@@ -350,6 +350,54 @@ export function getHiringInvitations(params?: {
 	);
 }
 
+export interface TalentDetail {
+	id: number;
+	email: string;
+	firstName: string;
+	lastName: string;
+	phoneNumber: string | null;
+	avgStarPoint: number;
+	marked: boolean;
+	createdAt: string;
+	recruitments: TalentRecruitment[];
+}
+
+export function getTalentDetail(id: string) {
+	return apiGet<TalentDetail>(
+		`/customer/hiring-invitations/talents/${id}`,
+	);
+}
+
+export interface TalentInvitationItem {
+	id: number;
+	recruitmentName: string;
+	tests: string[];
+	createdAt: string;
+	status: string;
+	rated: boolean;
+	completedAt: string | null;
+}
+
+export interface TalentInvitationPage {
+	content: TalentInvitationItem[];
+	totalElements: number;
+	totalPages: number;
+	size: number;
+	number: number;
+}
+
+export function getTalentInvitations(
+	id: string,
+	params?: { page?: number; size?: number },
+) {
+	const query = new URLSearchParams(
+		params as Record<string, string>,
+	).toString();
+	return apiGet<TalentInvitationPage>(
+		`/customer/hiring-invitations/talents/${id}/invitations${query ? `?${query}` : ""}`,
+	);
+}
+
 export interface CreateSurveyPayload {
 	[key: string]: unknown;
 }
