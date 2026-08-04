@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
 	ArrowLeft,
 	Bookmark,
-	Calendar,
 	ChevronLeft,
 	ChevronRight,
 	Mail,
@@ -17,7 +16,6 @@ import { EmptyState, TableSkeleton } from "@/components/shared/ListComponents";
 import {
 	getTalentDetail,
 	getTalentInvitations,
-	type TalentDetail,
 	type TalentInvitationItem,
 } from "@/lib/api";
 

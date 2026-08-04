@@ -363,9 +363,7 @@ export interface TalentDetail {
 }
 
 export function getTalentDetail(id: string) {
-	return apiGet<TalentDetail>(
-		`/customer/hiring-invitations/talents/${id}`,
-	);
+	return apiGet<TalentDetail>(`/customer/hiring-invitations/talents/${id}`);
 }
 
 export interface TalentInvitationItem {

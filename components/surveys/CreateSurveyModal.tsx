@@ -243,19 +243,11 @@ export default function CreateSurveyModal({
 										<span className="shrink-0">{question.icon}</span>
 										<div className="flex flex-col flex-1 min-w-0">
 											<span className="truncate">{question.title}</span>
-											<span
-												role="button"
-												tabIndex={0}
+											<button
+												type="button"
 												onClick={(e) => {
 													e.stopPropagation();
 													togglePreview(question.template);
-												}}
-												onKeyDown={(e) => {
-													if (e.key === "Enter" || e.key === " ") {
-														e.preventDefault();
-														e.stopPropagation();
-														togglePreview(question.template);
-													}
 												}}
 												className="text-[9px] text-muted-foreground/70 hover:text-muted-foreground truncate text-left mt-0.5 cursor-pointer"
 											>
@@ -265,7 +257,7 @@ export default function CreateSurveyModal({
 														— Хариулт: {optionsPreview}
 													</span>
 												)}
-											</span>
+											</button>
 										</div>
 										{isExpanded && (
 											<ChevronDown
