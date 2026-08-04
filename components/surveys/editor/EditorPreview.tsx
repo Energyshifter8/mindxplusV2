@@ -1,0 +1,253 @@
+"use client";
+
+import { Play } from "lucide-react";
+import { PLACEHOLDER, PREVIEW } from "@/lib/helptext";
+import { getThemeColors, type ThemeName } from "@/lib/theme";
+import type { QuestionItem, SectionType } from "./EditorSidebar";
+
+type PreviewDevice = "desktop" | "tablet" | "mobile";
+
+interface EditorPreviewProps {
+	activeSection: SectionType;
+	activeQuestionId: string | null;
+	questions: QuestionItem[];
+	activeQuestion: QuestionItem | null;
+	title: string;
+	description: string;
+	buttonText: string;
+	device: PreviewDevice;
+	endingTitle: string;
+	endingDescription: string;
+	theme: ThemeName;
+}
+
+const deviceWidths: Record<PreviewDevice, string> = {
+	desktop: "100%",
+	tablet: "768px",
+	mobile: "375px",
+};
+
+function OptionIndicator({ questionType }: { questionType: string }) {
+	if (questionType === "MULTIPLE_CHOICE") {
+		return <div className="w-3.5 h-3.5 border-2 border-[#444444] shrink-0" />;
+	}
+	return (
+		<div className="w-3.5 h-3.5 rounded-full border-2 border-[#444444] shrink-0" />
+	);
+}
+
+export default function EditorPreview({
+	activeSection,
+	activeQuestionId,
+	questions,
+	activeQuestion,
+	title,
+	description,
+	buttonText,
+	device,
+	endingTitle,
+	endingDescription,
+	theme,
+}: EditorPreviewProps) {
+	const width = deviceWidths[device];
+	const themeConfig = getThemeColors(theme);
+
+	return (
+		<div
+			className="flex-1 flex items-center justify-center overflow-auto p-6"
+			style={{ background: "var(--background)" }}
+		>
+			<div
+				className="min-h-[500px] flex flex-col transition-[width] duration-300"
+				style={{
+					width,
+					maxWidth: "100%",
+					background: themeConfig.bgColor,
+					border: `2px solid ${themeConfig.optionBorder}`,
+				}}
+			>
+				{/* Preview content */}
+				<div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
+					{activeSection === "homepage" && !activeQuestionId && (
+						<>
+							<h2
+								className="text-3xl font-black uppercase mb-4 leading-tight"
+								style={{
+									fontFamily: "'Barlow Condensed', sans-serif",
+									color: themeConfig.txtColor,
+								}}
+							>
+								{title || PLACEHOLDER.SURVEY_NAME}
+							</h2>
+							<p
+								className="text-xs mb-8 max-w-md leading-relaxed"
+								style={{
+									fontFamily: "'JetBrains Mono', monospace",
+									color: themeConfig.descColor,
+								}}
+							>
+								{description || PLACEHOLDER.DESCRIPTION}
+							</p>
+							<button
+								type="button"
+								className="flex items-center gap-2 px-6 py-3 text-[11px] uppercase tracking-widest font-bold transition-colors"
+								style={{
+									fontFamily: "'JetBrains Mono', monospace",
+									background: themeConfig.btnBg,
+									color: themeConfig.btnTxt,
+								}}
+							>
+								<Play size={14} />
+								{buttonText || PLACEHOLDER.BUTTON_TEXT}
+							</button>
+						</>
+					)}
+
+					{activeSection === "question" && activeQuestion && (
+						<div className="w-full max-w-lg text-left">
+							<div className="flex items-center gap-3 mb-3">
+								<span
+									className="text-[9px] uppercase tracking-widest"
+									style={{
+										fontFamily: "'JetBrains Mono', monospace",
+										color: themeConfig.descColor,
+									}}
+								>
+									{PREVIEW.QUESTION_PREFIX}{" "}
+									{questions.findIndex((q) => q.id === activeQuestionId) + 1} /{" "}
+									{questions.length}
+								</span>
+								{activeQuestion.isRequired && (
+									<span
+										className="text-[8px] uppercase tracking-widest px-1.5 py-0.5"
+										style={{
+											fontFamily: "'JetBrains Mono', monospace",
+											color: themeConfig.btnBg,
+											border: `1px solid ${themeConfig.btnBg}`,
+										}}
+									>
+										{PREVIEW.REQUIRED_BADGE}
+									</span>
+								)}
+							</div>
+							<h3
+								className="text-xl font-bold uppercase mb-6"
+								style={{
+									fontFamily: "'Barlow Condensed', sans-serif",
+									color: themeConfig.txtColor,
+								}}
+							>
+								{activeQuestion.title || PLACEHOLDER.QUESTION_TITLE}
+							</h3>
+							{activeQuestion.questionType === "TEXT" ? (
+								<div
+									className="w-full h-20 flex items-start px-3 py-2"
+									style={{
+										border: `2px solid ${themeConfig.optionBorder}`,
+										background: themeConfig.inputBg,
+									}}
+								>
+									<span
+										className="text-[11px]"
+										style={{
+											fontFamily: "'JetBrains Mono', monospace",
+											color: themeConfig.descColor,
+										}}
+									>
+										{PLACEHOLDER.TEXT_INPUT}
+									</span>
+								</div>
+							) : (
+								<div className="space-y-3">
+									{activeQuestion.options.length > 0
+										? activeQuestion.options.map((opt, idx) => (
+												<div
+													// biome-ignore lint/suspicious/noArrayIndexKey: option list
+													key={`option-${activeQuestion.id}-${idx}`}
+													className="h-10 flex items-center gap-3 px-3"
+													style={{
+														border: `2px solid ${themeConfig.optionBorder}`,
+														background: themeConfig.inputBg,
+													}}
+												>
+													<OptionIndicator
+														questionType={activeQuestion.questionType}
+													/>
+													<span
+														className="text-[11px]"
+														style={{
+															fontFamily: "'JetBrains Mono', monospace",
+															color: themeConfig.descColor,
+														}}
+													>
+														{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}
+													</span>
+													{opt.point > 0 && (
+														<span
+															className="ml-auto text-[9px]"
+															style={{
+																fontFamily: "'JetBrains Mono', monospace",
+																color: themeConfig.descColor,
+															}}
+														>
+															{opt.point} {PREVIEW.POINTS_SUFFIX}
+														</span>
+													)}
+												</div>
+											))
+										: Array.from({ length: 3 }, (_, idx) => (
+												<div
+													// biome-ignore lint/suspicious/noArrayIndexKey: empty slot list
+													key={`empty-${idx}`}
+													className="h-10 flex items-center gap-3 px-3"
+													style={{
+														border: `2px solid ${themeConfig.optionBorder}`,
+														background: themeConfig.inputBg,
+													}}
+												>
+													<OptionIndicator
+														questionType={activeQuestion.questionType}
+													/>
+													<span
+														className="text-[11px]"
+														style={{
+															fontFamily: "'JetBrains Mono', monospace",
+															color: themeConfig.descColor,
+														}}
+													>
+														{PLACEHOLDER.OPTION} {idx + 1}
+													</span>
+												</div>
+											))}
+								</div>
+							)}
+						</div>
+					)}
+
+					{activeSection === "ending" && !activeQuestionId && (
+						<>
+							<h2
+								className="text-3xl font-black uppercase mb-4 leading-tight"
+								style={{
+									fontFamily: "'Barlow Condensed', sans-serif",
+									color: themeConfig.txtColor,
+								}}
+							>
+								{endingTitle || PLACEHOLDER.ENDING_TITLE}
+							</h2>
+							<p
+								className="text-xs max-w-md leading-relaxed"
+								style={{
+									fontFamily: "'JetBrains Mono', monospace",
+									color: themeConfig.descColor,
+								}}
+							>
+								{endingDescription || PLACEHOLDER.ENDING_DESCRIPTION}
+							</p>
+						</>
+					)}
+				</div>
+			</div>
+		</div>
+	);
+}

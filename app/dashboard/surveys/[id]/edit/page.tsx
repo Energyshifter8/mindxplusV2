@@ -1,0 +1,744 @@
+"use client";
+
+import { AlertTriangle } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import EditorPreview from "@/components/surveys/editor/EditorPreview";
+import EditorPublishModal from "@/components/surveys/editor/EditorPublishModal";
+import EditorRightPanel from "@/components/surveys/editor/EditorRightPanel";
+import EditorSidebar, {
+	type QuestionItem,
+	type SectionType,
+} from "@/components/surveys/editor/EditorSidebar";
+import EditorTopBar from "@/components/surveys/editor/EditorTopBar";
+
+const DesignModal = lazy(
+	() => import("@/components/surveys/editor/DesignModal"),
+);
+const SettingsModal = lazy(
+	() => import("@/components/surveys/editor/SettingsModal"),
+);
+
+import type {
+	CreateQuestionPayload,
+	SurveyDetail,
+	SurveyQuestion,
+} from "@/lib/api";
+import { BUTTON, DEFAULT, TOAST } from "@/lib/helptext";
+import { useCreateQuestion } from "@/lib/hooks/useCreateQuestion";
+import { useDeleteQuestion } from "@/lib/hooks/useDeleteQuestion";
+import { usePublishSurvey } from "@/lib/hooks/usePublishSurvey";
+import {
+	type QuestionCategory,
+	type ReorderableQuestion,
+	useReorderQuestions,
+} from "@/lib/hooks/useReorderQuestions";
+import {
+	useSurveyDetail,
+	useSurveyEditOptions,
+} from "@/lib/hooks/useSurveyDetail";
+import { useUpdateSurveyPage } from "@/lib/hooks/useUpdateSurveyPage";
+import { type ThemeName, themes } from "@/lib/theme";
+
+function mapQuestion(q: SurveyQuestion): QuestionItem {
+	if (!q.options) {
+		console.warn("Question missing options array:", q);
+	}
+	return {
+		id: q.id,
+		title: q.content,
+		questionType: q.questionType,
+		isRequired: q.isRequired,
+		minAnswerCount: q.minAnswerCount,
+		maxAnswerCount: q.maxAnswerCount,
+		section: q.section,
+		toBeAssessed: q.toBeAssessed,
+		options: (q.options ?? []).map((opt) => ({
+			id: opt.id,
+			content: opt.content,
+			point: opt.point,
+			order: opt.order,
+		})),
+	};
+}
+
+function EditorSkeleton() {
+	return (
+		<div className="flex flex-col h-full">
+			<div className="flex items-center h-14 px-4 border-b-2 border-border bg-card shrink-0 gap-3">
+				<div className="w-8 h-8 bg-muted animate-pulse" />
+				<div className="h-4 w-48 bg-muted animate-pulse" />
+			</div>
+			<div className="flex flex-1 overflow-hidden">
+				<div className="w-64 border-r-2 border-border bg-card p-4 space-y-3 shrink-0">
+					<div className="h-4 w-20 bg-muted animate-pulse" />
+					<div className="h-8 bg-muted animate-pulse" />
+					<div className="h-4 w-20 bg-muted animate-pulse mt-4" />
+					<div className="h-8 bg-muted animate-pulse" />
+					<div className="h-8 bg-muted animate-pulse" />
+				</div>
+				<div className="flex-1 flex items-center justify-center p-6">
+					<div className="h-[500px] w-full max-w-2xl bg-muted/30 animate-pulse" />
+				</div>
+				<div className="w-80 border-l-2 border-border bg-card p-4 space-y-5 shrink-0">
+					<div className="h-4 w-32 bg-muted animate-pulse" />
+					<div className="h-10 bg-muted animate-pulse" />
+					<div className="h-20 bg-muted animate-pulse" />
+					<div className="h-10 bg-muted animate-pulse" />
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function ErrorState({
+	message,
+	onRetry,
+}: {
+	message: string;
+	onRetry?: () => void;
+}) {
+	const router = useRouter();
+	return (
+		<div className="flex flex-col items-center justify-center h-full gap-4">
+			<div className="flex h-12 w-12 items-center justify-center border-2 border-destructive/30 text-destructive">
+				<AlertTriangle size={20} />
+			</div>
+			<p
+				className="text-xs uppercase tracking-widest text-destructive text-center"
+				style={{ fontFamily: "'JetBrains Mono', monospace" }}
+			>
+				{message}
+			</p>
+			<div className="flex gap-2">
+				{onRetry && (
+					<button
+						type="button"
+						onClick={onRetry}
+						className="px-4 py-1.5 text-[10px] uppercase tracking-widest font-bold border-2 border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+						style={{ fontFamily: "'JetBrains Mono', monospace" }}
+					>
+						{BUTTON.RETRY}
+					</button>
+				)}
+				<button
+					type="button"
+					onClick={() => router.push("/dashboard/surveys")}
+					className="px-4 py-1.5 text-[10px] uppercase tracking-widest font-bold border-2 border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+					style={{ fontFamily: "'JetBrains Mono', monospace" }}
+				>
+					{BUTTON.BACK}
+				</button>
+			</div>
+		</div>
+	);
+}
+
+function extractStartPage(data: SurveyDetail) {
+	return data.pages?.START?.[0] ?? null;
+}
+
+function extractEndPage(data: SurveyDetail) {
+	return data.pages?.END?.[0] ?? null;
+}
+
+function normalizeThemeType(raw: string | undefined): ThemeName {
+	if (!raw) return "dark";
+	const lower = raw.toLowerCase() as ThemeName;
+	return lower in themes ? lower : "dark";
+}
+
+export default function SurveyEditPage() {
+	const params = useParams();
+	const router = useRouter();
+	const surveyId = params?.id as string;
+
+	const {
+		data: surveyData,
+		isLoading: isLoadingSurvey,
+		isError: isSurveyError,
+		error: surveyError,
+		refetch: refetchSurvey,
+	} = useSurveyDetail(surveyId);
+
+	const { data: _editOptions } = useSurveyEditOptions(surveyId);
+
+	const [activeSection, setActiveSection] = useState<SectionType>("homepage");
+	const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null);
+	const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">(
+		"desktop",
+	);
+	const [showPublishModal, setShowPublishModal] = useState(false);
+	const [publishDate, setPublishDate] = useState("");
+	const [showDesignModal, setShowDesignModal] = useState(false);
+	const [selectedTheme, setSelectedTheme] = useState<ThemeName>("dark");
+	const [hideWatermark, setHideWatermark] = useState(false);
+
+	const [showSettingsModal, setShowSettingsModal] = useState(false);
+	const [settingsDeviceCheck, setSettingsDeviceCheck] = useState<
+		boolean | null
+	>(null);
+	const [settingsPassCodeProtected, setSettingsPassCodeProtected] = useState<
+		boolean | null
+	>(null);
+
+	const [title, setTitle] = useState<string | null>(null);
+	const [description, setDescription] = useState<string | null>(null);
+	const [buttonText, setButtonText] = useState<string | null>(null);
+	const [endingTitle, setEndingTitle] = useState<string | null>(null);
+	const [endingDescription, setEndingDescription] = useState<string | null>(
+		null,
+	);
+
+	const [questions, setQuestions] = useState<QuestionItem[]>([]);
+	const [prevSurveyData, setPrevSurveyData] = useState<SurveyDetail | null>(
+		null,
+	);
+	const [reorderMode, setReorderMode] = useState(false);
+
+	if (surveyData && surveyData !== prevSurveyData) {
+		setPrevSurveyData(surveyData);
+		const customQuestions =
+			surveyData.customQuestions?.CUSTOM_QUESTION_FIRST ?? [];
+		const templateQuestions = surveyData.templateQuestions ?? [];
+		const merged = [
+			...customQuestions.map(mapQuestion),
+			...templateQuestions.map(mapQuestion),
+		];
+		setQuestions(merged);
+		if (surveyData.design?.themeType) {
+			setSelectedTheme(normalizeThemeType(surveyData.design.themeType));
+		}
+		setHideWatermark(surveyData.design?.showAppLogo === false);
+		setSettingsDeviceCheck(surveyData.deviceCheck);
+		setSettingsPassCodeProtected(surveyData.passCodeProtected);
+	}
+
+	const initialReorderItems = useMemo<
+		Record<QuestionCategory, ReorderableQuestion[]>
+	>(
+		() => ({
+			CUSTOM_QUESTION_FIRST: questions
+				.filter((q) => q.section === "CUSTOM_QUESTION_FIRST")
+				.map((q) => ({
+					...q,
+					category: "CUSTOM_QUESTION_FIRST" as const,
+				})),
+			CUSTOM_QUESTION_LAST: questions
+				.filter(
+					(q) =>
+						q.section !== "CUSTOM_QUESTION_FIRST" &&
+						q.section !== "PRIMARY_QUESTION",
+				)
+				.map((q) => ({
+					...q,
+					category: "CUSTOM_QUESTION_LAST" as const,
+				})),
+		}),
+		[questions],
+	);
+
+	const {
+		items: reorderItems,
+		handleDragOver,
+		handleDragEnd,
+	} = useReorderQuestions({
+		surveyId,
+		initialItems: initialReorderItems,
+		onOptimisticUpdate: (newItems) => {
+			const reorderedIds = new Set([
+				...newItems.CUSTOM_QUESTION_FIRST.map((q) => q.id),
+				...newItems.CUSTOM_QUESTION_LAST.map((q) => q.id),
+			]);
+			const templateOnly = questions.filter(
+				(q) => q.section === "PRIMARY_QUESTION" && !reorderedIds.has(q.id),
+			);
+			const reorderedAsQuestionItems: QuestionItem[] = [
+				...newItems.CUSTOM_QUESTION_FIRST.map((q) => ({
+					id: q.id,
+					title: q.title,
+					questionType: q.questionType,
+					isRequired: q.isRequired,
+					minAnswerCount: q.minAnswerCount,
+					maxAnswerCount: q.maxAnswerCount,
+					options: q.options ?? [],
+					section: q.category,
+				})),
+				...newItems.CUSTOM_QUESTION_LAST.map((q) => ({
+					id: q.id,
+					title: q.title,
+					questionType: q.questionType,
+					isRequired: q.isRequired,
+					minAnswerCount: q.minAnswerCount,
+					maxAnswerCount: q.maxAnswerCount,
+					options: q.options ?? [],
+					section: q.category,
+				})),
+			];
+			setQuestions([...reorderedAsQuestionItems, ...templateOnly]);
+		},
+	});
+
+	const activeQuestion: QuestionItem | null = activeQuestionId
+		? (questions.find((q) => q.id === activeQuestionId) ?? null)
+		: null;
+
+	const startPage = surveyData ? extractStartPage(surveyData) : null;
+	const endPage = surveyData ? extractEndPage(surveyData) : null;
+
+	const effectiveTitle = title ?? startPage?.title ?? "";
+	const effectiveDescription = description ?? startPage?.content ?? "";
+	const effectiveButtonText = buttonText ?? startPage?.btnLabel ?? "";
+	const effectiveEndingTitle = endingTitle ?? endPage?.title ?? "";
+	const effectiveEndingDescription =
+		endingDescription ?? endPage?.content ?? "";
+
+	const effectiveSettingsDeviceCheck =
+		settingsDeviceCheck ?? surveyData?.deviceCheck ?? false;
+	const effectiveSettingsPassCodeProtected =
+		settingsPassCodeProtected ?? surveyData?.passCodeProtected ?? false;
+
+	const updatePageMutation = useUpdateSurveyPage({
+		surveyId,
+	});
+
+	const createQuestionMutation = useCreateQuestion({
+		surveyId,
+	});
+
+	const deleteQuestionMutation = useDeleteQuestion({
+		surveyId,
+	});
+
+	const publishMutation = usePublishSurvey({
+		surveyId,
+		onSuccess: () => {
+			setShowPublishModal(false);
+			setPublishDate("");
+			router.push("/dashboard/surveys");
+		},
+	});
+
+	const handleSectionSelect = useCallback(
+		(section: SectionType, questionId?: string) => {
+			setActiveSection(section);
+			setActiveQuestionId(questionId ?? null);
+		},
+		[],
+	);
+
+	const handleQuestionTitleChange = useCallback(
+		(questionId: string, value: string) => {
+			setQuestions((prev) =>
+				prev.map((q) => (q.id === questionId ? { ...q, title: value } : q)),
+			);
+		},
+		[],
+	);
+
+	const handleQuestionTypeChange = useCallback(
+		(questionId: string, value: string) => {
+			setQuestions((prev) =>
+				prev.map((q) => {
+					if (q.id !== questionId) return q;
+					const isMultiple = value === "MULTIPLE_CHOICE";
+					return {
+						...q,
+						questionType: value,
+						minAnswerCount: isMultiple ? 0 : 1,
+						maxAnswerCount: isMultiple ? q.options.length : 1,
+					};
+				}),
+			);
+		},
+		[],
+	);
+
+	const handleQuestionRequiredChange = useCallback(
+		(questionId: string, value: boolean) => {
+			setQuestions((prev) =>
+				prev.map((q) =>
+					q.id === questionId ? { ...q, isRequired: value } : q,
+				),
+			);
+		},
+		[],
+	);
+
+	const handleQuestionMinChange = useCallback(
+		(questionId: string, value: number) => {
+			setQuestions((prev) =>
+				prev.map((q) =>
+					q.id === questionId ? { ...q, minAnswerCount: value } : q,
+				),
+			);
+		},
+		[],
+	);
+
+	const handleQuestionMaxChange = useCallback(
+		(questionId: string, value: number) => {
+			setQuestions((prev) =>
+				prev.map((q) =>
+					q.id === questionId ? { ...q, maxAnswerCount: value } : q,
+				),
+			);
+		},
+		[],
+	);
+
+	const handleOptionContentChange = useCallback(
+		(questionId: string, optionIndex: number, value: string) => {
+			setQuestions((prev) =>
+				prev.map((q) => {
+					if (q.id !== questionId) return q;
+					const newOptions = q.options.map((opt, idx) =>
+						idx === optionIndex ? { ...opt, content: value } : opt,
+					);
+					return { ...q, options: newOptions };
+				}),
+			);
+		},
+		[],
+	);
+
+	const handleOptionPointChange = useCallback(
+		(questionId: string, optionIndex: number, value: number) => {
+			setQuestions((prev) =>
+				prev.map((q) => {
+					if (q.id !== questionId) return q;
+					const newOptions = q.options.map((opt, idx) =>
+						idx === optionIndex ? { ...opt, point: value } : opt,
+					);
+					return { ...q, options: newOptions };
+				}),
+			);
+		},
+		[],
+	);
+
+	const handleAddOption = useCallback((questionId: string) => {
+		setQuestions((prev) =>
+			prev.map((q) => {
+				if (q.id !== questionId) return q;
+				const newOption = {
+					content: "",
+					point: 0,
+					order: q.options.length + 1,
+				};
+				return {
+					...q,
+					options: [...q.options, newOption],
+					maxAnswerCount:
+						q.questionType === "MULTIPLE_CHOICE"
+							? q.options.length + 1
+							: q.maxAnswerCount,
+				};
+			}),
+		);
+	}, []);
+
+	const handleRemoveOption = useCallback(
+		(questionId: string, optionIndex: number) => {
+			setQuestions((prev) =>
+				prev.map((q) => {
+					if (q.id !== questionId) return q;
+					if (q.options.length <= 1) return q;
+					const newOptions = q.options
+						.filter((_, idx) => idx !== optionIndex)
+						.map((opt, idx) => ({ ...opt, order: idx + 1 }));
+					return {
+						...q,
+						options: newOptions,
+						maxAnswerCount:
+							q.questionType === "MULTIPLE_CHOICE"
+								? Math.min(q.maxAnswerCount, newOptions.length)
+								: q.maxAnswerCount,
+					};
+				}),
+			);
+		},
+		[],
+	);
+
+	const handleDeleteQuestion = useCallback(
+		(questionId: string) => {
+			deleteQuestionMutation.mutate(
+				{ id: questionId },
+				{
+					onSuccess: (response) => {
+						if (!response.success) return;
+						setQuestions((prev) => prev.filter((q) => q.id !== questionId));
+						if (activeQuestionId === questionId) {
+							setActiveQuestionId(null);
+							setActiveSection("homepage");
+						}
+					},
+				},
+			);
+		},
+		[deleteQuestionMutation, activeQuestionId],
+	);
+
+	const handleCreateQuestionFromPopover = useCallback(
+		async (payload: CreateQuestionPayload) => {
+			if (questions.length >= 5) return;
+			const result = await createQuestionMutation.mutateAsync(payload);
+			if (result.success && result.data?.id) {
+				setActiveQuestionId(result.data.id);
+				setActiveSection("question");
+			}
+			return result;
+		},
+		[questions.length, createQuestionMutation],
+	);
+
+	const handleSave = useCallback(() => {
+		const mutations: Promise<unknown>[] = [];
+
+		if (startPage) {
+			mutations.push(
+				updatePageMutation.mutateAsync({
+					id: startPage.id,
+					qnSection: startPage.qnSection,
+					pageType: startPage.pageType,
+					title: effectiveTitle,
+					content: effectiveDescription,
+					btnLabel: effectiveButtonText || undefined,
+					pageOrder: startPage.pageOrder,
+				}),
+			);
+		}
+
+		if (endPage) {
+			mutations.push(
+				updatePageMutation.mutateAsync({
+					id: endPage.id,
+					qnSection: endPage.qnSection,
+					pageType: endPage.pageType,
+					title: effectiveEndingTitle,
+					content: effectiveEndingDescription,
+					pageOrder: endPage.pageOrder,
+				}),
+			);
+		}
+
+		for (const q of questions) {
+			const isNew = String(q.id).startsWith("q-");
+			if (isNew) {
+				mutations.push(
+					createQuestionMutation.mutateAsync({
+						id: 0,
+						content: q.title,
+						description: "",
+						questionType: q.questionType,
+						section: q.section,
+						isRequired: q.isRequired,
+						minAnswerCount: q.minAnswerCount,
+						maxAnswerCount: q.maxAnswerCount,
+						toBeAssessed: q.toBeAssessed,
+						options: q.options.map((opt, idx) => ({
+							id: 0,
+							order: idx + 1,
+							content: opt.content,
+							point: opt.point,
+							tag: "I",
+							nextQuestionId: 0,
+						})),
+						matrixRows: [],
+					}),
+				);
+			} else if (q.section !== "PRIMARY_QUESTION") {
+				mutations.push(
+					(async () => {
+						const deleteResult = await deleteQuestionMutation.mutateAsync({
+							id: q.id,
+						});
+						if (!deleteResult.success) {
+							throw new Error(
+								deleteResult.error || "Failed to delete old question",
+							);
+						}
+						const createResult = await createQuestionMutation.mutateAsync({
+							id: 0,
+							content: q.title,
+							description: "",
+							questionType: q.questionType,
+							section: q.section,
+							isRequired: q.isRequired,
+							minAnswerCount: q.minAnswerCount,
+							maxAnswerCount: q.maxAnswerCount,
+							toBeAssessed: q.toBeAssessed,
+							options: q.options.map((opt, idx) => ({
+								id: 0,
+								order: idx + 1,
+								content: opt.content,
+								point: opt.point,
+								tag: "I",
+								nextQuestionId: 0,
+							})),
+							matrixRows: [],
+						});
+						if (!createResult.success) {
+							throw new Error(
+								"Old question was deleted but new version failed to save: " +
+									(createResult.error || "Unknown error"),
+							);
+						}
+						return createResult;
+					})(),
+				);
+			}
+		}
+
+		Promise.all(mutations).catch(() => {});
+	}, [
+		startPage,
+		endPage,
+		questions,
+		effectiveTitle,
+		effectiveDescription,
+		effectiveButtonText,
+		effectiveEndingTitle,
+		effectiveEndingDescription,
+		updatePageMutation,
+		createQuestionMutation,
+		deleteQuestionMutation,
+	]);
+
+	const handlePublishClick = useCallback(() => {
+		setShowPublishModal(true);
+	}, []);
+
+	const handlePublishConfirm = useCallback(() => {
+		if (!publishDate) return;
+		publishMutation.mutate({ value: publishDate });
+	}, [publishDate, publishMutation]);
+
+	const handlePublishCancel = useCallback(() => {
+		setShowPublishModal(false);
+		setPublishDate("");
+	}, []);
+
+	if (isLoadingSurvey) {
+		return <EditorSkeleton />;
+	}
+
+	if (isSurveyError) {
+		return (
+			<ErrorState
+				message={surveyError?.message || TOAST.FETCH_ERROR}
+				onRetry={() => refetchSurvey()}
+			/>
+		);
+	}
+
+	return (
+		<div className="flex flex-col h-full">
+			<EditorTopBar
+				surveyName={effectiveTitle || surveyData?.name || DEFAULT.SURVEY_NAME}
+				activeDevice={device}
+				onDeviceChange={setDevice}
+				onSave={handleSave}
+				onPublish={handlePublishClick}
+				onBack={() => router.push("/dashboard/surveys")}
+				onDesignClick={() => setShowDesignModal(true)}
+				onSettingsClick={() => setShowSettingsModal(true)}
+				isSaving={
+					updatePageMutation.isPending ||
+					createQuestionMutation.isPending ||
+					deleteQuestionMutation.isPending
+				}
+				isPublishing={publishMutation.isPending}
+			/>
+			<div className="flex flex-1 overflow-hidden">
+				<EditorSidebar
+					activeSection={activeSection}
+					activeQuestionId={activeQuestionId}
+					questions={questions}
+					onSectionSelect={handleSectionSelect}
+					onDeleteQuestion={handleDeleteQuestion}
+					onCreateQuestion={handleCreateQuestionFromPopover}
+					reorderMode={reorderMode}
+					reorderItems={reorderItems}
+					onReorderDragOver={handleDragOver}
+					onReorderDragEnd={handleDragEnd}
+					onToggleReorderMode={() => setReorderMode(!reorderMode)}
+				/>
+				<EditorPreview
+					activeSection={activeSection}
+					activeQuestionId={activeQuestionId}
+					questions={questions}
+					activeQuestion={activeQuestion}
+					title={effectiveTitle}
+					description={effectiveDescription}
+					buttonText={effectiveButtonText}
+					device={device}
+					endingTitle={effectiveEndingTitle}
+					endingDescription={effectiveEndingDescription}
+					theme={selectedTheme}
+				/>
+				<EditorRightPanel
+					activeSection={activeSection}
+					activeQuestionId={activeQuestionId}
+					activeQuestion={activeQuestion}
+					title={effectiveTitle}
+					description={effectiveDescription}
+					buttonText={effectiveButtonText}
+					endingTitle={effectiveEndingTitle}
+					endingDescription={effectiveEndingDescription}
+					onTitleChange={setTitle}
+					onDescriptionChange={setDescription}
+					onButtonTextChange={setButtonText}
+					onEndingTitleChange={setEndingTitle}
+					onEndingDescriptionChange={setEndingDescription}
+					onQuestionTitleChange={handleQuestionTitleChange}
+					onQuestionTypeChange={handleQuestionTypeChange}
+					onQuestionRequiredChange={handleQuestionRequiredChange}
+					onQuestionMinChange={handleQuestionMinChange}
+					onQuestionMaxChange={handleQuestionMaxChange}
+					onOptionContentChange={handleOptionContentChange}
+					onOptionPointChange={handleOptionPointChange}
+					onAddOption={handleAddOption}
+					onRemoveOption={handleRemoveOption}
+				/>
+			</div>
+
+			<Suspense fallback={null}>
+				<DesignModal
+					isOpen={showDesignModal}
+					onClose={() => setShowDesignModal(false)}
+					currentTheme={selectedTheme}
+					onThemeChange={setSelectedTheme}
+					onLogoUpload={(file) => {
+						console.log("Logo uploaded:", file.name);
+					}}
+					hideWatermark={hideWatermark}
+					onHideWatermarkChange={setHideWatermark}
+				/>
+			</Suspense>
+
+			<Suspense fallback={null}>
+				<SettingsModal
+					surveyId={surveyId}
+					isOpen={showSettingsModal}
+					onClose={() => setShowSettingsModal(false)}
+					deviceCheck={effectiveSettingsDeviceCheck}
+					passCodeProtected={effectiveSettingsPassCodeProtected}
+					onDeviceCheckChange={setSettingsDeviceCheck}
+					onPassCodeProtectedChange={setSettingsPassCodeProtected}
+				/>
+			</Suspense>
+
+			{showPublishModal && (
+				<EditorPublishModal
+					publishDate={publishDate}
+					onDateChange={setPublishDate}
+					onConfirm={handlePublishConfirm}
+					onCancel={handlePublishCancel}
+					isPending={publishMutation.isPending}
+				/>
+			)}
+		</div>
+	);
+}
