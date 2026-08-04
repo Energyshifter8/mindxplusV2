@@ -235,7 +235,7 @@ export default function SurveysPage() {
 				{/* Table / Grid */}
 				<div className="border-2 border-border bg-card overflow-hidden">
 					{listLoading ? (
-						<TableSkeleton />
+						<TableSkeleton columnCount={8} />
 					) : listError ? (
 						<EmptyState text="Мэдээлэл ачаалахад алдаа гарлаа" />
 					) : surveyRows.length === 0 ? (

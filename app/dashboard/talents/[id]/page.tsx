@@ -215,7 +215,7 @@ export default function TalentDetailPage() {
 				{/* Table */}
 				<div className="border-2 border-border bg-card overflow-hidden">
 					{invitationsLoading ? (
-						<TableSkeleton />
+						<TableSkeleton columnCount={7} />
 					) : invitationsError ? (
 						<EmptyState text="Урилгын мэдээлэл ачаалахад алдаа гарлаа" />
 					) : invitations.length === 0 ? (

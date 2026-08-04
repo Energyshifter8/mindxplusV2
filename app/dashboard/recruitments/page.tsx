@@ -219,7 +219,7 @@ export default function RecruitmentsPage() {
 				{/* Table / Grid */}
 				<div className="border-2 border-border bg-card overflow-hidden">
 					{listLoading ? (
-						<TableSkeleton />
+						<TableSkeleton columnCount={8} />
 					) : listError ? (
 						<EmptyState text="Мэдээлэл ачаалахад алдаа гарлаа" />
 					) : rows.length === 0 ? (
