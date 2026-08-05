@@ -2,6 +2,7 @@ import "@/app/globals.css";
 import type { Metadata } from "next";
 import { Barlow_Condensed, Geist, JetBrains_Mono } from "next/font/google";
 import Providers from "@/components/providers";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -36,9 +37,10 @@ export default function RootLayout({
 				barlowCondensed.variable,
 			)}
 		>
-			<body className="antialiased">
-				<Providers>{children}</Providers>
-			</body>
+		<body className="antialiased">
+			<Providers>{children}</Providers>
+			<Toaster />
+		</body>
 		</html>
 	);
 }

@@ -4,8 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
 	Bookmark,
 	Calendar,
-	ChevronLeft,
-	ChevronRight,
 	Mail,
 	Search,
 	Star,
@@ -13,6 +11,14 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EmptyState } from "@/components/shared/ListComponents";
+import {
+	Pagination,
+	PaginationContent,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+} from "@/components/ui/pagination";
 import { getHiringInvitations, type HiringInvitationItem } from "@/lib/api";
 
 const PAGE_SIZE = 9;
@@ -301,39 +307,40 @@ export default function TalentsPage() {
 							))}
 						</div>
 
-						{/* Pagination */}
-						{totalPages > 1 && (
-							<div className="flex items-center justify-center gap-3 mt-8">
-								<button
-									type="button"
-									onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
-									disabled={currentPage === 0}
-									className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold border-2 border-border text-muted-foreground hover:border-primary hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-colors"
-									style={{ fontFamily: "'JetBrains Mono', monospace" }}
-								>
-									<ChevronLeft size={12} />
-									Өмнөх
-								</button>
-								<span
-									className="text-[10px] uppercase tracking-widest text-muted-foreground"
-									style={{ fontFamily: "'JetBrains Mono', monospace" }}
-								>
-									{currentPage + 1} / {totalPages}
-								</span>
-								<button
-									type="button"
-									onClick={() =>
-										setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
-									}
-									disabled={currentPage >= totalPages - 1}
-									className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold border-2 border-border text-muted-foreground hover:border-primary hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-colors"
-									style={{ fontFamily: "'JetBrains Mono', monospace" }}
-								>
-									Дараах
-									<ChevronRight size={12} />
-								</button>
-							</div>
-						)}
+					{/* Pagination */}
+					{totalPages > 1 && (
+						<Pagination className="mt-8">
+							<PaginationContent>
+								<PaginationItem>
+									<PaginationPrevious
+										text="Өмнөх"
+										onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+										aria-disabled={currentPage === 0}
+										className={currentPage === 0 ? "pointer-events-none opacity-30" : "cursor-pointer"}
+									/>
+								</PaginationItem>
+								{Array.from({ length: totalPages }, (_, i) => (
+									<PaginationItem key={i}>
+										<PaginationLink
+											isActive={currentPage === i}
+											onClick={() => setCurrentPage(i)}
+											className="cursor-pointer"
+										>
+											{i + 1}
+										</PaginationLink>
+									</PaginationItem>
+								))}
+								<PaginationItem>
+									<PaginationNext
+										text="Дараах"
+										onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
+										aria-disabled={currentPage >= totalPages - 1}
+										className={currentPage >= totalPages - 1 ? "pointer-events-none opacity-30" : "cursor-pointer"}
+									/>
+								</PaginationItem>
+							</PaginationContent>
+						</Pagination>
+					)}
 					</>
 				)}
 			</div>
