@@ -43,7 +43,7 @@ export const MiniStatCard = memo(function MiniStatCard({
 			<div className="relative z-10">
 				<div className="flex items-start justify-between mb-3">
 					<span
-						className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground leading-tight max-w-[120px]"
+						className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground leading-tight"
 						style={{ fontFamily: "'JetBrains Mono', monospace" }}
 					>
 						{label}
@@ -63,7 +63,7 @@ export const MiniStatCard = memo(function MiniStatCard({
 					</div>
 				) : (
 					<div
-						className="text-3xl font-black uppercase text-stat-value"
+						className="text-xl sm:text-2xl lg:text-3xl font-black uppercase text-stat-value"
 						style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
 					>
 						{displayValue}

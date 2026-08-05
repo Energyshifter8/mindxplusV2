@@ -77,7 +77,7 @@ function MiniStatCard({
 					</div>
 				) : (
 					<div
-						className="text-3xl font-black uppercase text-stat-value"
+						className="text-xl sm:text-2xl lg:text-3xl font-black uppercase text-stat-value"
 						style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
 					>
 						{value}

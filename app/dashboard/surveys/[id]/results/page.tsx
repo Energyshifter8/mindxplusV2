@@ -47,7 +47,7 @@ function StatCard({
 			<div className="relative z-10">
 				<div className="flex items-start justify-between mb-3">
 					<span
-						className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground leading-tight max-w-[120px]"
+						className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground leading-tight"
 						style={{ fontFamily: "'JetBrains Mono', monospace" }}
 					>
 						{label}
