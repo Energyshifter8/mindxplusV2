@@ -1,13 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-	Bookmark,
-	Calendar,
-	Mail,
-	Search,
-	Star,
-} from "lucide-react";
+import { Bookmark, Calendar, Mail, Search, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EmptyState } from "@/components/shared/ListComponents";
@@ -307,40 +301,51 @@ export default function TalentsPage() {
 							))}
 						</div>
 
-					{/* Pagination */}
-					{totalPages > 1 && (
-						<Pagination className="mt-8">
-							<PaginationContent>
-								<PaginationItem>
-									<PaginationPrevious
-										text="Өмнөх"
-										onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
-										aria-disabled={currentPage === 0}
-										className={currentPage === 0 ? "pointer-events-none opacity-30" : "cursor-pointer"}
-									/>
-								</PaginationItem>
-								{Array.from({ length: totalPages }, (_, i) => (
-									<PaginationItem key={i}>
-										<PaginationLink
-											isActive={currentPage === i}
-											onClick={() => setCurrentPage(i)}
-											className="cursor-pointer"
-										>
-											{i + 1}
-										</PaginationLink>
+						{/* Pagination */}
+						{totalPages > 1 && (
+							<Pagination className="mt-8">
+								<PaginationContent>
+									<PaginationItem>
+										<PaginationPrevious
+											text="Өмнөх"
+											onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+											aria-disabled={currentPage === 0}
+											className={
+												currentPage === 0
+													? "pointer-events-none opacity-30"
+													: "cursor-pointer"
+											}
+										/>
 									</PaginationItem>
-								))}
-								<PaginationItem>
-									<PaginationNext
-										text="Дараах"
-										onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
-										aria-disabled={currentPage >= totalPages - 1}
-										className={currentPage >= totalPages - 1 ? "pointer-events-none opacity-30" : "cursor-pointer"}
-									/>
-								</PaginationItem>
-							</PaginationContent>
-						</Pagination>
-					)}
+									{Array.from({ length: totalPages }, (_, i) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: pagination index is stable
+										<PaginationItem key={`page-${i}`}>
+											<PaginationLink
+												isActive={currentPage === i}
+												onClick={() => setCurrentPage(i)}
+												className="cursor-pointer"
+											>
+												{i + 1}
+											</PaginationLink>
+										</PaginationItem>
+									))}
+									<PaginationItem>
+										<PaginationNext
+											text="Дараах"
+											onClick={() =>
+												setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
+											}
+											aria-disabled={currentPage >= totalPages - 1}
+											className={
+												currentPage >= totalPages - 1
+													? "pointer-events-none opacity-30"
+													: "cursor-pointer"
+											}
+										/>
+									</PaginationItem>
+								</PaginationContent>
+							</Pagination>
+						)}
 					</>
 				)}
 			</div>

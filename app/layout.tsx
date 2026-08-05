@@ -37,10 +37,10 @@ export default function RootLayout({
 				barlowCondensed.variable,
 			)}
 		>
-		<body className="antialiased">
-			<Providers>{children}</Providers>
-			<Toaster />
-		</body>
+			<body className="antialiased">
+				<Providers>{children}</Providers>
+				<Toaster />
+			</body>
 		</html>
 	);
 }
