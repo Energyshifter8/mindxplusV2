@@ -8,8 +8,9 @@ async function proxyRequest(
 	pathSegments: string[],
 ): Promise<NextResponse> {
 	const targetPath = pathSegments.join("/");
+	const hasTrailingSlash = request.nextUrl.pathname.endsWith("/");
 	const search = request.nextUrl.search;
-	const targetUrl = `${STAGING_API}/${targetPath}${search}`;
+	const targetUrl = `${STAGING_API}/${targetPath}${hasTrailingSlash ? "/" : ""}${search}`;
 
 	const headers = new Headers();
 	const contentType = request.headers.get("content-type");
