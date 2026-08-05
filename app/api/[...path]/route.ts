@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-const STAGING_API = "https://service-staging.mindxplus.com";
+const STAGING_API = process.env.NEXT_PUBLIC_API_URL || "";
 
 async function proxyRequest(
 	request: NextRequest,

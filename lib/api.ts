@@ -5,9 +5,7 @@ function getApiBaseUrl(): string {
 	) {
 		return "/api";
 	}
-	return (
-		process.env.NEXT_PUBLIC_API_URL || "https://service-staging.mindxplus.com"
-	);
+	return process.env.NEXT_PUBLIC_API_URL || "";
 }
 
 const API_BASE_URL = getApiBaseUrl();
