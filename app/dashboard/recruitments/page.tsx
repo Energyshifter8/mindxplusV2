@@ -32,6 +32,12 @@ const CreateRecruitmentModal = lazy(
 	() => import("@/components/recruitments/CreateRecruitmentModal"),
 );
 
+function formatBalance(value: number | undefined | null): string {
+	if (value === undefined || value === null) return "—";
+	if (!Number.isFinite(value) || value >= 100_000) return "Хязгааргүй";
+	return String(value);
+}
+
 function formatDate(dateStr: string): string {
 	if (!dateStr) return "—";
 	const d = new Date(dateStr);
@@ -147,11 +153,7 @@ export default function RecruitmentsPage() {
 					/>
 					<MiniStatCard
 						label="Үлдсэн урилгын эрх"
-						value={String(
-							stats?.invitationBalance === Infinity
-								? "Хязгааргүй"
-								: (stats?.invitationBalance ?? ""),
-						)}
+						value={formatBalance(stats?.invitationBalance)}
 						icon={<Users size={14} />}
 						isLoading={statsLoading}
 						isError={statsError}
