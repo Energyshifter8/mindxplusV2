@@ -50,7 +50,7 @@ function SortableQuestionItem({
 	return (
 		<div
 			ref={ref}
-			className={`group relative flex items-center gap-2 px-2 py-2 text-left text-xs transition-all duration-150 ${
+			className={`group relative flex items-center gap-2 px-2 py-2 text-left text-xs transition-all duration-150 touch-none ${
 				isActive
 					? "bg-primary/10 text-primary border-l-2 border-primary"
 					: "text-foreground/80 hover:bg-muted border-l-2 border-transparent"
@@ -60,15 +60,16 @@ function SortableQuestionItem({
 			style={{
 				fontFamily: "'JetBrains Mono', monospace",
 				willChange: isDragging ? "transform" : undefined,
+				touchAction: "none",
 			}}
 		>
 			<button
 				type="button"
 				ref={handleRef}
-				className="flex items-center justify-center w-5 h-5 shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing transition-colors touch-none"
+				className="flex items-center justify-center w-8 h-8 shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing transition-colors"
 				tabIndex={-1}
 			>
-				<GripVertical size={12} />
+				<GripVertical size={14} />
 			</button>
 			<button
 				type="button"

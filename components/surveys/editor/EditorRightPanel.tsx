@@ -120,15 +120,16 @@ function SortableOptionItem({
 	return (
 		<div
 			ref={ref}
-			className={`flex items-center gap-1.5 ${isDragSource ? "opacity-50" : ""} ${isDragging ? "z-50 shadow-lg" : ""}`}
+			className={`flex items-center gap-1.5 touch-none ${isDragSource ? "opacity-50" : ""} ${isDragging ? "z-50 shadow-lg" : ""}`}
+			style={{ touchAction: "none" }}
 		>
 			<button
 				type="button"
 				ref={handleRef}
-				className="flex items-center justify-center w-5 h-5 shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing transition-colors touch-none"
+				className="flex items-center justify-center w-8 h-8 shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing transition-colors"
 				tabIndex={-1}
 			>
-				<GripVertical size={12} />
+				<GripVertical size={14} />
 			</button>
 			<input
 				type="text"

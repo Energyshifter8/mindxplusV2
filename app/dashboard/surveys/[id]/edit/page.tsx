@@ -201,7 +201,10 @@ export default function SurveyEditPage() {
 		const templateQuestions = surveyData.templateQuestions ?? [];
 		const merged = [
 			...customQuestions.map(mapQuestion),
-			...templateQuestions.map(mapQuestion),
+			...templateQuestions.map((q) => ({
+				...mapQuestion(q),
+				section: "PRIMARY_QUESTION" as const,
+			})),
 		];
 		setQuestions(merged);
 		if (surveyData.design?.themeType) {
