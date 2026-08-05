@@ -147,7 +147,11 @@ export default function RecruitmentsPage() {
 					/>
 					<MiniStatCard
 						label="Үлдсэн урилгын эрх"
-						value={String(stats?.invitationBalance ?? "")}
+						value={String(
+							stats?.invitationBalance === Infinity
+								? "Хязгааргүй"
+								: (stats?.invitationBalance ?? ""),
+						)}
 						icon={<Users size={14} />}
 						isLoading={statsLoading}
 						isError={statsError}

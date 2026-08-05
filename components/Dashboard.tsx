@@ -541,7 +541,9 @@ export default function Dashboard() {
 								<MiniStatCard
 									label="Үлдсэн урилгын эрх"
 									value={String(
-										recruitmentStats?.data?.invitationBalance ?? "",
+										recruitmentStats?.data?.invitationBalance === Infinity
+											? "Хязгааргүй"
+											: (recruitmentStats?.data?.invitationBalance ?? ""),
 									)}
 									icon={<FileText size={14} />}
 									isLoading={recruitmentStatsLoading}
