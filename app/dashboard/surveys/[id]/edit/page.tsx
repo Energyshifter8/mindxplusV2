@@ -355,11 +355,38 @@ export default function SurveyEditPage() {
 			setQuestions((prev) =>
 				prev.map((q) => {
 					if (q.id !== questionId) return q;
+
+					function makeOpt(order: number, content = "") {
+						return { content, point: 0, order };
+					}
+
+					let options = q.options;
+
+					if (value === "TEXT") {
+						options = [];
+					} else if (value === "YES_NO" && q.options.length < 2) {
+						options = [makeOpt(1, "Тийм"), makeOpt(2, "Үгүй")];
+					} else if (value === "STAR_RATING" && q.options.length < 2) {
+						options = Array.from({ length: 5 }, (_, i) =>
+							makeOpt(i + 1, `${i + 1} Од`),
+						);
+					} else if (value === "NUMBER_RATING" && q.options.length < 2) {
+						options = Array.from({ length: 10 }, (_, i) =>
+							makeOpt(i + 1, `${i + 1} оноо`),
+						);
+					} else if (
+						(value === "SINGLE_CHOICE" || value === "MULTIPLE_CHOICE") &&
+						q.options.length < 2
+					) {
+						options = [makeOpt(1), makeOpt(2)];
+					}
+
+					const optionCount = options.length;
 					const isMultiple = value === "MULTIPLE_CHOICE";
-					const optionCount = q.options.length;
 					return {
 						...q,
 						questionType: value,
+						options,
 						minAnswerCount: isMultiple ? 0 : 1,
 						maxAnswerCount: isMultiple
 							? Math.min(q.maxAnswerCount || optionCount, optionCount)
@@ -594,60 +621,36 @@ export default function SurveyEditPage() {
 
 			// Save questions sequentially to avoid race conditions
 			for (const q of questions) {
-				const isNew = String(q.id).startsWith("q-");
-				if (isNew) {
-					const result = await createQuestionMutation.mutateAsync({
+				if (q.section === "PRIMARY_QUESTION") continue;
+
+				const payload: CreateQuestionPayload = {
+					id: 0,
+					content: q.title,
+					description: "",
+					questionType: q.questionType,
+					section: q.section,
+					isRequired: q.isRequired,
+					minAnswerCount: q.minAnswerCount,
+					maxAnswerCount: q.maxAnswerCount,
+					toBeAssessed: q.toBeAssessed,
+					options: q.options.map((opt, idx) => ({
 						id: 0,
-						content: q.title,
-						description: "",
-						questionType: q.questionType,
-						section: q.section,
-						isRequired: q.isRequired,
-						minAnswerCount: q.minAnswerCount,
-						maxAnswerCount: q.maxAnswerCount,
-						toBeAssessed: q.toBeAssessed,
-						options: q.options.map((opt, idx) => ({
-							id: 0,
-							order: idx + 1,
-							content: opt.content,
-							point: opt.point,
-							tag: "I",
-							nextQuestionId: 0,
-						})),
-						matrixRows: [],
-					});
-					if (!result.success) {
-						throw new Error(result.error || "Failed to create question");
-					}
-				} else if (q.section !== "PRIMARY_QUESTION") {
-					// Create new version first, then delete old one (safer order)
-					const createResult = await createQuestionMutation.mutateAsync({
-						id: 0,
-						content: q.title,
-						description: "",
-						questionType: q.questionType,
-						section: q.section,
-						isRequired: q.isRequired,
-						minAnswerCount: q.minAnswerCount,
-						maxAnswerCount: q.maxAnswerCount,
-						toBeAssessed: q.toBeAssessed,
-						options: q.options.map((opt, idx) => ({
-							id: 0,
-							order: idx + 1,
-							content: opt.content,
-							point: opt.point,
-							tag: "I",
-							nextQuestionId: 0,
-						})),
-						matrixRows: [],
-					});
-					if (!createResult.success) {
-						throw new Error(
-							`Failed to save question: ${createResult.error || "Unknown error"}`,
-						);
-					}
-					await deleteQuestionMutation.mutateAsync({ id: q.id });
+						order: idx + 1,
+						content: opt.content,
+						point: opt.point,
+						tag: "I",
+						nextQuestionId: 0,
+					})),
+					matrixRows: [],
+				};
+
+				const createResult = await createQuestionMutation.mutateAsync(payload);
+				if (!createResult.success) {
+					throw new Error(
+						`Failed to save question: ${createResult.error || "Unknown error"}`,
+					);
 				}
+				await deleteQuestionMutation.mutateAsync({ id: q.id });
 			}
 
 			toast.dismiss("save-survey");
@@ -677,8 +680,21 @@ export default function SurveyEditPage() {
 
 	const handlePublishConfirm = useCallback(() => {
 		if (!publishDate) return;
+		if (!effectiveTitle.trim()) {
+			toast.error(TOAST.VALIDATION_ERROR);
+			return;
+		}
+		if (questions.length === 0) {
+			toast.error("Хамгийн багадаа нэг асуулт нэмнэ үү");
+			return;
+		}
 		publishMutation.mutate({ value: publishDate });
-	}, [publishDate, publishMutation]);
+	}, [publishDate, publishMutation, effectiveTitle, questions.length]);
+
+	const handleBack = useCallback(() => {
+		if (isDirty && !window.confirm(TOAST.UNSAVED_CHANGES)) return;
+		router.push("/dashboard/surveys");
+	}, [isDirty, router]);
 
 	const handlePublishCancel = useCallback(() => {
 		setShowPublishModal(false);
@@ -706,7 +722,7 @@ export default function SurveyEditPage() {
 				onDeviceChange={setDevice}
 				onSave={handleSave}
 				onPublish={handlePublishClick}
-				onBack={() => router.push("/dashboard/surveys")}
+				onBack={handleBack}
 				onDesignClick={() => setShowDesignModal(true)}
 				onSettingsClick={() => setShowSettingsModal(true)}
 				isSaving={

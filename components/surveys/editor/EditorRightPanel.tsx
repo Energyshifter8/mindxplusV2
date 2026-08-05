@@ -12,6 +12,10 @@ const QUESTION_TYPES = [
 	{ value: "MULTIPLE_CHOICE", label: QUESTION.TYPE_MULTIPLE },
 	{ value: "SCALE", label: QUESTION.TYPE_SCALE },
 	{ value: "TEXT", label: QUESTION.TYPE_TEXT },
+	{ value: "DROPDOWN", label: QUESTION.TYPE_DROPDOWN },
+	{ value: "STAR_RATING", label: QUESTION.TYPE_STAR_RATING },
+	{ value: "NUMBER_RATING", label: QUESTION.TYPE_NUMBER_RATING },
+	{ value: "YES_NO", label: QUESTION.TYPE_YES_NO },
 ] as const;
 
 interface EditorRightPanelProps {

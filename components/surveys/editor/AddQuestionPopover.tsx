@@ -71,9 +71,27 @@ const QUESTION_TYPES = [
 ] as const;
 
 function buildBlankPayload(questionType: string): CreateQuestionPayload {
-	const needsOptions = ["SINGLE_CHOICE", "MULTIPLE_CHOICE"].includes(
-		questionType,
-	);
+	type Option = CreateQuestionPayload["options"][number];
+	function makeOption(order: number, content = ""): Option {
+		return { id: 0, order, content, point: 0, tag: "I", nextQuestionId: 0 };
+	}
+
+	let options: CreateQuestionPayload["options"] = [];
+
+	if (questionType === "SINGLE_CHOICE" || questionType === "MULTIPLE_CHOICE") {
+		options = [makeOption(1), makeOption(2)];
+	} else if (questionType === "YES_NO") {
+		options = [makeOption(1, "Тийм"), makeOption(2, "Үгүй")];
+	} else if (questionType === "STAR_RATING") {
+		options = Array.from({ length: 5 }, (_, i) =>
+			makeOption(i + 1, `${i + 1} Од`),
+		);
+	} else if (questionType === "NUMBER_RATING") {
+		options = Array.from({ length: 10 }, (_, i) =>
+			makeOption(i + 1, `${i + 1} оноо`),
+		);
+	}
+
 	return {
 		id: 0,
 		content: PLACEHOLDER.QUESTION_TITLE,
@@ -83,26 +101,7 @@ function buildBlankPayload(questionType: string): CreateQuestionPayload {
 		isRequired: true,
 		minAnswerCount: 1,
 		maxAnswerCount: 1,
-		options: needsOptions
-			? [
-					{
-						id: 0,
-						order: 1,
-						content: "",
-						point: 0,
-						tag: "I",
-						nextQuestionId: 0,
-					},
-					{
-						id: 0,
-						order: 2,
-						content: "",
-						point: 0,
-						tag: "I",
-						nextQuestionId: 0,
-					},
-				]
-			: [],
+		options,
 		matrixRows: [],
 	};
 }
