@@ -7,6 +7,10 @@ export const TOAST = {
 	PUBLISH_SUCCESS: "Шинжилгээ амжилттай нийтлэгдлээ",
 	PUBLISH_ERROR: "Нийтлэхэд алдаа гарлаа",
 	FETCH_ERROR: "Мэдээлэл ачаалахад алдаа гарлаа",
+	VALIDATION_ERROR: "Шаардлагатай талбаруудыг бөглөнө үү",
+	OPTION_DELETE_ERROR: "Хамгийн багадаа нэг сонголт байх ёстой",
+	QUESTION_LIMIT: "Дээд тал нь 5 асуулт нэмэх боломжтой",
+	UNSAVED_CHANGES: "Хадгалаагүй өөрчлөлт байна. Гарахдаа итгэлтэй байна уу?",
 } as const;
 
 // Button labels

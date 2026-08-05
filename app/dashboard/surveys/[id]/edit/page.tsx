@@ -2,7 +2,15 @@
 
 import { AlertTriangle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import {
+	lazy,
+	Suspense,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
+import { toast } from "sonner";
 import EditorPreview from "@/components/surveys/editor/EditorPreview";
 import EditorPublishModal from "@/components/surveys/editor/EditorPublishModal";
 import EditorRightPanel from "@/components/surveys/editor/EditorRightPanel";
@@ -33,17 +41,11 @@ import {
 	type ReorderableQuestion,
 	useReorderQuestions,
 } from "@/lib/hooks/useReorderQuestions";
-import {
-	useSurveyDetail,
-	useSurveyEditOptions,
-} from "@/lib/hooks/useSurveyDetail";
+import { useSurveyDetail } from "@/lib/hooks/useSurveyDetail";
 import { useUpdateSurveyPage } from "@/lib/hooks/useUpdateSurveyPage";
 import { type ThemeName, themes } from "@/lib/theme";
 
 function mapQuestion(q: SurveyQuestion): QuestionItem {
-	if (!q.options) {
-		console.warn("Question missing options array:", q);
-	}
 	return {
 		id: q.id,
 		title: q.content,
@@ -161,8 +163,6 @@ export default function SurveyEditPage() {
 		refetch: refetchSurvey,
 	} = useSurveyDetail(surveyId);
 
-	const { data: _editOptions } = useSurveyEditOptions(surveyId);
-
 	const [activeSection, setActiveSection] = useState<SectionType>("homepage");
 	const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null);
 	const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">(
@@ -191,13 +191,11 @@ export default function SurveyEditPage() {
 	);
 
 	const [questions, setQuestions] = useState<QuestionItem[]>([]);
-	const [prevSurveyData, setPrevSurveyData] = useState<SurveyDetail | null>(
-		null,
-	);
 	const [reorderMode, setReorderMode] = useState(false);
+	const [isDirty, setIsDirty] = useState(false);
 
-	if (surveyData && surveyData !== prevSurveyData) {
-		setPrevSurveyData(surveyData);
+	useEffect(() => {
+		if (!surveyData) return;
 		const customQuestions =
 			surveyData.customQuestions?.CUSTOM_QUESTION_FIRST ?? [];
 		const templateQuestions = surveyData.templateQuestions ?? [];
@@ -212,7 +210,18 @@ export default function SurveyEditPage() {
 		setHideWatermark(surveyData.design?.showAppLogo === false);
 		setSettingsDeviceCheck(surveyData.deviceCheck);
 		setSettingsPassCodeProtected(surveyData.passCodeProtected);
-	}
+		setIsDirty(false);
+	}, [surveyData]);
+
+	useEffect(() => {
+		const handler = (e: BeforeUnloadEvent) => {
+			if (isDirty) {
+				e.preventDefault();
+			}
+		};
+		window.addEventListener("beforeunload", handler);
+		return () => window.removeEventListener("beforeunload", handler);
+	}, [isDirty]);
 
 	const initialReorderItems = useMemo<
 		Record<QuestionCategory, ReorderableQuestion[]>
@@ -329,6 +338,7 @@ export default function SurveyEditPage() {
 
 	const handleQuestionTitleChange = useCallback(
 		(questionId: string, value: string) => {
+			setIsDirty(true);
 			setQuestions((prev) =>
 				prev.map((q) => (q.id === questionId ? { ...q, title: value } : q)),
 			);
@@ -338,15 +348,19 @@ export default function SurveyEditPage() {
 
 	const handleQuestionTypeChange = useCallback(
 		(questionId: string, value: string) => {
+			setIsDirty(true);
 			setQuestions((prev) =>
 				prev.map((q) => {
 					if (q.id !== questionId) return q;
 					const isMultiple = value === "MULTIPLE_CHOICE";
+					const optionCount = q.options.length;
 					return {
 						...q,
 						questionType: value,
 						minAnswerCount: isMultiple ? 0 : 1,
-						maxAnswerCount: isMultiple ? q.options.length : 1,
+						maxAnswerCount: isMultiple
+							? Math.min(q.maxAnswerCount || optionCount, optionCount)
+							: 1,
 					};
 				}),
 			);
@@ -356,6 +370,7 @@ export default function SurveyEditPage() {
 
 	const handleQuestionRequiredChange = useCallback(
 		(questionId: string, value: boolean) => {
+			setIsDirty(true);
 			setQuestions((prev) =>
 				prev.map((q) =>
 					q.id === questionId ? { ...q, isRequired: value } : q,
@@ -367,6 +382,7 @@ export default function SurveyEditPage() {
 
 	const handleQuestionMinChange = useCallback(
 		(questionId: string, value: number) => {
+			setIsDirty(true);
 			setQuestions((prev) =>
 				prev.map((q) =>
 					q.id === questionId ? { ...q, minAnswerCount: value } : q,
@@ -378,6 +394,7 @@ export default function SurveyEditPage() {
 
 	const handleQuestionMaxChange = useCallback(
 		(questionId: string, value: number) => {
+			setIsDirty(true);
 			setQuestions((prev) =>
 				prev.map((q) =>
 					q.id === questionId ? { ...q, maxAnswerCount: value } : q,
@@ -389,6 +406,7 @@ export default function SurveyEditPage() {
 
 	const handleOptionContentChange = useCallback(
 		(questionId: string, optionIndex: number, value: string) => {
+			setIsDirty(true);
 			setQuestions((prev) =>
 				prev.map((q) => {
 					if (q.id !== questionId) return q;
@@ -404,6 +422,7 @@ export default function SurveyEditPage() {
 
 	const handleOptionPointChange = useCallback(
 		(questionId: string, optionIndex: number, value: number) => {
+			setIsDirty(true);
 			setQuestions((prev) =>
 				prev.map((q) => {
 					if (q.id !== questionId) return q;
@@ -418,6 +437,7 @@ export default function SurveyEditPage() {
 	);
 
 	const handleAddOption = useCallback((questionId: string) => {
+		setIsDirty(true);
 		setQuestions((prev) =>
 			prev.map((q) => {
 				if (q.id !== questionId) return q;
@@ -440,20 +460,48 @@ export default function SurveyEditPage() {
 
 	const handleRemoveOption = useCallback(
 		(questionId: string, optionIndex: number) => {
-			setQuestions((prev) =>
-				prev.map((q) => {
-					if (q.id !== questionId) return q;
-					if (q.options.length <= 1) return q;
-					const newOptions = q.options
+			setQuestions((prev) => {
+				const q = prev.find((item) => item.id === questionId);
+				if (!q) return prev;
+				if (q.options.length <= 1) {
+					toast.error(TOAST.OPTION_DELETE_ERROR);
+					return prev;
+				}
+				setIsDirty(true);
+				return prev.map((item) => {
+					if (item.id !== questionId) return item;
+					const newOptions = item.options
 						.filter((_, idx) => idx !== optionIndex)
 						.map((opt, idx) => ({ ...opt, order: idx + 1 }));
 					return {
-						...q,
+						...item,
 						options: newOptions,
 						maxAnswerCount:
-							q.questionType === "MULTIPLE_CHOICE"
-								? Math.min(q.maxAnswerCount, newOptions.length)
-								: q.maxAnswerCount,
+							item.questionType === "MULTIPLE_CHOICE"
+								? Math.min(item.maxAnswerCount, newOptions.length)
+								: item.maxAnswerCount,
+					};
+				});
+			});
+		},
+		[],
+	);
+
+	const handleOptionReorder = useCallback(
+		(questionId: string, oldIndex: number, newIndex: number) => {
+			setIsDirty(true);
+			setQuestions((prev) =>
+				prev.map((q) => {
+					if (q.id !== questionId) return q;
+					const newOptions = [...q.options];
+					const [moved] = newOptions.splice(oldIndex, 1);
+					newOptions.splice(newIndex, 0, moved);
+					return {
+						...q,
+						options: newOptions.map((opt, idx) => ({
+							...opt,
+							order: idx + 1,
+						})),
 					};
 				}),
 			);
@@ -482,7 +530,10 @@ export default function SurveyEditPage() {
 
 	const handleCreateQuestionFromPopover = useCallback(
 		async (payload: CreateQuestionPayload) => {
-			if (questions.length >= 5) return;
+			if (questions.length >= 5) {
+				toast.error(TOAST.QUESTION_LIMIT);
+				return;
+			}
 			const result = await createQuestionMutation.mutateAsync(payload);
 			if (result.success && result.data?.id) {
 				setActiveQuestionId(result.data.id);
@@ -493,41 +544,56 @@ export default function SurveyEditPage() {
 		[questions.length, createQuestionMutation],
 	);
 
-	const handleSave = useCallback(() => {
-		const mutations: Promise<unknown>[] = [];
-
-		if (startPage) {
-			mutations.push(
-				updatePageMutation.mutateAsync({
-					id: startPage.id,
-					qnSection: startPage.qnSection,
-					pageType: startPage.pageType,
-					title: effectiveTitle,
-					content: effectiveDescription,
-					btnLabel: effectiveButtonText || undefined,
-					pageOrder: startPage.pageOrder,
-				}),
-			);
+	const handleSave = useCallback(async () => {
+		// Validate
+		const hasEmptyTitle = questions.some((q) => !q.title.trim());
+		const hasEmptyOption = questions.some((q) =>
+			q.options.some((opt) => !opt.content.trim()),
+		);
+		if (hasEmptyTitle || hasEmptyOption) {
+			toast.error(TOAST.VALIDATION_ERROR);
+			return;
 		}
 
-		if (endPage) {
-			mutations.push(
-				updatePageMutation.mutateAsync({
-					id: endPage.id,
-					qnSection: endPage.qnSection,
-					pageType: endPage.pageType,
-					title: effectiveEndingTitle,
-					content: effectiveEndingDescription,
-					pageOrder: endPage.pageOrder,
-				}),
-			);
-		}
+		toast.loading(TOAST.SAVE_LOADING, { id: "save-survey" });
 
-		for (const q of questions) {
-			const isNew = String(q.id).startsWith("q-");
-			if (isNew) {
-				mutations.push(
-					createQuestionMutation.mutateAsync({
+		try {
+			const pageMutations: Promise<unknown>[] = [];
+
+			if (startPage) {
+				pageMutations.push(
+					updatePageMutation.mutateAsync({
+						id: startPage.id,
+						qnSection: startPage.qnSection,
+						pageType: startPage.pageType,
+						title: effectiveTitle,
+						content: effectiveDescription,
+						btnLabel: effectiveButtonText || undefined,
+						pageOrder: startPage.pageOrder,
+					}),
+				);
+			}
+
+			if (endPage) {
+				pageMutations.push(
+					updatePageMutation.mutateAsync({
+						id: endPage.id,
+						qnSection: endPage.qnSection,
+						pageType: endPage.pageType,
+						title: effectiveEndingTitle,
+						content: effectiveEndingDescription,
+						pageOrder: endPage.pageOrder,
+					}),
+				);
+			}
+
+			await Promise.all(pageMutations);
+
+			// Save questions sequentially to avoid race conditions
+			for (const q of questions) {
+				const isNew = String(q.id).startsWith("q-");
+				if (isNew) {
+					const result = await createQuestionMutation.mutateAsync({
 						id: 0,
 						content: q.title,
 						description: "",
@@ -546,56 +612,52 @@ export default function SurveyEditPage() {
 							nextQuestionId: 0,
 						})),
 						matrixRows: [],
-					}),
-				);
-			} else if (q.section !== "PRIMARY_QUESTION") {
-				mutations.push(
-					(async () => {
-						const deleteResult = await deleteQuestionMutation.mutateAsync({
-							id: q.id,
-						});
-						if (!deleteResult.success) {
-							throw new Error(
-								deleteResult.error || "Failed to delete old question",
-							);
-						}
-						const createResult = await createQuestionMutation.mutateAsync({
+					});
+					if (!result.success) {
+						throw new Error(result.error || "Failed to create question");
+					}
+				} else if (q.section !== "PRIMARY_QUESTION") {
+					// Create new version first, then delete old one (safer order)
+					const createResult = await createQuestionMutation.mutateAsync({
+						id: 0,
+						content: q.title,
+						description: "",
+						questionType: q.questionType,
+						section: q.section,
+						isRequired: q.isRequired,
+						minAnswerCount: q.minAnswerCount,
+						maxAnswerCount: q.maxAnswerCount,
+						toBeAssessed: q.toBeAssessed,
+						options: q.options.map((opt, idx) => ({
 							id: 0,
-							content: q.title,
-							description: "",
-							questionType: q.questionType,
-							section: q.section,
-							isRequired: q.isRequired,
-							minAnswerCount: q.minAnswerCount,
-							maxAnswerCount: q.maxAnswerCount,
-							toBeAssessed: q.toBeAssessed,
-							options: q.options.map((opt, idx) => ({
-								id: 0,
-								order: idx + 1,
-								content: opt.content,
-								point: opt.point,
-								tag: "I",
-								nextQuestionId: 0,
-							})),
-							matrixRows: [],
-						});
-						if (!createResult.success) {
-							throw new Error(
-								"Old question was deleted but new version failed to save: " +
-									(createResult.error || "Unknown error"),
-							);
-						}
-						return createResult;
-					})(),
-				);
+							order: idx + 1,
+							content: opt.content,
+							point: opt.point,
+							tag: "I",
+							nextQuestionId: 0,
+						})),
+						matrixRows: [],
+					});
+					if (!createResult.success) {
+						throw new Error(
+							`Failed to save question: ${createResult.error || "Unknown error"}`,
+						);
+					}
+					await deleteQuestionMutation.mutateAsync({ id: q.id });
+				}
 			}
-		}
 
-		Promise.all(mutations).catch(() => {});
+			toast.dismiss("save-survey");
+			toast.success(TOAST.SAVE_SUCCESS);
+			setIsDirty(false);
+		} catch (error) {
+			toast.dismiss("save-survey");
+			toast.error(error instanceof Error ? error.message : TOAST.SAVE_ERROR);
+		}
 	}, [
+		questions,
 		startPage,
 		endPage,
-		questions,
 		effectiveTitle,
 		effectiveDescription,
 		effectiveButtonText,
@@ -701,6 +763,7 @@ export default function SurveyEditPage() {
 					onOptionPointChange={handleOptionPointChange}
 					onAddOption={handleAddOption}
 					onRemoveOption={handleRemoveOption}
+					onOptionReorder={handleOptionReorder}
 				/>
 			</div>
 

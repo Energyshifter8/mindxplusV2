@@ -1,6 +1,9 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { move } from "@dnd-kit/helpers";
+import { DragDropProvider } from "@dnd-kit/react";
+import { useSortable } from "@dnd-kit/react/sortable";
+import { GripVertical, Plus, Trash2 } from "lucide-react";
 import { PLACEHOLDER, QUESTION, SECTION } from "@/lib/helptext";
 import type { QuestionItem, SectionType } from "./EditorSidebar";
 
@@ -42,6 +45,11 @@ interface EditorRightPanelProps {
 	) => void;
 	onAddOption: (questionId: string) => void;
 	onRemoveOption: (questionId: string, optionIndex: number) => void;
+	onOptionReorder: (
+		questionId: string,
+		oldIndex: number,
+		newIndex: number,
+	) => void;
 }
 
 function CharacterCounter({ current, max }: { current: number; max: number }) {
@@ -79,6 +87,75 @@ function FieldLabel({
 	);
 }
 
+function SortableOptionItem({
+	opt,
+	idx,
+	questionId,
+	onContentChange,
+	onPointChange,
+	onRemove,
+}: {
+	opt: { id?: string; content: string; point: number; order: number };
+	idx: number;
+	questionId: string;
+	onContentChange: (
+		questionId: string,
+		optionIndex: number,
+		value: string,
+	) => void;
+	onPointChange: (
+		questionId: string,
+		optionIndex: number,
+		value: number,
+	) => void;
+	onRemove: (questionId: string, optionIndex: number) => void;
+}) {
+	const { isDragging, isDragSource, handleRef, ref } = useSortable({
+		id: opt.id ?? `new-${idx}`,
+		index: idx,
+		group: "options",
+		data: { opt, idx },
+	});
+
+	return (
+		<div
+			ref={ref}
+			className={`flex items-center gap-1.5 ${isDragSource ? "opacity-50" : ""} ${isDragging ? "z-50 shadow-lg" : ""}`}
+		>
+			<button
+				type="button"
+				ref={handleRef}
+				className="flex items-center justify-center w-5 h-5 shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing transition-colors touch-none"
+				tabIndex={-1}
+			>
+				<GripVertical size={12} />
+			</button>
+			<input
+				type="text"
+				value={opt.content}
+				onChange={(e) => onContentChange(questionId, idx, e.target.value)}
+				placeholder={`${QUESTION.OPTION_CONTENT} ${idx + 1}`}
+				className="flex-1 h-8 border-2 border-border bg-input-background px-2 text-xs text-foreground outline-none transition-colors focus:border-primary placeholder:text-muted-foreground"
+				style={{ fontFamily: "'JetBrains Mono', monospace" }}
+			/>
+			<input
+				type="number"
+				value={opt.point}
+				onChange={(e) => onPointChange(questionId, idx, Number(e.target.value))}
+				className="w-14 h-8 border-2 border-border bg-input-background px-2 text-xs text-foreground outline-none transition-colors focus:border-primary text-center tabular-nums"
+				style={{ fontFamily: "'JetBrains Mono', monospace" }}
+			/>
+			<button
+				type="button"
+				onClick={() => onRemove(questionId, idx)}
+				className="flex items-center justify-center w-8 h-8 text-muted-foreground hover:text-destructive transition-colors shrink-0"
+			>
+				<Trash2 size={12} />
+			</button>
+		</div>
+	);
+}
+
 export default function EditorRightPanel({
 	activeSection,
 	activeQuestionId,
@@ -102,6 +179,7 @@ export default function EditorRightPanel({
 	onOptionPointChange,
 	onAddOption,
 	onRemoveOption,
+	onOptionReorder,
 }: EditorRightPanelProps) {
 	const inputClasses =
 		"w-full h-10 border-2 border-border bg-input-background px-3 text-sm text-foreground outline-none transition-colors focus:border-primary placeholder:text-muted-foreground";
@@ -278,58 +356,63 @@ export default function EditorRightPanel({
 
 						<div>
 							<FieldLabel>{QUESTION.OPTIONS}</FieldLabel>
-							<div className="space-y-2">
-								{activeQuestion.options.map((opt, idx) => (
-									<div
-										key={opt.id ?? `new-${idx}`}
-										className="flex items-center gap-1.5"
+							<DragDropProvider
+								onDragOver={(event) => {
+									if (!activeQuestion) return;
+									const items = activeQuestion.options.map(
+										(_, i) => `opt-${i}`,
+									);
+									const next = move(items, event);
+									const oldIdx = items.indexOf(
+										String(event.operation.source.id),
+									);
+									const newIdx = next.indexOf(
+										String(event.operation.source.id),
+									);
+									if (oldIdx !== -1 && newIdx !== -1 && oldIdx !== newIdx) {
+										onOptionReorder(activeQuestion.id, oldIdx, newIdx);
+									}
+								}}
+								onDragEnd={(event) => {
+									if (!activeQuestion) return;
+									const items = activeQuestion.options.map(
+										(_, i) => `opt-${i}`,
+									);
+									const next = move(items, event);
+									const oldIdx = items.indexOf(
+										String(event.operation.source.id),
+									);
+									const newIdx = next.indexOf(
+										String(event.operation.source.id),
+									);
+									if (oldIdx !== -1 && newIdx !== -1 && oldIdx !== newIdx) {
+										onOptionReorder(activeQuestion.id, oldIdx, newIdx);
+									}
+								}}
+							>
+								<div className="space-y-2">
+									{activeQuestion.options.map((opt, idx) => (
+										<SortableOptionItem
+											key={opt.id ?? `new-${idx}`}
+											opt={opt}
+											idx={idx}
+											questionId={activeQuestion.id}
+											onContentChange={onOptionContentChange}
+											onPointChange={onOptionPointChange}
+											onRemove={onRemoveOption}
+										/>
+									))}
+									<button
+										type="button"
+										onClick={() => onAddOption(activeQuestion.id)}
+										className="flex items-center gap-1.5 w-full h-8 border-2 border-dashed border-border text-[10px] uppercase tracking-widest text-muted-foreground hover:text-primary hover:border-primary transition-colors justify-center"
+										style={{ fontFamily: "'JetBrains Mono', monospace" }}
 									>
-										<input
-											type="text"
-											value={opt.content}
-											onChange={(e) =>
-												onOptionContentChange(
-													activeQuestion.id,
-													idx,
-													e.target.value,
-												)
-											}
-											placeholder={`${QUESTION.OPTION_CONTENT} ${idx + 1}`}
-											className="flex-1 h-8 border-2 border-border bg-input-background px-2 text-xs text-foreground outline-none transition-colors focus:border-primary placeholder:text-muted-foreground"
-											style={{ fontFamily: "'JetBrains Mono', monospace" }}
-										/>
-										<input
-											type="number"
-											value={opt.point}
-											onChange={(e) =>
-												onOptionPointChange(
-													activeQuestion.id,
-													idx,
-													Number(e.target.value),
-												)
-											}
-											className="w-14 h-8 border-2 border-border bg-input-background px-2 text-xs text-foreground outline-none transition-colors focus:border-primary text-center tabular-nums"
-											style={{ fontFamily: "'JetBrains Mono', monospace" }}
-										/>
-										<button
-											type="button"
-											onClick={() => onRemoveOption(activeQuestion.id, idx)}
-											className="flex items-center justify-center w-8 h-8 text-muted-foreground hover:text-destructive transition-colors shrink-0"
-										>
-											<Trash2 size={12} />
-										</button>
-									</div>
-								))}
-								<button
-									type="button"
-									onClick={() => onAddOption(activeQuestion.id)}
-									className="flex items-center gap-1.5 w-full h-8 border-2 border-dashed border-border text-[10px] uppercase tracking-widest text-muted-foreground hover:text-primary hover:border-primary transition-colors justify-center"
-									style={{ fontFamily: "'JetBrains Mono', monospace" }}
-								>
-									<Plus size={11} />
-									{QUESTION.ADD_OPTION}
-								</button>
-							</div>
+										<Plus size={11} />
+										{QUESTION.ADD_OPTION}
+									</button>
+								</div>
+							</DragDropProvider>
 						</div>
 					</div>
 				)}
