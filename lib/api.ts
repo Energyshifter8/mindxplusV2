@@ -3,7 +3,7 @@ function getApiBaseUrl(): string {
 		typeof window !== "undefined" &&
 		window.location.hostname === "localhost"
 	) {
-		return "/api/proxy";
+		return "/api";
 	}
 	return (
 		process.env.NEXT_PUBLIC_API_URL || "https://service-staging.mindxplus.com"
