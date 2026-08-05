@@ -521,7 +521,7 @@ export default function Dashboard() {
 						>
 							<div className="grid grid-cols-3 gap-3 mb-5">
 								<MiniStatCard
-									label="Нийтэлсэн рекрутмент"
+									label="Нийт урьсан талент"
 									value={String(
 										recruitmentStats?.data?.totalInvitationCount ?? "",
 									)}
@@ -530,7 +530,7 @@ export default function Dashboard() {
 									isError={recruitmentStatsError}
 								/>
 								<MiniStatCard
-									label="Рекрутментийн хариулагч"
+									label="Нийт үнэлгээнд оролцсон талент"
 									value={String(
 										recruitmentStats?.data?.totalCompletedCount ?? "",
 									)}
@@ -539,7 +539,7 @@ export default function Dashboard() {
 									isError={recruitmentStatsError}
 								/>
 								<MiniStatCard
-									label="Рекрутментийн үлдэгдэл"
+									label="Үлдсэн урилгын эрх"
 									value={String(
 										recruitmentStats?.data?.invitationBalance ?? "",
 									)}
