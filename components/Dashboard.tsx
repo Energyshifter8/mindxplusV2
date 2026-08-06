@@ -474,6 +474,7 @@ export default function Dashboard() {
 							title="Миний шинжилгээ"
 							subtitle="Таны үндсэн үнэлгээний үйл ажиллагааг товч харуулав."
 							buttonText="Шинжилгээ үүсгэх"
+							onButtonClick={() => router.push("/dashboard/surveys/new")}
 						>
 							<div className="grid grid-cols-3 gap-3 mb-5">
 								<MiniStatCard
@@ -524,6 +525,7 @@ export default function Dashboard() {
 							title="Талентийн үнэлгээ"
 							subtitle="Үүссэн талентийн үнэлгээ болон оролцогчдын бөглөсөн үр дүнг шуудхарах."
 							buttonText="Талентийн үнэлгээ үүсгэх"
+							onButtonClick={() => router.push("/dashboard/recruitments")}
 						>
 							<div className="grid grid-cols-3 gap-3 mb-5">
 								<MiniStatCard
