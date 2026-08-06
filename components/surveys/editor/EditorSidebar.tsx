@@ -1,5 +1,6 @@
 "use client";
 
+import type { DragEndEvent } from "@dnd-kit/core";
 import {
 	ArrowUpDown,
 	ChevronDown,
@@ -49,8 +50,7 @@ interface EditorSidebarProps {
 	onCreateQuestion: (payload: CreateQuestionPayload) => Promise<unknown>;
 	reorderMode?: boolean;
 	reorderItems?: Record<QuestionCategory, ReorderableQuestion[]>;
-	onReorderDragOver?: Parameters<typeof ReorderableList>[0]["onDragOver"];
-	onReorderDragEnd?: Parameters<typeof ReorderableList>[0]["onDragEnd"];
+	onReorderDragEnd?: (event: DragEndEvent) => void;
 	onToggleReorderMode?: () => void;
 }
 
@@ -63,7 +63,6 @@ export default function EditorSidebar({
 	onCreateQuestion,
 	reorderMode = false,
 	reorderItems,
-	onReorderDragOver,
 	onReorderDragEnd,
 	onToggleReorderMode,
 }: EditorSidebarProps) {
@@ -177,17 +176,15 @@ export default function EditorSidebar({
 					</div>
 				</div>
 
-				{reorderMode &&
-				reorderItems &&
-				onReorderDragOver &&
-				onReorderDragEnd ? (
-					<ReorderableList
-						items={reorderItems}
-						activeQuestionId={activeQuestionId}
-						onSelect={(id) => onSectionSelect("question", id)}
-						onDragOver={onReorderDragOver}
-						onDragEnd={onReorderDragEnd}
-					/>
+			{reorderMode &&
+			reorderItems &&
+			onReorderDragEnd ? (
+				<ReorderableList
+					items={reorderItems}
+					activeQuestionId={activeQuestionId}
+					onSelect={(id) => onSectionSelect("question", id)}
+					onDragEnd={onReorderDragEnd}
+				/>
 				) : (
 					<div className="space-y-0.5">
 						{regularQuestions.map((q, index) => (

@@ -252,7 +252,6 @@ export default function SurveyEditPage() {
 
 	const {
 		items: reorderItems,
-		handleDragOver,
 		handleDragEnd,
 	} = useReorderQuestions({
 		surveyId,
@@ -742,7 +741,6 @@ export default function SurveyEditPage() {
 					onCreateQuestion={handleCreateQuestionFromPopover}
 					reorderMode={reorderMode}
 					reorderItems={reorderItems}
-					onReorderDragOver={handleDragOver}
 					onReorderDragEnd={handleDragEnd}
 					onToggleReorderMode={() => setReorderMode(!reorderMode)}
 				/>
