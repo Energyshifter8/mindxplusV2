@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
 			"tailwind-merge",
 			"sonner",
 			"next-themes",
+			"animejs",
 		],
 		turbopackFileSystemCacheForDev: true,
 	},

@@ -10,7 +10,8 @@ import {
 	ArrowUp,
 	ArrowDown,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
+import { createLayout, type AutoLayout } from "animejs";
 import type { CreateQuestionPayload } from "@/lib/api";
 import { PLACEHOLDER, SIDEBAR } from "@/lib/helptext";
 import AddQuestionPopover from "./AddQuestionPopover";
@@ -36,6 +37,11 @@ export interface QuestionItem {
 	toBeAssessed?: boolean;
 }
 
+export interface EditorSidebarHandle {
+	recordPositions: () => void;
+	animatePositions: () => void;
+}
+
 interface EditorSidebarProps {
 	activeSection: SectionType;
 	activeQuestionId: string | null;
@@ -46,22 +52,46 @@ interface EditorSidebarProps {
 	onCreateQuestion: (payload: CreateQuestionPayload) => Promise<unknown>;
 }
 
-export default function EditorSidebar({
-	activeSection,
-	activeQuestionId,
-	questions,
-	onSectionSelect,
-	onDeleteQuestion,
-	onSwapQuestion,
-	onCreateQuestion,
-}: EditorSidebarProps) {
-	const [baseQuestionsExpanded, setBaseQuestionsExpanded] = useState(false);
-	const [popoverOpen, setPopoverOpen] = useState(false);
-	const [popoverPos, setPopoverPos] = useState<{
-		top: number;
-		left: number;
-	} | null>(null);
-	const addBtnRef = useRef<HTMLButtonElement>(null);
+const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
+	function EditorSidebar(
+		{
+			activeSection,
+			activeQuestionId,
+			questions,
+			onSectionSelect,
+			onDeleteQuestion,
+			onSwapQuestion,
+			onCreateQuestion,
+		},
+		ref,
+	) {
+		const [baseQuestionsExpanded, setBaseQuestionsExpanded] = useState(false);
+		const [popoverOpen, setPopoverOpen] = useState(false);
+		const [popoverPos, setPopoverPos] = useState<{
+			top: number;
+			left: number;
+		} | null>(null);
+		const addBtnRef = useRef<HTMLButtonElement>(null);
+		const questionsContainerRef = useRef<HTMLDivElement>(null);
+		const layoutRef = useRef<AutoLayout | null>(null);
+
+		useLayoutEffect(() => {
+			if (questionsContainerRef.current) {
+				layoutRef.current = createLayout(questionsContainerRef.current);
+			}
+			return () => {
+				layoutRef.current = null;
+			};
+		}, []);
+
+		useImperativeHandle(ref, () => ({
+			recordPositions: () => {
+				layoutRef.current?.record();
+			},
+			animatePositions: () => {
+				layoutRef.current?.animate({ duration: 350, ease: "easeOutQuad" });
+			},
+		}));
 
 	const regularQuestions = questions.filter(
 		(q) => q.section !== "PRIMARY_QUESTION",
@@ -147,7 +177,7 @@ export default function EditorSidebar({
 					</div>
 				</div>
 
-				<div className="space-y-0.5">
+				<div ref={questionsContainerRef} className="space-y-0.5">
 					{regularQuestions.map((q, index) => (
 						<div key={q.id} className="group relative">
 							<button
@@ -285,4 +315,7 @@ export default function EditorSidebar({
 			</div>
 		</div>
 	);
-}
+	},
+);
+
+export default EditorSidebar;

@@ -7,13 +7,16 @@ import {
 	Suspense,
 	useCallback,
 	useEffect,
+	useRef,
 	useState,
 } from "react";
+import { flushSync } from "react-dom";
 import { toast } from "sonner";
 import EditorPreview from "@/components/surveys/editor/EditorPreview";
 import EditorPublishModal from "@/components/surveys/editor/EditorPublishModal";
 import EditorRightPanel from "@/components/surveys/editor/EditorRightPanel";
 import EditorSidebar, {
+	type EditorSidebarHandle,
 	type QuestionItem,
 	type SectionType,
 } from "@/components/surveys/editor/EditorSidebar";
@@ -186,6 +189,9 @@ export default function SurveyEditPage() {
 
 	const [questions, setQuestions] = useState<QuestionItem[]>([]);
 	const [isDirty, setIsDirty] = useState(false);
+
+	const sidebarRef = useRef<EditorSidebarHandle>(null);
+	const isAnimatingRef = useRef(false);
 
 	useEffect(() => {
 		if (!surveyData) return;
@@ -469,16 +475,28 @@ export default function SurveyEditPage() {
 
 	const handleSwapQuestion = useCallback(
 		(questionId: string, direction: "up" | "down") => {
-			setIsDirty(true);
-			setQuestions((prev) => {
-				const idx = prev.findIndex((q) => q.id === questionId);
-				if (idx === -1) return prev;
-				const newIdx = direction === "up" ? idx - 1 : idx + 1;
-				if (newIdx < 0 || newIdx >= prev.length) return prev;
-				const swapped = [...prev];
-				[swapped[idx], swapped[newIdx]] = [swapped[newIdx], swapped[idx]];
-				return swapped;
+			if (isAnimatingRef.current) return;
+			isAnimatingRef.current = true;
+
+			sidebarRef.current?.recordPositions();
+
+			flushSync(() => {
+				setIsDirty(true);
+				setQuestions((prev) => {
+					const idx = prev.findIndex((q) => q.id === questionId);
+					if (idx === -1) return prev;
+					const newIdx = direction === "up" ? idx - 1 : idx + 1;
+					if (newIdx < 0 || newIdx >= prev.length) return prev;
+					const swapped = [...prev];
+					[swapped[idx], swapped[newIdx]] = [swapped[newIdx], swapped[idx]];
+					return swapped;
+				});
 			});
+
+			sidebarRef.current?.animatePositions();
+			setTimeout(() => {
+				isAnimatingRef.current = false;
+			}, 400);
 		},
 		[],
 	);
@@ -678,6 +696,7 @@ export default function SurveyEditPage() {
 			/>
 			<div className="flex flex-1 overflow-hidden">
 				<EditorSidebar
+					ref={sidebarRef}
 					activeSection={activeSection}
 					activeQuestionId={activeQuestionId}
 					questions={questions}
