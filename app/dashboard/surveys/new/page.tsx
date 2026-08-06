@@ -8,6 +8,7 @@ const CreateSurveyModal = lazy(
 );
 
 import TemplateCard from "@/components/surveys/TemplateCard";
+import TemplatePreviewModal from "@/components/surveys/TemplatePreviewModal";
 import type { SurveyTemplate } from "@/lib/hooks/useTemplates";
 import { useTemplates } from "@/lib/hooks/useTemplates";
 
@@ -82,6 +83,9 @@ function ErrorState({ message }: { message: string }) {
 export default function NewSurveyPage() {
 	const [selectedTemplate, setSelectedTemplate] =
 		useState<SurveyTemplate | null>(null);
+	const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(
+		null,
+	);
 	const { data: categories, isLoading, isError, error } = useTemplates();
 
 	return (
@@ -137,6 +141,7 @@ export default function NewSurveyPage() {
 										key={template.id}
 										template={template}
 										onUse={setSelectedTemplate}
+										onPreview={setPreviewTemplateId}
 									/>
 								))}
 							</div>
@@ -154,6 +159,14 @@ export default function NewSurveyPage() {
 						onClose={() => setSelectedTemplate(null)}
 					/>
 				</Suspense>
+			)}
+
+			{/* Template preview modal */}
+			{previewTemplateId && (
+				<TemplatePreviewModal
+					templateId={previewTemplateId}
+					onClose={() => setPreviewTemplateId(null)}
+				/>
 			)}
 		</div>
 	);

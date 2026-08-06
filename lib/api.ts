@@ -197,6 +197,28 @@ export function getTemplates<T>() {
 	return apiGet<T>("/customer/templates");
 }
 
+export interface TemplateDetail {
+	id: string;
+	name: string;
+	questionCount: number;
+	minMinutes: number;
+	maxMinutes: number;
+	likes: number;
+	image: string;
+	author: string;
+	description: string;
+	frequency: string;
+	whenSuitable: string;
+	importance: string;
+	hasTrial: boolean;
+	categories: string[];
+	status: string;
+}
+
+export function getTemplateDetail(id: string) {
+	return apiGet<TemplateDetail>(`/customer/templates/${id}`);
+}
+
 export interface SurveyItem {
 	id: string;
 	title: string;

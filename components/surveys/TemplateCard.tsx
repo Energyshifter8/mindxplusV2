@@ -7,9 +7,14 @@ import type { SurveyTemplate } from "@/lib/hooks/useTemplates";
 interface TemplateCardProps {
 	template: SurveyTemplate;
 	onUse: (template: SurveyTemplate) => void;
+	onPreview: (templateId: string) => void;
 }
 
-export default function TemplateCard({ template, onUse }: TemplateCardProps) {
+export default function TemplateCard({
+	template,
+	onUse,
+	onPreview,
+}: TemplateCardProps) {
 	const isDisabled = template.status === "CREATED";
 
 	return (
@@ -104,6 +109,7 @@ export default function TemplateCard({ template, onUse }: TemplateCardProps) {
 				<div className="flex items-center justify-end gap-2 pt-2">
 					<button
 						type="button"
+						onClick={() => onPreview(template.id)}
 						className="inline-flex h-8 w-8 shrink-0 items-center justify-center border-2 border-border text-muted-foreground transition-all duration-150 hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.97]"
 						title="Урьдчилан харах"
 					>
