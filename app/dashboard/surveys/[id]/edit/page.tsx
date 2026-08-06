@@ -522,7 +522,10 @@ export default function SurveyEditPage() {
 
 	const handleCreateQuestionFromPopover = useCallback(
 		async (payload: CreateQuestionPayload) => {
-			if (questions.length >= 5) {
+			const customCount = questions.filter(
+				(q) => q.section !== "PRIMARY_QUESTION",
+			).length;
+			if (customCount >= 5) {
 				toast.error(TOAST.QUESTION_LIMIT);
 				return;
 			}
@@ -533,7 +536,7 @@ export default function SurveyEditPage() {
 			}
 			return result;
 		},
-		[questions.length, createQuestionMutation],
+		[questions, createQuestionMutation],
 	);
 
 	const handleSave = useCallback(async () => {
