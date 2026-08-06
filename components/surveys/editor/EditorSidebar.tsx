@@ -7,6 +7,8 @@ import {
 	Home,
 	Plus,
 	Trash2,
+	ArrowUp,
+	ArrowDown,
 } from "lucide-react";
 import { useRef, useState } from "react";
 import type { CreateQuestionPayload } from "@/lib/api";
@@ -40,6 +42,7 @@ interface EditorSidebarProps {
 	questions: QuestionItem[];
 	onSectionSelect: (section: SectionType, questionId?: string) => void;
 	onDeleteQuestion?: (questionId: string) => void;
+	onSwapQuestion?: (questionId: string, direction: "up" | "down") => void;
 	onCreateQuestion: (payload: CreateQuestionPayload) => Promise<unknown>;
 }
 
@@ -49,6 +52,7 @@ export default function EditorSidebar({
 	questions,
 	onSectionSelect,
 	onDeleteQuestion,
+	onSwapQuestion,
 	onCreateQuestion,
 }: EditorSidebarProps) {
 	const [baseQuestionsExpanded, setBaseQuestionsExpanded] = useState(false);
@@ -161,20 +165,48 @@ export default function EditorSidebar({
 									{q.title || PLACEHOLDER.QUESTION_TITLE}
 								</span>
 							</button>
-							{onDeleteQuestion && (
-								<button
-									type="button"
-									onClick={(e) => {
-										e.stopPropagation();
-										if (window.confirm("Устгах уу?")) {
-											onDeleteQuestion(q.id);
-										}
-									}}
-									className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-6 h-6 text-muted-foreground hover:text-destructive"
-								>
-									<Trash2 size={12} />
-								</button>
-							)}
+							<div className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
+								{onSwapQuestion && index > 0 && (
+									<button
+										type="button"
+										onClick={(e) => {
+											e.stopPropagation();
+											onSwapQuestion(q.id, "up");
+										}}
+										className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-foreground"
+										title="Дээшлүүлэх"
+									>
+										<ArrowUp size={11} />
+									</button>
+								)}
+								{onSwapQuestion && index < regularQuestions.length - 1 && (
+									<button
+										type="button"
+										onClick={(e) => {
+											e.stopPropagation();
+											onSwapQuestion(q.id, "down");
+										}}
+										className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-foreground"
+										title="Доошлуулх"
+									>
+										<ArrowDown size={11} />
+									</button>
+								)}
+								{onDeleteQuestion && (
+									<button
+										type="button"
+										onClick={(e) => {
+											e.stopPropagation();
+											if (window.confirm("Устгах уу?")) {
+												onDeleteQuestion(q.id);
+											}
+										}}
+										className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-destructive"
+									>
+										<Trash2 size={11} />
+									</button>
+								)}
+							</div>
 						</div>
 					))}
 				</div>

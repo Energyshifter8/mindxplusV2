@@ -467,6 +467,22 @@ export default function SurveyEditPage() {
 		[],
 	);
 
+	const handleSwapQuestion = useCallback(
+		(questionId: string, direction: "up" | "down") => {
+			setIsDirty(true);
+			setQuestions((prev) => {
+				const idx = prev.findIndex((q) => q.id === questionId);
+				if (idx === -1) return prev;
+				const newIdx = direction === "up" ? idx - 1 : idx + 1;
+				if (newIdx < 0 || newIdx >= prev.length) return prev;
+				const swapped = [...prev];
+				[swapped[idx], swapped[newIdx]] = [swapped[newIdx], swapped[idx]];
+				return swapped;
+			});
+		},
+		[],
+	);
+
 	const handleDeleteQuestion = useCallback(
 		(questionId: string) => {
 			deleteQuestionMutation.mutate(
@@ -667,6 +683,7 @@ export default function SurveyEditPage() {
 					questions={questions}
 					onSectionSelect={handleSectionSelect}
 					onDeleteQuestion={handleDeleteQuestion}
+					onSwapQuestion={handleSwapQuestion}
 					onCreateQuestion={handleCreateQuestionFromPopover}
 				/>
 				<EditorPreview
