@@ -154,12 +154,7 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 							>
 								Асуултууд
 							</span>
-							<span
-								className="inline-flex h-4 min-w-[1.5rem] items-center justify-center border border-border bg-muted px-1.5 text-[8px] font-bold tabular-nums text-muted-foreground"
-								style={{ fontFamily: "'JetBrains Mono', monospace" }}
-							>
-								{regularQuestions.length}/5
-							</span>
+
 						</div>
 						<div className="flex items-center gap-1">
 							<div className="relative">
