@@ -1,20 +1,6 @@
 "use client";
 
-import {
- closestCenter,
- DndContext,
- PointerSensor,
- useSensor,
- useSensors,
-} from "@dnd-kit/core";
-import type { DragEndEvent } from "@dnd-kit/core";
-import {
- SortableContext,
- useSortable,
- verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { PLACEHOLDER, QUESTION, SECTION } from "@/lib/helptext";
 import type { QuestionItem, SectionType } from "./EditorSidebar";
 
@@ -102,17 +88,20 @@ function FieldLabel({
  );
 }
 
-function SortableOptionItem({
+function OptionItem({
  opt,
  idx,
  questionId,
+ total,
  onContentChange,
  onPointChange,
  onRemove,
+ onReorder,
 }: {
  opt: { id?: string; content: string; point: number; order: number };
  idx: number;
  questionId: string;
+ total: number;
  onContentChange: (
   questionId: string,
   optionIndex: number,
@@ -124,38 +113,30 @@ function SortableOptionItem({
   value: number,
  ) => void;
  onRemove: (questionId: string, optionIndex: number) => void;
+ onReorder: (questionId: string, oldIndex: number, newIndex: number) => void;
 }) {
- const {
-  attributes,
-  listeners,
-  setNodeRef,
-  setActivatorNodeRef,
-  transform,
-  transition,
-  isDragging,
- } = useSortable({ id: opt.id ?? `new-${idx}` });
-
- const style = {
-  transform: CSS.Transform.toString(transform),
-  transition,
- };
-
  return (
-  <div
-   ref={setNodeRef}
-   style={style}
-   className={`flex items-center gap-1.5 touch-none ${isDragging ? "z-50 opacity-50 shadow-lg" : ""}`}
-  >
-   <button
-    type="button"
-    ref={setActivatorNodeRef}
-    className="flex items-center justify-center w-8 h-8 shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing transition-colors"
-    {...attributes}
-    {...listeners}
-    tabIndex={-1}
-   >
-    <GripVertical size={14} />
-   </button>
+  <div className="flex items-center gap-1.5">
+   <div className="flex flex-col">
+    <button
+     type="button"
+     onClick={() => idx > 0 && onReorder(questionId, idx, idx - 1)}
+     disabled={idx === 0}
+     className="flex items-center justify-center w-6 h-4 text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+     tabIndex={-1}
+    >
+     <ChevronUp size={12} />
+    </button>
+    <button
+     type="button"
+     onClick={() => idx < total - 1 && onReorder(questionId, idx, idx + 1)}
+     disabled={idx === total - 1}
+     className="flex items-center justify-center w-6 h-4 text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+     tabIndex={-1}
+    >
+     <ChevronDown size={12} />
+    </button>
+   </div>
    <input
     type="text"
     value={opt.content}
@@ -207,12 +188,6 @@ export default function EditorRightPanel({
  onRemoveOption,
  onOptionReorder,
 }: EditorRightPanelProps) {
- const sensors = useSensors(
-  useSensor(PointerSensor, {
-   activationConstraint: { distance: 4 },
-  }),
- );
-
  const inputClasses =
   "w-full h-10 border-2 border-border bg-input-background px-3 text-sm text-foreground outline-none transition-colors focus:border-primary placeholder:text-muted-foreground";
  const textareaClasses =
@@ -388,52 +363,30 @@ export default function EditorRightPanel({
 
       <div>
        <FieldLabel>{QUESTION.OPTIONS}</FieldLabel>
-       <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={(event: DragEndEvent) => {
-         if (!activeQuestion) return;
-         const { active, over } = event;
-         if (!over || active.id === over.id) return;
-         const oldIndex = activeQuestion.options.findIndex(
-          (opt) => (opt.id ?? `new-${activeQuestion.options.indexOf(opt)}`) === active.id,
-         );
-         const newIndex = activeQuestion.options.findIndex(
-          (opt) => (opt.id ?? `new-${activeQuestion.options.indexOf(opt)}`) === over.id,
-         );
-         if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-          onOptionReorder(activeQuestion.id, oldIndex, newIndex);
-         }
-        }}
-       >
-        <div className="space-y-2">
-         <SortableContext
-          items={activeQuestion.options.map((opt, i) => opt.id ?? `new-${i}`)}
-          strategy={verticalListSortingStrategy}
-         >
-          {activeQuestion.options.map((opt, idx) => (
-           <SortableOptionItem
-            key={opt.id ?? `new-${idx}`}
-            opt={opt}
-            idx={idx}
-            questionId={activeQuestion.id}
-            onContentChange={onOptionContentChange}
-            onPointChange={onOptionPointChange}
-            onRemove={onRemoveOption}
-           />
-          ))}
-         </SortableContext>
-         <button
-          type="button"
-          onClick={() => onAddOption(activeQuestion.id)}
-          className="flex items-center gap-1.5 w-full h-8 border-2 border-dashed border-border text-[10px] uppercase tracking-widest text-muted-foreground hover:text-primary hover:border-primary transition-colors justify-center"
-          style={{ fontFamily: "'JetBrains Mono', monospace" }}
-         >
-          <Plus size={11} />
-          {QUESTION.ADD_OPTION}
-         </button>
-        </div>
-       </DndContext>
+       <div className="space-y-2">
+        {activeQuestion.options.map((opt, idx) => (
+         <OptionItem
+          key={opt.id ?? `new-${idx}`}
+          opt={opt}
+          idx={idx}
+          questionId={activeQuestion.id}
+          total={activeQuestion.options.length}
+          onContentChange={onOptionContentChange}
+          onPointChange={onOptionPointChange}
+          onRemove={onRemoveOption}
+          onReorder={onOptionReorder}
+         />
+        ))}
+        <button
+         type="button"
+         onClick={() => onAddOption(activeQuestion.id)}
+         className="flex items-center gap-1.5 w-full h-8 border-2 border-dashed border-border text-[10px] uppercase tracking-widest text-muted-foreground hover:text-primary hover:border-primary transition-colors justify-center"
+         style={{ fontFamily: "'JetBrains Mono', monospace" }}
+        >
+         <Plus size={11} />
+         {QUESTION.ADD_OPTION}
+        </button>
+       </div>
       </div>
      </div>
     )}

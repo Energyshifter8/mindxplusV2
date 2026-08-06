@@ -1,6 +1,5 @@
 "use client";
 
-import type { DragEndEvent } from "@dnd-kit/core";
 import {
 	ArrowUpDown,
 	ChevronDown,
@@ -13,12 +12,7 @@ import {
 import { useRef, useState } from "react";
 import type { CreateQuestionPayload } from "@/lib/api";
 import { PLACEHOLDER, SIDEBAR } from "@/lib/helptext";
-import type {
-	QuestionCategory,
-	ReorderableQuestion,
-} from "@/lib/hooks/useReorderQuestions";
 import AddQuestionPopover from "./AddQuestionPopover";
-import ReorderableList from "./ReorderableList";
 
 export type SectionType = "homepage" | "question" | "ending";
 
@@ -48,10 +42,7 @@ interface EditorSidebarProps {
 	onSectionSelect: (section: SectionType, questionId?: string) => void;
 	onDeleteQuestion?: (questionId: string) => void;
 	onCreateQuestion: (payload: CreateQuestionPayload) => Promise<unknown>;
-	reorderMode?: boolean;
-	reorderItems?: Record<QuestionCategory, ReorderableQuestion[]>;
-	onReorderDragEnd?: (event: DragEndEvent) => void;
-	onToggleReorderMode?: () => void;
+	onReverseQuestions?: () => void;
 }
 
 export default function EditorSidebar({
@@ -61,10 +52,7 @@ export default function EditorSidebar({
 	onSectionSelect,
 	onDeleteQuestion,
 	onCreateQuestion,
-	reorderMode = false,
-	reorderItems,
-	onReorderDragEnd,
-	onToggleReorderMode,
+	onReverseQuestions,
 }: EditorSidebarProps) {
 	const [baseQuestionsExpanded, setBaseQuestionsExpanded] = useState(false);
 	const [popoverOpen, setPopoverOpen] = useState(false);
@@ -137,20 +125,12 @@ export default function EditorSidebar({
 						</span>
 					</div>
 					<div className="flex items-center gap-1">
-						{onToggleReorderMode && (
+						{onReverseQuestions && (
 							<button
 								type="button"
-								onClick={onToggleReorderMode}
-								className={`flex items-center justify-center w-5 h-5 transition-colors ${
-									reorderMode
-										? "text-primary"
-										: "text-muted-foreground hover:text-primary"
-								}`}
-								title={
-									reorderMode
-										? "Эрэмбэлэх горимыг хаах"
-										: "Асуултуудыг эрэмбэлэх"
-								}
+								onClick={onReverseQuestions}
+								className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-primary transition-colors"
+								title="Дараалал урвуулах"
 							>
 								<ArrowUpDown size={13} />
 							</button>
@@ -176,54 +156,43 @@ export default function EditorSidebar({
 					</div>
 				</div>
 
-			{reorderMode &&
-			reorderItems &&
-			onReorderDragEnd ? (
-				<ReorderableList
-					items={reorderItems}
-					activeQuestionId={activeQuestionId}
-					onSelect={(id) => onSectionSelect("question", id)}
-					onDragEnd={onReorderDragEnd}
-				/>
-				) : (
-					<div className="space-y-0.5">
-						{regularQuestions.map((q, index) => (
-							<div key={q.id} className="group relative">
+				<div className="space-y-0.5">
+					{regularQuestions.map((q, index) => (
+						<div key={q.id} className="group relative">
+							<button
+								type="button"
+								onClick={() => onSectionSelect("question", q.id)}
+								className={`w-full flex items-center gap-2.5 px-2 py-2 text-left text-xs transition-colors ${
+									activeSection === "question" && activeQuestionId === q.id
+										? "bg-primary/10 text-primary border-l-2 border-primary"
+										: "text-foreground/80 hover:bg-muted border-l-2 border-transparent"
+								}`}
+								style={{ fontFamily: "'JetBrains Mono', monospace" }}
+							>
+								<span className="text-[11px] text-muted-foreground w-4 text-center shrink-0 tabular-nums">{index + 1}.</span>
+								<span className="truncate">
+									{q.title || PLACEHOLDER.QUESTION_TITLE}
+								</span>
+							</button>
+							{onDeleteQuestion && (
 								<button
 									type="button"
-									onClick={() => onSectionSelect("question", q.id)}
-									className={`w-full flex items-center gap-2.5 px-2 py-2 text-left text-xs transition-colors ${
-										activeSection === "question" && activeQuestionId === q.id
-											? "bg-primary/10 text-primary border-l-2 border-primary"
-											: "text-foreground/80 hover:bg-muted border-l-2 border-transparent"
-									}`}
-									style={{ fontFamily: "'JetBrains Mono', monospace" }}
+									onClick={(e) => {
+										e.stopPropagation();
+										if (window.confirm("Устгах уу?")) {
+											onDeleteQuestion(q.id);
+										}
+									}}
+									className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-6 h-6 text-muted-foreground hover:text-destructive"
 								>
-									<span className="text-[11px] text-muted-foreground w-4 text-center shrink-0 tabular-nums">{index + 1}.</span>
-									<span className="truncate">
-										{q.title || PLACEHOLDER.QUESTION_TITLE}
-									</span>
+									<Trash2 size={12} />
 								</button>
-								{onDeleteQuestion && (
-									<button
-										type="button"
-										onClick={(e) => {
-											e.stopPropagation();
-											if (window.confirm("Устгах уу?")) {
-												onDeleteQuestion(q.id);
-											}
-										}}
-										className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-6 h-6 text-muted-foreground hover:text-destructive"
-									>
-										<Trash2 size={12} />
-									</button>
-								)}
-							</div>
-						))}
-					</div>
-				)}
+							)}
+						</div>
+					))}
+				</div>
 
-				{/* Үндсэн асуултууд — always visible, both modes */}
+				{/* Үндсэн асуултууд */}
 				<div className="mt-3">
 					<button
 						type="button"

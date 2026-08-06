@@ -191,7 +191,6 @@ export default function SurveyEditPage() {
 	);
 
 	const [questions, setQuestions] = useState<QuestionItem[]>([]);
-	const [reorderMode, setReorderMode] = useState(false);
 	const [isDirty, setIsDirty] = useState(false);
 
 	useEffect(() => {
@@ -252,7 +251,8 @@ export default function SurveyEditPage() {
 
 	const {
 		items: reorderItems,
-		handleDragEnd,
+		reverseCategory,
+		flushSave,
 	} = useReorderQuestions({
 		surveyId,
 		initialItems: initialReorderItems,
@@ -289,6 +289,13 @@ export default function SurveyEditPage() {
 			setQuestions([...reorderedAsQuestionItems, ...templateOnly]);
 		},
 	});
+
+	const handleReverseQuestions = useCallback(() => {
+		setIsDirty(true);
+		reverseCategory("CUSTOM_QUESTION_FIRST");
+		reverseCategory("CUSTOM_QUESTION_LAST");
+		flushSave();
+	}, [reverseCategory, flushSave]);
 
 	const activeQuestion: QuestionItem | null = activeQuestionId
 		? (questions.find((q) => q.id === activeQuestionId) ?? null)
@@ -739,10 +746,7 @@ export default function SurveyEditPage() {
 					onSectionSelect={handleSectionSelect}
 					onDeleteQuestion={handleDeleteQuestion}
 					onCreateQuestion={handleCreateQuestionFromPopover}
-					reorderMode={reorderMode}
-					reorderItems={reorderItems}
-					onReorderDragEnd={handleDragEnd}
-					onToggleReorderMode={() => setReorderMode(!reorderMode)}
+					onReverseQuestions={handleReverseQuestions}
 				/>
 				<EditorPreview
 					activeSection={activeSection}

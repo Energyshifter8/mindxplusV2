@@ -19,9 +19,6 @@ const nextConfig: NextConfig = {
 		optimizePackageImports: [
 			"lucide-react",
 			"@tanstack/react-query",
-			"@dnd-kit/core",
-			"@dnd-kit/sortable",
-			"@dnd-kit/utilities",
 			"@base-ui/react",
 			"class-variance-authority",
 			"tailwind-merge",
