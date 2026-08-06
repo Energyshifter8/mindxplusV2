@@ -292,10 +292,43 @@ export default function SurveyEditPage() {
 
 	const handleReverseQuestions = useCallback(() => {
 		setIsDirty(true);
-		reverseCategory("CUSTOM_QUESTION_FIRST");
-		reverseCategory("CUSTOM_QUESTION_LAST");
-		flushSave();
-	}, [reverseCategory, flushSave]);
+		let newItems = reverseCategory("CUSTOM_QUESTION_FIRST");
+		const secondItems = reverseCategory("CUSTOM_QUESTION_LAST");
+		if (secondItems) newItems = secondItems;
+		if (newItems) {
+			const reorderedIds = new Set([
+				...newItems.CUSTOM_QUESTION_FIRST.map((q) => q.id),
+				...newItems.CUSTOM_QUESTION_LAST.map((q) => q.id),
+			]);
+			const templateOnly = questions.filter(
+				(q) => q.section === "PRIMARY_QUESTION" && !reorderedIds.has(q.id),
+			);
+			const reorderedAsQuestionItems: QuestionItem[] = [
+				...newItems.CUSTOM_QUESTION_FIRST.map((q) => ({
+					id: q.id,
+					title: q.title,
+					questionType: q.questionType,
+					isRequired: q.isRequired,
+					minAnswerCount: q.minAnswerCount,
+					maxAnswerCount: q.maxAnswerCount,
+					options: q.options ?? [],
+					section: q.category,
+				})),
+				...newItems.CUSTOM_QUESTION_LAST.map((q) => ({
+					id: q.id,
+					title: q.title,
+					questionType: q.questionType,
+					isRequired: q.isRequired,
+					minAnswerCount: q.minAnswerCount,
+					maxAnswerCount: q.maxAnswerCount,
+					options: q.options ?? [],
+					section: q.category,
+				})),
+			];
+			setQuestions([...reorderedAsQuestionItems, ...templateOnly]);
+			flushSave(newItems);
+		}
+	}, [reverseCategory, flushSave, questions]);
 
 	const activeQuestion: QuestionItem | null = activeQuestionId
 		? (questions.find((q) => q.id === activeQuestionId) ?? null)

@@ -198,22 +198,27 @@ export function useReorderQuestions({
 	});
 
 	const reverseCategory = useCallback(
-		(category: QuestionCategory) => {
+		(category: QuestionCategory): Record<QuestionCategory, ReorderableQuestion[]> | null => {
+			let result: Record<QuestionCategory, ReorderableQuestion[]> | null = null;
 			setItems((prev) => {
 				const reversed = [...prev[category]].reverse();
 				const next = { ...prev, [category]: reversed };
 				const recalculated = recalculateOrders(next);
-				onOptimisticUpdate?.(recalculated);
+				result = recalculated;
 				return recalculated;
 			});
+			return result;
 		},
-		[onOptimisticUpdate],
+		[],
 	);
 
-	const flushSave = useCallback(() => {
-		previousItemsRef.current = { ...items };
-		mutation.mutate(items);
-	}, [mutation, items]);
+	const flushSave = useCallback(
+		(newItems: Record<QuestionCategory, ReorderableQuestion[]>) => {
+			previousItemsRef.current = { ...newItems };
+			mutation.mutate(newItems);
+		},
+		[mutation],
+	);
 
 	const resetItems = useCallback(
 		(newItems: Record<QuestionCategory, ReorderableQuestion[]>) => {
