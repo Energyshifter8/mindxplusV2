@@ -249,45 +249,9 @@ export default function SurveyEditPage() {
 		[questions],
 	);
 
-	const {
-		items: reorderItems,
-		reverseCategory,
-		flushSave,
-	} = useReorderQuestions({
+	const { reverseCategory } = useReorderQuestions({
 		surveyId,
 		initialItems: initialReorderItems,
-		onOptimisticUpdate: (newItems) => {
-			const reorderedIds = new Set([
-				...newItems.CUSTOM_QUESTION_FIRST.map((q) => q.id),
-				...newItems.CUSTOM_QUESTION_LAST.map((q) => q.id),
-			]);
-			const templateOnly = questions.filter(
-				(q) => q.section === "PRIMARY_QUESTION" && !reorderedIds.has(q.id),
-			);
-			const reorderedAsQuestionItems: QuestionItem[] = [
-				...newItems.CUSTOM_QUESTION_FIRST.map((q) => ({
-					id: q.id,
-					title: q.title,
-					questionType: q.questionType,
-					isRequired: q.isRequired,
-					minAnswerCount: q.minAnswerCount,
-					maxAnswerCount: q.maxAnswerCount,
-					options: q.options ?? [],
-					section: q.category,
-				})),
-				...newItems.CUSTOM_QUESTION_LAST.map((q) => ({
-					id: q.id,
-					title: q.title,
-					questionType: q.questionType,
-					isRequired: q.isRequired,
-					minAnswerCount: q.minAnswerCount,
-					maxAnswerCount: q.maxAnswerCount,
-					options: q.options ?? [],
-					section: q.category,
-				})),
-			];
-			setQuestions([...reorderedAsQuestionItems, ...templateOnly]);
-		},
 	});
 
 	const handleReverseQuestions = useCallback(() => {
@@ -326,9 +290,8 @@ export default function SurveyEditPage() {
 				})),
 			];
 			setQuestions([...reorderedAsQuestionItems, ...templateOnly]);
-			flushSave(newItems);
 		}
-	}, [reverseCategory, flushSave, questions]);
+	}, [reverseCategory, questions]);
 
 	const activeQuestion: QuestionItem | null = activeQuestionId
 		? (questions.find((q) => q.id === activeQuestionId) ?? null)
