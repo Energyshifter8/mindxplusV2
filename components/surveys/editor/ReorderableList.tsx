@@ -78,6 +78,8 @@ function SortableQuestionItem({
 				type="button"
 				ref={setActivatorNodeRef}
 				className="flex items-center justify-center w-8 h-8 shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing transition-colors"
+				onMouseDown={() => console.log("HANDLE MOUSEDOWN", question.id)}
+				onPointerDown={() => console.log("HANDLE POINTERDOWN", question.id)}
 				{...attributes}
 				{...listeners}
 				tabIndex={-1}

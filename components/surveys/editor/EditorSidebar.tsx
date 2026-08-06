@@ -179,12 +179,17 @@ export default function EditorSidebar({
 			{reorderMode &&
 			reorderItems &&
 			onReorderDragEnd ? (
-				<ReorderableList
-					items={reorderItems}
-					activeQuestionId={activeQuestionId}
-					onSelect={(id) => onSectionSelect("question", id)}
-					onDragEnd={onReorderDragEnd}
-				/>
+				(() => {
+					console.log("[DEBUG] ReorderableList rendered, onDragEnd type:", typeof onReorderDragEnd);
+					return (
+						<ReorderableList
+							items={reorderItems}
+							activeQuestionId={activeQuestionId}
+							onSelect={(id) => onSectionSelect("question", id)}
+							onDragEnd={onReorderDragEnd}
+						/>
+					);
+				})()
 				) : (
 					<div className="space-y-0.5">
 						{regularQuestions.map((q, index) => (
