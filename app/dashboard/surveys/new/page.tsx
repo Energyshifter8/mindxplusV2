@@ -7,8 +7,11 @@ const CreateSurveyModal = lazy(
 	() => import("@/components/surveys/CreateSurveyModal"),
 );
 
+const TemplatePreviewModal = lazy(
+	() => import("@/components/surveys/TemplatePreviewModal"),
+);
+
 import TemplateCard from "@/components/surveys/TemplateCard";
-import TemplatePreviewModal from "@/components/surveys/TemplatePreviewModal";
 import type { SurveyTemplate } from "@/lib/hooks/useTemplates";
 import { useTemplates } from "@/lib/hooks/useTemplates";
 
@@ -163,10 +166,12 @@ export default function NewSurveyPage() {
 
 			{/* Template preview modal */}
 			{previewTemplateId && (
-				<TemplatePreviewModal
-					templateId={previewTemplateId}
-					onClose={() => setPreviewTemplateId(null)}
-				/>
+				<Suspense fallback={null}>
+					<TemplatePreviewModal
+						templateId={previewTemplateId}
+						onClose={() => setPreviewTemplateId(null)}
+					/>
+				</Suspense>
 			)}
 		</div>
 	);
