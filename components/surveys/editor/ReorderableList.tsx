@@ -2,7 +2,7 @@
 
 import { DragDropProvider, useDroppable } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
-import { GripVertical, HelpCircle } from "lucide-react";
+import { GripVertical } from "lucide-react";
 import { PLACEHOLDER } from "@/lib/helptext";
 import type {
 	QuestionCategory,
@@ -76,7 +76,7 @@ function SortableQuestionItem({
 				onClick={() => onSelect(question.id)}
 				className="flex items-center gap-2 flex-1 min-w-0 text-left"
 			>
-				<HelpCircle size={13} className="shrink-0" />
+				<span className="text-[11px] text-muted-foreground w-4 text-center shrink-0 tabular-nums">{index + 1}.</span>
 				<span className="truncate">
 					{question.title || PLACEHOLDER.QUESTION_TITLE}
 				</span>

@@ -5,7 +5,6 @@ import {
 	ChevronDown,
 	ChevronRight,
 	Flag,
-	HelpCircle,
 	Home,
 	Plus,
 	Trash2,
@@ -191,7 +190,7 @@ export default function EditorSidebar({
 					/>
 				) : (
 					<div className="space-y-0.5">
-						{regularQuestions.map((q) => (
+						{regularQuestions.map((q, index) => (
 							<div key={q.id} className="group relative">
 								<button
 									type="button"
@@ -203,7 +202,7 @@ export default function EditorSidebar({
 									}`}
 									style={{ fontFamily: "'JetBrains Mono', monospace" }}
 								>
-									<HelpCircle size={13} />
+									<span className="text-[11px] text-muted-foreground w-4 text-center shrink-0 tabular-nums">{index + 1}.</span>
 									<span className="truncate">
 										{q.title || PLACEHOLDER.QUESTION_TITLE}
 									</span>
@@ -252,7 +251,7 @@ export default function EditorSidebar({
 					</button>
 					{baseQuestionsExpanded && (
 						<div className="pl-6 space-y-0.5">
-							{baseQuestions.map((q) => {
+							{baseQuestions.map((q, index) => {
 								const qId = q.id;
 								return (
 									<button
@@ -267,6 +266,7 @@ export default function EditorSidebar({
 										style={{ fontFamily: "'JetBrains Mono', monospace" }}
 										title={q.title}
 									>
+										<span className="text-[10px] text-muted-foreground/70 w-4 text-center shrink-0 tabular-nums">{index + 1}.</span>
 										{q.title}
 									</button>
 								);
