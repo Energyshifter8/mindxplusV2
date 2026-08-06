@@ -7,7 +7,6 @@ import {
 	Suspense,
 	useCallback,
 	useEffect,
-	useMemo,
 	useState,
 } from "react";
 import { toast } from "sonner";
@@ -36,11 +35,6 @@ import { BUTTON, DEFAULT, TOAST } from "@/lib/helptext";
 import { useCreateQuestion } from "@/lib/hooks/useCreateQuestion";
 import { useDeleteQuestion } from "@/lib/hooks/useDeleteQuestion";
 import { usePublishSurvey } from "@/lib/hooks/usePublishSurvey";
-import {
-	type QuestionCategory,
-	type ReorderableQuestion,
-	useReorderQuestions,
-} from "@/lib/hooks/useReorderQuestions";
 import { useSurveyDetail } from "@/lib/hooks/useSurveyDetail";
 import { useUpdateSurveyPage } from "@/lib/hooks/useUpdateSurveyPage";
 import { type ThemeName, themes } from "@/lib/theme";
@@ -224,74 +218,6 @@ export default function SurveyEditPage() {
 		window.addEventListener("beforeunload", handler);
 		return () => window.removeEventListener("beforeunload", handler);
 	}, [isDirty]);
-
-	const initialReorderItems = useMemo<
-		Record<QuestionCategory, ReorderableQuestion[]>
-	>(
-		() => ({
-			CUSTOM_QUESTION_FIRST: questions
-				.filter((q) => q.section === "CUSTOM_QUESTION_FIRST")
-				.map((q) => ({
-					...q,
-					category: "CUSTOM_QUESTION_FIRST" as const,
-				})),
-			CUSTOM_QUESTION_LAST: questions
-				.filter(
-					(q) =>
-						q.section !== "CUSTOM_QUESTION_FIRST" &&
-						q.section !== "PRIMARY_QUESTION",
-				)
-				.map((q) => ({
-					...q,
-					category: "CUSTOM_QUESTION_LAST" as const,
-				})),
-		}),
-		[questions],
-	);
-
-	const { reverseCategory } = useReorderQuestions({
-		surveyId,
-		initialItems: initialReorderItems,
-	});
-
-	const handleReverseQuestions = useCallback(() => {
-		setIsDirty(true);
-		let newItems = reverseCategory("CUSTOM_QUESTION_FIRST");
-		const secondItems = reverseCategory("CUSTOM_QUESTION_LAST");
-		if (secondItems) newItems = secondItems;
-		if (newItems) {
-			const reorderedIds = new Set([
-				...newItems.CUSTOM_QUESTION_FIRST.map((q) => q.id),
-				...newItems.CUSTOM_QUESTION_LAST.map((q) => q.id),
-			]);
-			const templateOnly = questions.filter(
-				(q) => q.section === "PRIMARY_QUESTION" && !reorderedIds.has(q.id),
-			);
-			const reorderedAsQuestionItems: QuestionItem[] = [
-				...newItems.CUSTOM_QUESTION_FIRST.map((q) => ({
-					id: q.id,
-					title: q.title,
-					questionType: q.questionType,
-					isRequired: q.isRequired,
-					minAnswerCount: q.minAnswerCount,
-					maxAnswerCount: q.maxAnswerCount,
-					options: q.options ?? [],
-					section: q.category,
-				})),
-				...newItems.CUSTOM_QUESTION_LAST.map((q) => ({
-					id: q.id,
-					title: q.title,
-					questionType: q.questionType,
-					isRequired: q.isRequired,
-					minAnswerCount: q.minAnswerCount,
-					maxAnswerCount: q.maxAnswerCount,
-					options: q.options ?? [],
-					section: q.category,
-				})),
-			];
-			setQuestions([...reorderedAsQuestionItems, ...templateOnly]);
-		}
-	}, [reverseCategory, questions]);
 
 	const activeQuestion: QuestionItem | null = activeQuestionId
 		? (questions.find((q) => q.id === activeQuestionId) ?? null)
@@ -742,7 +668,6 @@ export default function SurveyEditPage() {
 					onSectionSelect={handleSectionSelect}
 					onDeleteQuestion={handleDeleteQuestion}
 					onCreateQuestion={handleCreateQuestionFromPopover}
-					onReverseQuestions={handleReverseQuestions}
 				/>
 				<EditorPreview
 					activeSection={activeSection}

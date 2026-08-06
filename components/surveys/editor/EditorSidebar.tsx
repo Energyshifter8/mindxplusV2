@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	ArrowUpDown,
 	ChevronDown,
 	ChevronRight,
 	Flag,
@@ -42,7 +41,6 @@ interface EditorSidebarProps {
 	onSectionSelect: (section: SectionType, questionId?: string) => void;
 	onDeleteQuestion?: (questionId: string) => void;
 	onCreateQuestion: (payload: CreateQuestionPayload) => Promise<unknown>;
-	onReverseQuestions?: () => void;
 }
 
 export default function EditorSidebar({
@@ -52,7 +50,6 @@ export default function EditorSidebar({
 	onSectionSelect,
 	onDeleteQuestion,
 	onCreateQuestion,
-	onReverseQuestions,
 }: EditorSidebarProps) {
 	const [baseQuestionsExpanded, setBaseQuestionsExpanded] = useState(false);
 	const [popoverOpen, setPopoverOpen] = useState(false);
@@ -125,16 +122,6 @@ export default function EditorSidebar({
 						</span>
 					</div>
 					<div className="flex items-center gap-1">
-						{onReverseQuestions && (
-							<button
-								type="button"
-								onClick={onReverseQuestions}
-								className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-primary transition-colors"
-								title="Дараалал урвуулах"
-							>
-								<ArrowUpDown size={13} />
-							</button>
-						)}
 						<div className="relative">
 							<button
 								ref={addBtnRef}
