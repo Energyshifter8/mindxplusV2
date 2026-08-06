@@ -5,6 +5,7 @@ import {
  DndContext,
  PointerSensor,
  useDroppable,
+ useSensor,
  useSensors,
 } from "@dnd-kit/core";
 import type { DragEndEvent } from "@dnd-kit/core";
@@ -78,9 +79,9 @@ function SortableQuestionItem({
     type="button"
     ref={setActivatorNodeRef}
     className="flex items-center justify-center w-8 h-8 shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing transition-colors"
-    tabIndex={-1}
     {...attributes}
     {...listeners}
+    tabIndex={-1}
    >
     <GripVertical size={14} />
    </button>
