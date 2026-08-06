@@ -210,16 +210,26 @@ export default function CreateSurveyModal({
 
 							return (
 								<div key={question.template} className="flex flex-col">
-									<button
-										type="button"
-										disabled={isDisabled}
-										onClick={() => toggleAdditional(question.template)}
+									{/* biome-ignore lint/a11y/useSemanticElements: cannot nest <button> inside <button> */}
+									<div
+										role="button"
+										tabIndex={isDisabled ? -1 : 0}
+										aria-disabled={isDisabled}
+										onClick={() => {
+											if (!isDisabled) toggleAdditional(question.template);
+										}}
+										onKeyDown={(e) => {
+											if (!isDisabled && (e.key === "Enter" || e.key === " ")) {
+												e.preventDefault();
+												toggleAdditional(question.template);
+											}
+										}}
 										className={`flex items-center gap-3 border-2 px-3 py-2.5 text-left text-xs transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
 											isSelected
 												? "border-primary/40 bg-primary/10 text-foreground"
 												: isDisabled
 													? "cursor-not-allowed border-border/50 bg-input-field-bg/50 text-disabled-text"
-													: "border-border bg-input-field-bg text-muted-foreground hover:border-muted-foreground hover:text-foreground"
+													: "cursor-pointer border-border bg-input-field-bg text-muted-foreground hover:border-muted-foreground hover:text-foreground"
 										}`}
 										style={{ fontFamily: "'JetBrains Mono', monospace" }}
 									>
@@ -243,11 +253,17 @@ export default function CreateSurveyModal({
 										<span className="shrink-0">{question.icon}</span>
 										<div className="flex flex-col flex-1 min-w-0">
 											<span className="truncate">{question.title}</span>
-											<button
-												type="button"
+											{/* biome-ignore lint/a11y/noStaticElementInteractions: inner action inside outer button */}
+											<span
 												onClick={(e) => {
 													e.stopPropagation();
 													togglePreview(question.template);
+												}}
+												onKeyDown={(e) => {
+													if (e.key === "Enter" || e.key === " ") {
+														e.stopPropagation();
+														togglePreview(question.template);
+													}
 												}}
 												className="text-[9px] text-muted-foreground/70 hover:text-muted-foreground truncate text-left mt-0.5 cursor-pointer"
 											>
@@ -257,7 +273,7 @@ export default function CreateSurveyModal({
 														— Хариулт: {optionsPreview}
 													</span>
 												)}
-											</button>
+											</span>
 										</div>
 										{isExpanded && (
 											<ChevronDown
@@ -265,7 +281,7 @@ export default function CreateSurveyModal({
 												className="shrink-0 text-muted-foreground"
 											/>
 										)}
-									</button>
+									</div>
 									{isExpanded && (
 										<div
 											className="border-x-2 border-b-2 border-border/50 bg-input-field-bg/30 px-3 py-2 text-[10px] text-muted-foreground"
