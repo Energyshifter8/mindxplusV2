@@ -3,11 +3,12 @@
 import {
 	closestCenter,
 	DndContext,
+	DragOverlay,
 	PointerSensor,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
-import type { DragEndEvent } from "@dnd-kit/core";
+import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import {
 	SortableContext,
 	useSortable,
@@ -15,6 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
+import { useState } from "react";
 import { PLACEHOLDER } from "@/lib/helptext";
 import type {
 	QuestionCategory,
@@ -38,6 +40,30 @@ const CATEGORY_ORDER: QuestionCategory[] = [
 	"CUSTOM_QUESTION_LAST",
 ];
 
+function QuestionItemRow({
+	question,
+	index,
+}: {
+	question: ReorderableQuestion;
+	index: number;
+}) {
+	return (
+		<div className="group relative flex items-center gap-2 px-2 py-2 text-left text-xs bg-card shadow-lg border border-border/50">
+			<span className="flex items-center justify-center w-8 h-8 shrink-0 text-muted-foreground">
+				<GripVertical size={14} />
+			</span>
+			<span className="flex items-center gap-2 flex-1 min-w-0 text-left">
+				<span className="text-[11px] text-muted-foreground w-4 text-center shrink-0 tabular-nums">
+					{index + 1}.
+				</span>
+				<span className="truncate">
+					{question.title || PLACEHOLDER.QUESTION_TITLE}
+				</span>
+			</span>
+		</div>
+	);
+}
+
 function SortableQuestionItem({
 	question,
 	index,
@@ -59,10 +85,12 @@ function SortableQuestionItem({
 		isDragging,
 	} = useSortable({ id: question.id });
 
-	const style = {
-		transform: CSS.Transform.toString(transform),
-		transition,
-	};
+	const style = isDragging
+		? undefined
+		: {
+				transform: CSS.Transform.toString(transform),
+				transition,
+			};
 
 	return (
 		<div
@@ -72,14 +100,12 @@ function SortableQuestionItem({
 				isActive
 					? "bg-primary/10 text-primary border-l-2 border-primary"
 					: "text-foreground/80 hover:bg-muted border-l-2 border-transparent"
-			} ${isDragging ? "z-50 opacity-50 shadow-lg" : ""}`}
+			} ${isDragging ? "opacity-40" : ""}`}
 		>
 			<button
 				type="button"
 				ref={setActivatorNodeRef}
 				className="flex items-center justify-center w-8 h-8 shrink-0 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing transition-colors"
-				onMouseDown={() => console.log("HANDLE MOUSEDOWN", question.id)}
-				onPointerDown={() => console.log("HANDLE POINTERDOWN", question.id)}
 				{...attributes}
 				{...listeners}
 				tabIndex={-1}
@@ -102,23 +128,50 @@ function SortableQuestionItem({
 	);
 }
 
+function findQuestion(
+	items: Record<QuestionCategory, ReorderableQuestion[]>,
+	id: string | number,
+): { question: ReorderableQuestion; index: number } | null {
+	for (const category of CATEGORY_ORDER) {
+		const idx = items[category].findIndex((q) => q.id === id);
+		if (idx !== -1) {
+			return { question: items[category][idx], index: idx };
+		}
+	}
+	return null;
+}
+
 export default function ReorderableList({
 	items,
 	activeQuestionId,
 	onSelect,
 	onDragEnd,
 }: ReorderableListProps) {
+	const [activeId, setActiveId] = useState<string | number | null>(null);
+
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
 			activationConstraint: { distance: 4 },
 		}),
 	);
 
+	function handleDragStart(event: DragStartEvent) {
+		setActiveId(event.active.id);
+	}
+
+	function handleDragEnd(event: DragEndEvent) {
+		setActiveId(null);
+		onDragEnd(event);
+	}
+
+	const activeItem = activeId != null ? findQuestion(items, activeId) : null;
+
 	return (
 		<DndContext
 			sensors={sensors}
 			collisionDetection={closestCenter}
-			onDragEnd={onDragEnd}
+			onDragStart={handleDragStart}
+			onDragEnd={handleDragEnd}
 		>
 			{CATEGORY_ORDER.map((category) => {
 				const questions = items[category];
@@ -152,6 +205,14 @@ export default function ReorderableList({
 					</div>
 				);
 			})}
+			<DragOverlay dropAnimation={null}>
+				{activeItem ? (
+					<QuestionItemRow
+						question={activeItem.question}
+						index={activeItem.index}
+					/>
+				) : null}
+			</DragOverlay>
 		</DndContext>
 	);
 }
