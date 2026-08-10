@@ -7,20 +7,32 @@ import type { QuestionItem, SectionType } from "./EditorSidebar";
 
 type PreviewDevice = "desktop" | "tablet" | "mobile";
 
-function EndLogo() {
+function LogoFooter() {
 	return (
-		<svg width="160" height="44" viewBox="0 0 160 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="mindX+ logo">
-			<path d="M0 32V12.8h4.2l5.8 13.6L15.8 12.8H20V32h-3.8V17.4L11.2 32H8.8L3.8 17.4V32H0Z" fill="#1a1f36" />
-			<path d="M22.4 32V12.8h7.6c3.4 0 5.8 2 5.8 4.8 0 2.2-1.2 3.8-3 4.4 2.2.4 3.6 2.2 3.6 4.6 0 3-2.6 5.4-6.2 5.4H22.4Zm3.8-9.2h3.4c1.4 0 2.2-.8 2.2-2s-.8-2-2.2-2h-3.4v4Zm0 7.6h3.8c1.6 0 2.4-1 2.4-2.2 0-1.2-.8-2.2-2.4-2.2h-3.8v4.4Z" fill="#1a1f36" />
-			<path d="M37.2 32V12.8h3.8v15.6h8.4v3.2h-12.2Z" fill="#1a1f36" />
-			<path d="M51.2 32V12.8h7.6c3.4 0 5.8 2 5.8 4.8 0 2.2-1.2 3.8-3 4.4 2.2.4 3.6 2.2 3.6 4.6 0 3-2.6 5.4-6.2 5.4H51.2Zm3.8-9.2h3.4c1.4 0 2.2-.8 2.2-2s-.8-2-2.2-2h-3.4v4Zm0 7.6h3.8c1.6 0 2.4-1 2.4-2.2 0-1.2-.8-2.2-2.4-2.2h-3.8v4.4Z" fill="#1a1f36" />
-			<path d="M70.4 12.8L77.6 20l7.2-7.2h4.8L82.8 20.8 90.4 32h-5l-5.6-8.4L74.4 32h-4.8l5.6-8.4L66 12.8h4.4Z" fill="#1a1f36" />
-			<circle cx="74" cy="10" r="3.5" fill="#e53e3e" />
-			<circle cx="86" cy="10" r="3.5" fill="#dd6b20" />
-			<circle cx="74" cy="34" r="3.5" fill="#3182ce" />
-			<circle cx="86" cy="34" r="3.5" fill="#38a169" />
-			<path d="M98 20v-8h3v8h8v3h-8v8h-3v-8h-8v-3h8Z" fill="#1a1f36" />
-		</svg>
+		<div className="flex items-center gap-1 select-none">
+			<span
+				className="text-xl font-black uppercase tracking-tight"
+				style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#1a1f36" }}
+			>
+				mind
+			</span>
+			<span
+				className="text-xl font-black uppercase tracking-tight relative"
+				style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#1a1f36" }}
+			>
+				X
+				<span className="absolute -top-1 -left-1.5 w-2 h-2 rounded-full bg-[#e53e3e]" />
+				<span className="absolute -top-1 -right-1.5 w-2 h-2 rounded-full bg-[#dd6b20]" />
+				<span className="absolute -bottom-1 -left-1.5 w-2 h-2 rounded-full bg-[#3182ce]" />
+				<span className="absolute -bottom-1 -right-1.5 w-2 h-2 rounded-full bg-[#38a169]" />
+			</span>
+			<span
+				className="text-lg font-bold"
+				style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#1a1f36" }}
+			>
+				+
+			</span>
+		</div>
 	);
 }
 
@@ -85,50 +97,35 @@ export default function EditorPreview({
 			>
 				{/* Preview content */}
 				<div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
-					{activeSection === "homepage" && !activeQuestionId && (
-						<div
-							className="flex flex-col items-center justify-between w-full min-h-full p-10"
-							style={{ background: "#f5f5e8" }}
-						>
-							<div className="flex-1 flex flex-col items-center justify-center w-full">
-								<h2
-									className="text-3xl font-black uppercase mb-3 leading-tight"
-									style={{
-										fontFamily: "'Barlow Condensed', sans-serif",
-										color: "#1a1f36",
-									}}
-								>
-									{title || PLACEHOLDER.SURVEY_NAME}
-								</h2>
-								<p
-									className="text-sm mb-8 max-w-md leading-relaxed"
-									style={{
-										fontFamily: "'JetBrains Mono', monospace",
-										color: "#6b7280",
-									}}
-								>
-									{description || PLACEHOLDER.DESCRIPTION}
-								</p>
-								<button
-									type="button"
-									className="h-10 px-6 flex items-center gap-2 text-[11px] uppercase tracking-widest font-bold text-white transition-colors"
-									style={{
-										fontFamily: "'JetBrains Mono', monospace",
-										background: "#1a1f36",
-										borderRadius: "20px",
-									}}
-								>
-									<Play size={14} />
-									{buttonText || PLACEHOLDER.BUTTON_TEXT}
-								</button>
-							</div>
-
-							{/* mindX+ logo footer */}
-							<div className="flex items-center justify-center pb-4 pt-8">
-								<EndLogo />
-							</div>
+				{activeSection === "homepage" && !activeQuestionId && (
+					<div className="flex flex-col items-center justify-between w-full h-full p-10" style={{ background: "#f5f5e8" }}>
+						<div className="flex-1 flex flex-col items-center justify-center w-full">
+							<h2
+								className="text-3xl font-black uppercase mb-3 leading-tight"
+								style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#1a1f36" }}
+							>
+								{title || PLACEHOLDER.SURVEY_NAME}
+							</h2>
+							<p
+								className="text-sm mb-8 max-w-md leading-relaxed"
+								style={{ fontFamily: "'JetBrains Mono', monospace", color: "#6b7280" }}
+							>
+								{description || PLACEHOLDER.DESCRIPTION}
+							</p>
+							<button
+								type="button"
+								className="h-10 px-6 flex items-center gap-2 text-[11px] uppercase tracking-widest font-bold text-white"
+								style={{ fontFamily: "'JetBrains Mono', monospace", background: "#1a1f36", borderRadius: "20px" }}
+							>
+								<Play size={14} />
+								{buttonText || PLACEHOLDER.BUTTON_TEXT}
+							</button>
 						</div>
-					)}
+						<div className="pt-8 pb-2">
+							<LogoFooter />
+						</div>
+					</div>
+				)}
 
 					{activeSection === "question" && activeQuestion && (
 						<div className="w-full max-w-lg text-left">
@@ -252,39 +249,22 @@ export default function EditorPreview({
 					)}
 
 					{activeSection === "ending" && !activeQuestionId && (
-						<div
-							className="flex flex-col items-center justify-between w-full min-h-full p-10"
-							style={{ background: "#f5f5e8" }}
-						>
+						<div className="flex flex-col items-center justify-between w-full h-full p-10" style={{ background: "#f5f5e8" }}>
 							<div className="flex-1 flex flex-col items-center justify-center w-full">
 								<h2
 									className="text-3xl font-black uppercase mb-3 leading-tight"
-									style={{
-										fontFamily: "'Barlow Condensed', sans-serif",
-										color: "#1a1f36",
-									}}
+									style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#1a1f36" }}
 								>
 									{endingTitle || PLACEHOLDER.ENDING_TITLE}
 								</h2>
 								<p
 									className="text-sm mb-8 max-w-md leading-relaxed"
-									style={{
-										fontFamily: "'JetBrains Mono', monospace",
-										color: "#6b7280",
-									}}
+									style={{ fontFamily: "'JetBrains Mono', monospace", color: "#6b7280" }}
 								>
 									{endingDescription || PLACEHOLDER.ENDING_DESCRIPTION}
 								</p>
-
-								{/* Email collection block */}
 								<div className="flex flex-col items-center gap-3">
-									<span
-										className="text-[10px] uppercase tracking-widest"
-										style={{
-											fontFamily: "'JetBrains Mono', monospace",
-											color: "#6b7280",
-										}}
-									>
+									<span className="text-[10px] uppercase tracking-widest" style={{ fontFamily: "'JetBrains Mono', monospace", color: "#6b7280" }}>
 										Имэйлээр үр дүнгээ хүлээн авах
 									</span>
 									<div className="flex items-center gap-2">
@@ -293,20 +273,12 @@ export default function EditorPreview({
 											placeholder="Имэйл"
 											readOnly
 											className="h-10 px-4 text-[11px] w-56 border border-gray-300 bg-white outline-none"
-											style={{
-												fontFamily: "'JetBrains Mono', monospace",
-												borderRadius: "20px",
-												color: "#1a1f36",
-											}}
+											style={{ fontFamily: "'JetBrains Mono', monospace", borderRadius: "20px", color: "#1a1f36" }}
 										/>
 										<button
 											type="button"
-											className="h-10 px-5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-white transition-colors"
-											style={{
-												fontFamily: "'JetBrains Mono', monospace",
-												background: "#1a1f36",
-												borderRadius: "20px",
-											}}
+											className="h-10 px-5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-white"
+											style={{ fontFamily: "'JetBrains Mono', monospace", background: "#1a1f36", borderRadius: "20px" }}
 										>
 											<Mail size={14} />
 											Хариу авах
@@ -314,10 +286,8 @@ export default function EditorPreview({
 									</div>
 								</div>
 							</div>
-
-							{/* mindX+ logo footer */}
-							<div className="flex items-center justify-center pb-4 pt-8">
-								<EndLogo />
+							<div className="pt-8 pb-2">
+								<LogoFooter />
 							</div>
 						</div>
 					)}
