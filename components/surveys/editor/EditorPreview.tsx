@@ -53,6 +53,92 @@ export default function EditorPreview({
 	const width = deviceWidths[device];
 	const themeConfig = getThemeColors(theme);
 
+	// Render preview content per question type to avoid complex nested JSX/ternary parsing
+	const questionPreview = activeQuestion
+		? (() => {
+			const qt = activeQuestion.questionType;
+			if (qt === "TEXT") {
+				return (
+					<div
+						className="w-full h-20 flex items-start px-3 py-2"
+						style={{
+							border: `2px solid ${themeConfig.optionBorder}`,
+							background: themeConfig.inputBg,
+						}}
+					>
+						<span
+							className="text-[11px]"
+							style={{
+								fontFamily: "'JetBrains Mono', monospace",
+								color: themeConfig.descColor,
+							}}
+						>
+							{PLACEHOLDER.TEXT_INPUT}
+						</span>
+					</div>
+				);
+			}
+			if (qt === "STAR_RATING") {
+				return (
+					<div className="flex items-center gap-2">
+						{Array.from({ length: Math.max(5, activeQuestion.options.length || 5) }).map((_, i) => (
+							<button key={`star-${i}`} type="button" className="p-1" aria-label={`star-${i + 1}`}>
+								<StarIcon size={20} className="text-yellow-400" />
+							</button>
+						))}
+					</div>
+				);
+			}
+			if (qt === "NUMBER_RATING") {
+				const opts = activeQuestion.options.length > 0 ? activeQuestion.options : Array.from({ length: 10 }, (_, i) => ({ order: i + 1, content: String(i + 1) }));
+				return (
+					<div className="flex items-center gap-2">
+						{opts.map((opt, idx) => (
+							<button key={`num-${idx}`} type="button" className="px-3 py-1 border rounded-full text-[11px]">{opt.content}</button>
+						))}
+					</div>
+				);
+			}
+			if (qt === "YES_NO") {
+				return (
+					<div className="flex items-center gap-2">
+						<button type="button" className="px-4 py-1 border rounded text-[11px]">Тийм</button>
+						<button type="button" className="px-4 py-1 border rounded text-[11px]">Үгүй</button>
+					</div>
+				);
+			}
+			if (qt === "DROPDOWN") {
+				const opts = activeQuestion.options.length > 0 ? activeQuestion.options : [{ order: 1, content: PLACEHOLDER.OPTION }];
+				return (
+					<select className="w-full h-10 border-2" style={{ background: themeConfig.inputBg }}>
+						{opts.map((opt, idx) => (
+							<option key={`opt-${idx}`}>{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}</option>
+						))}
+					</select>
+				);
+			}
+			// Default: option list view
+			return (
+				<div className="space-y-3">
+					{activeQuestion.options.length > 0
+						? activeQuestion.options.map((opt, idx) => (
+							<div key={`option-${activeQuestion.id}-${idx}`} className="h-10 flex items-center gap-3 px-3" style={{ border: `2px solid ${themeConfig.optionBorder}`, background: themeConfig.inputBg }}>
+								<OptionIndicator questionType={activeQuestion.questionType} />
+								<span className="text-[11px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: themeConfig.descColor }}>{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}</span>
+								{opt.point > 0 && <span className="ml-auto text-[9px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: themeConfig.descColor }}>{opt.point} {PREVIEW.POINTS_SUFFIX}</span>}
+							</div>
+						))
+						: Array.from({ length: 3 }, (_, idx) => (
+							<div key={`empty-${idx}`} className="h-10 flex items-center gap-3 px-3" style={{ border: `2px solid ${themeConfig.optionBorder}`, background: themeConfig.inputBg }}>
+								<OptionIndicator questionType={activeQuestion.questionType} />
+								<span className="text-[11px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: themeConfig.descColor }}>{PLACEHOLDER.OPTION} {idx + 1}</span>
+							</div>
+						))}
+				</div>
+			);
+		})()
+		: null;
+
 	return (
 		<div
 			className="flex-1 flex items-center justify-center overflow-auto p-6"
@@ -149,135 +235,9 @@ export default function EditorPreview({
 							>
 								{activeQuestion.title || PLACEHOLDER.QUESTION_TITLE}
 							</h3>
-							{activeQuestion.questionType === "TEXT" ? (
-								<div
-									className="w-full h-20 flex items-start px-3 py-2"
-									style={{
-										border: `2px solid ${themeConfig.optionBorder}`,
-										background: themeConfig.inputBg,
-									}}
-								>
-									<span
-										className="text-[11px]"
-										style={{
-											fontFamily: "'JetBrains Mono', monospace",
-											color: themeConfig.descColor,
-										}}
-									>
-										{PLACEHOLDER.TEXT_INPUT}
-									</span>
-								</div>
-							) : activeQuestion.questionType === "STAR_RATING" ? (
-								{/* Star rating preview */}
-								<div className="flex items-center gap-2">
-										{Array.from({ length: Math.max(5, activeQuestion.options.length || 5) }).map((_, i) => (
-											<button
-											key={`star-${i}`}
-											type="button"
-											className="p-1"
-											aria-label={`star-${i + 1}`}
-											>
-											<StarIcon size={20} className="text-yellow-400" />
-											</button>
-										))}
-								</div>
-							) : activeQuestion.questionType === "NUMBER_RATING" ? (
-								{/* Number rating preview */}
-								<div className="flex items-center gap-2">
-										{(activeQuestion.options.length > 0 ? activeQuestion.options : Array.from({ length: 10 }, (_, i) => ({ order: i + 1, content: String(i + 1) }))).map((opt, idx) => (
-											<button
-											key={`num-${idx}`}
-											type="button"
-											className="px-3 py-1 border rounded-full text-[11px]"
-											>
-											{opt.content}
-											</button>
-										))}
-								</div>
-							) : activeQuestion.questionType === "YES_NO" ? (
-								{/* Yes/No preview */}
-								<div className="flex items-center gap-2">
-										<button type="button" className="px-4 py-1 border rounded text-[11px]">
-											Тийм
-										</button>
-										<button type="button" className="px-4 py-1 border rounded text-[11px]">
-											Үгүй
-										</button>
-								</div>
-							) : activeQuestion.questionType === "DROPDOWN" ? (
-								{/* Dropdown preview */}
-								<select className="w-full h-10 border-2" style={{ background: themeConfig.inputBg }}>
-										{(activeQuestion.options.length > 0 ? activeQuestion.options : [{ order: 1, content: PLACEHOLDER.OPTION }]).map((opt, idx) => (
-											<option key={`opt-${idx}`}>{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}</option>
-										))}
-								</select>
-							) : (
-								<div className="space-y-3">
-										{activeQuestion.options.length > 0
-											? activeQuestion.options.map((opt, idx) => (
-												<div
-												// biome-ignore lint/suspicious/noArrayIndexKey: option list
-												key={`option-${activeQuestion.id}-${idx}`}
-												className="h-10 flex items-center gap-3 px-3"
-												style={{
-														border: `2px solid ${themeConfig.optionBorder}`,
-														background: themeConfig.inputBg,
-												}}
-												>
-												<OptionIndicator
-														questionType={activeQuestion.questionType}
-												/>
-												<span
-														className="text-[11px]"
-														style={{
-															fontFamily: "'JetBrains Mono', monospace",
-															color: themeConfig.descColor,
-														}}
-												>
-														{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}
-												</span>
-												{opt.point > 0 && (
-														<span
-															className="ml-auto text-[9px]"
-															style={{
-																fontFamily: "'JetBrains Mono', monospace",
-																color: themeConfig.descColor,
-															}}
-														>
-															{opt.point} {PREVIEW.POINTS_SUFFIX}
-														</span>
-												)}
-												</div>
-											))
-										: Array.from({ length: 3 }, (_, idx) => (
-												<div
-												// biome-ignore lint/suspicious/noArrayIndexKey: empty slot list
-												key={`empty-${idx}`}
-												className="h-10 flex items-center gap-3 px-3"
-												style={{
-														border: `2px solid ${themeConfig.optionBorder}`,
-														background: themeConfig.inputBg,
-												}}
-												>
-												<OptionIndicator
-														questionType={activeQuestion.questionType}
-												/>
-												<span
-														className="text-[11px]"
-														style={{
-															fontFamily: "'JetBrains Mono', monospace",
-															color: themeConfig.descColor,
-														}}
-												>
-														{PLACEHOLDER.OPTION} {idx + 1}
-												</span>
-												</div>
-											))}
-								</div>
-							)
-							</div>
-					)}
-
+					{questionPreview}
+					</div>
+			)}
 					{activeSection === "ending" && !activeQuestionId && (
 						<div
 							className="flex flex-col items-center justify-between w-full h-full p-10"
