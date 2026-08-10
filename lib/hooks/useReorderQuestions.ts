@@ -198,7 +198,9 @@ export function useReorderQuestions({
 	});
 
 	const reverseCategory = useCallback(
-		(category: QuestionCategory): Record<QuestionCategory, ReorderableQuestion[]> | null => {
+		(
+			category: QuestionCategory,
+		): Record<QuestionCategory, ReorderableQuestion[]> | null => {
 			let result: Record<QuestionCategory, ReorderableQuestion[]> | null = null;
 			setItems((prev) => {
 				const reversed = [...prev[category]].reverse();

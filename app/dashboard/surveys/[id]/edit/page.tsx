@@ -29,11 +29,13 @@ const SettingsModal = lazy(
 	() => import("@/components/surveys/editor/SettingsModal"),
 );
 
+import { useQueryClient } from "@tanstack/react-query";
 import type {
 	CreateQuestionPayload,
 	SurveyDetail,
 	SurveyQuestion,
 } from "@/lib/api";
+import { createQuestion, deleteQuestion, updateSurveyPage } from "@/lib/api";
 import { BUTTON, DEFAULT, TOAST } from "@/lib/helptext";
 import { useCreateQuestion } from "@/lib/hooks/useCreateQuestion";
 import { useDeleteQuestion } from "@/lib/hooks/useDeleteQuestion";
@@ -41,8 +43,6 @@ import { usePublishSurvey } from "@/lib/hooks/usePublishSurvey";
 import { useSurveyDetail } from "@/lib/hooks/useSurveyDetail";
 import { useUpdateSurveyPage } from "@/lib/hooks/useUpdateSurveyPage";
 import { type ThemeName, themes } from "@/lib/theme";
-import { useQueryClient } from "@tanstack/react-query";
-import { createQuestion, deleteQuestion, updateSurveyPage } from "@/lib/api";
 
 function mapQuestion(q: SurveyQuestion): QuestionItem {
 	return {
@@ -647,7 +647,6 @@ export default function SurveyEditPage() {
 
 		toast.loading(TOAST.SAVE_LOADING, { id: "save-survey" });
 
-
 		try {
 			// update pages (call API directly to avoid per-mutation invalidations)
 			const pageCalls: Promise<unknown>[] = [];
@@ -715,7 +714,9 @@ export default function SurveyEditPage() {
 
 				const delRes = await deleteQuestion(surveyId, { id: q.id });
 				if (!delRes.success) {
-					throw new Error(`Failed to delete placeholder question: ${delRes.error || "Unknown"}`);
+					throw new Error(
+						`Failed to delete placeholder question: ${delRes.error || "Unknown"}`,
+					);
 				}
 			}
 
