@@ -740,9 +740,8 @@ export default function SurveyEditPage() {
 		effectiveButtonText,
 		effectiveEndingTitle,
 		effectiveEndingDescription,
-		updatePageMutation,
-		createQuestionMutation,
-		deleteQuestionMutation,
+		surveyId,
+		queryClient,
 		localSaving,
 	]);
 
