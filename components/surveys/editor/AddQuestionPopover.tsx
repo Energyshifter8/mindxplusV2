@@ -185,6 +185,7 @@ export default function AddQuestionPopover({
 			ref={popoverRef}
 			className="fixed z-[100] w-72 max-h-[80vh] overflow-y-auto border-2 border-border bg-card shadow-lg"
 			style={{ top: popoverPos.top, left: popoverPos.left }}
+			onPointerDown={(e) => e.stopPropagation()}
 		>
 			{/* Асуултын төрөл */}
 			<div className="p-3">

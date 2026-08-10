@@ -168,6 +168,7 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 									ref={addBtnRef}
 									type="button"
 									onClick={handleAddClick}
+									onPointerDown={(e) => e.stopPropagation()}
 									className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-primary transition-colors"
 									title={SIDEBAR.ADD_QUESTION}
 								>
