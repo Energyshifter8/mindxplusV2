@@ -1,6 +1,6 @@
 "use client";
 
-import { Play } from "lucide-react";
+import { Mail, Play } from "lucide-react";
 import { PLACEHOLDER, PREVIEW } from "@/lib/helptext";
 import { getThemeColors, type ThemeName } from "@/lib/theme";
 import type { QuestionItem, SectionType } from "./EditorSidebar";
@@ -225,26 +225,120 @@ export default function EditorPreview({
 					)}
 
 					{activeSection === "ending" && !activeQuestionId && (
-						<>
-							<h2
-								className="text-3xl font-black uppercase mb-4 leading-tight"
-								style={{
-									fontFamily: "'Barlow Condensed', sans-serif",
-									color: themeConfig.txtColor,
-								}}
-							>
-								{endingTitle || PLACEHOLDER.ENDING_TITLE}
-							</h2>
-							<p
-								className="text-xs max-w-md leading-relaxed"
-								style={{
-									fontFamily: "'JetBrains Mono', monospace",
-									color: themeConfig.descColor,
-								}}
-							>
-								{endingDescription || PLACEHOLDER.ENDING_DESCRIPTION}
-							</p>
-						</>
+						<div
+							className="flex flex-col items-center justify-between w-full min-h-full p-10"
+							style={{ background: "#f5f5e8" }}
+						>
+							<div className="flex-1 flex flex-col items-center justify-center w-full">
+								<h2
+									className="text-3xl font-black uppercase mb-3 leading-tight"
+									style={{
+										fontFamily: "'Barlow Condensed', sans-serif",
+										color: "#1a1f36",
+									}}
+								>
+									{endingTitle || PLACEHOLDER.ENDING_TITLE}
+								</h2>
+								<p
+									className="text-sm mb-8 max-w-md leading-relaxed"
+									style={{
+										fontFamily: "'JetBrains Mono', monospace",
+										color: "#6b7280",
+									}}
+								>
+									{endingDescription || PLACEHOLDER.ENDING_DESCRIPTION}
+								</p>
+
+								{/* Email collection block */}
+								<div className="flex flex-col items-center gap-3">
+									<span
+										className="text-[10px] uppercase tracking-widest"
+										style={{
+											fontFamily: "'JetBrains Mono', monospace",
+											color: "#6b7280",
+										}}
+									>
+										Имэйлээр үр дүнгээ хүлээн авах
+									</span>
+									<div className="flex items-center gap-2">
+										<input
+											type="email"
+											placeholder="Имэйл"
+											readOnly
+											className="h-10 px-4 text-[11px] w-56 border border-gray-300 bg-white outline-none"
+											style={{
+												fontFamily: "'JetBrains Mono', monospace",
+												borderRadius: "20px",
+												color: "#1a1f36",
+											}}
+										/>
+										<button
+											type="button"
+											className="h-10 px-5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-white transition-colors"
+											style={{
+												fontFamily: "'JetBrains Mono', monospace",
+												background: "#1a1f36",
+												borderRadius: "20px",
+											}}
+										>
+											<Mail size={14} />
+											Хариу авах
+										</button>
+									</div>
+								</div>
+							</div>
+
+							{/* mindX+ logo footer */}
+							<div className="flex items-center justify-center pb-4 pt-8">
+								<svg
+									width="160"
+									height="44"
+									viewBox="0 0 160 44"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+									aria-label="mindX+ logo"
+								>
+									{/* mindX text */}
+									<text
+										x="0"
+										y="30"
+										fontFamily="'Barlow Condensed', sans-serif"
+										fontWeight="900"
+										fontSize="28"
+										fill="#1a1f36"
+										letterSpacing="-0.5"
+									>
+										mind
+									</text>
+									{/* X with 4 colored dots */}
+									<text
+										x="68"
+										y="30"
+										fontFamily="'Barlow Condensed', sans-serif"
+										fontWeight="900"
+										fontSize="28"
+										fill="#1a1f36"
+									>
+										X
+									</text>
+									<circle cx="63" cy="14" r="3.5" fill="#e53e3e" />
+									<circle cx="81" cy="14" r="3.5" fill="#dd6b20" />
+									<circle cx="63" cy="30" r="3.5" fill="#3182ce" />
+									<circle cx="81" cy="30" r="3.5" fill="#38a169" />
+									{/* + sign */}
+									<text
+										x="90"
+										y="30"
+										fontFamily="'Barlow Condensed', sans-serif"
+										fontWeight="700"
+										fontSize="24"
+										fill="#1a1f36"
+									>
+										+
+									</text>
+								</svg>
+							</div>
+						</div>
 					)}
 				</div>
 			</div>
