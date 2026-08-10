@@ -3,11 +3,13 @@
 import { useQuery } from "@tanstack/react-query";
 import {
 	BarChart3,
+	Copy,
 	LayoutGrid,
 	List,
 	Pencil,
 	Plus,
 	Search,
+	Share2,
 	Trash2,
 	Users,
 	Zap,
@@ -21,6 +23,7 @@ import {
 	RecruitmentStatusBadge,
 	TableSkeleton,
 } from "@/components/shared/ListComponents";
+import { KebabMenu, type KebabMenuItem } from "@/components/shared/KebabMenu";
 import {
 	getRecruitmentList,
 	getRecruitmentStats,
@@ -47,6 +50,58 @@ function formatDate(dateStr: string): string {
 		month: "2-digit",
 		day: "2-digit",
 	});
+}
+
+function getRecruitmentKebabItems(
+	row: RecruitmentListItem,
+	router: ReturnType<typeof useRouter>,
+): KebabMenuItem[] {
+	const items: KebabMenuItem[] = [];
+
+	if (row.status === "DRAFT") {
+		items.push({
+			label: "Засах",
+			icon: <Pencil size={11} />,
+			onClick: () => router.push(`/dashboard/recruitments/${row.id}/edit`),
+		});
+		items.push({
+			label: "Хуулах",
+			icon: <Copy size={11} />,
+			onClick: () => {},
+		});
+		items.push({
+			label: "Устгах",
+			icon: <Trash2 size={11} />,
+			onClick: () => {
+				if (window.confirm("Энэ үнэлгээг устгах уу?")) {
+					// TODO: implement delete mutation
+				}
+			},
+			variant: "destructive",
+		});
+	} else if (row.status === "PUBLISHED") {
+		items.push({
+			label: "Түгээх",
+			icon: <Share2 size={11} />,
+			onClick: () => {},
+		});
+		items.push({
+			label: "Үр дүн",
+			icon: <BarChart3 size={11} />,
+			onClick: () =>
+				router.push(`/dashboard/recruitments/${row.id}/results`),
+		});
+	} else {
+		// CLOSED, COMPLETED
+		items.push({
+			label: "Үр дүн",
+			icon: <BarChart3 size={11} />,
+			onClick: () =>
+				router.push(`/dashboard/recruitments/${row.id}/results`),
+		});
+	}
+
+	return items;
 }
 
 type FilterTab = "ALL" | "DRAFT" | "PUBLISHED" | "CLOSED" | "COMPLETED";
@@ -354,6 +409,9 @@ export default function RecruitmentsPage() {
 															Үр дүн
 														</button>
 													)}
+													<KebabMenu
+														items={getRecruitmentKebabItems(row, router)}
+													/>
 												</div>
 											</td>
 										</tr>
@@ -461,6 +519,9 @@ export default function RecruitmentsPage() {
 													Үр дүн
 												</button>
 											)}
+											<KebabMenu
+												items={getRecruitmentKebabItems(row, router)}
+											/>
 										</div>
 									</div>
 								</div>

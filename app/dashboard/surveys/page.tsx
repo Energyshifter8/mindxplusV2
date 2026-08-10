@@ -3,12 +3,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	BarChart3,
+	Copy,
 	FileText,
 	LayoutGrid,
 	List,
 	Pencil,
 	Plus,
 	Search,
+	Share2,
 	Trash2,
 	Zap,
 } from "lucide-react";
@@ -21,6 +23,7 @@ import {
 	SurveyStatusBadge,
 	TableSkeleton,
 } from "@/components/shared/ListComponents";
+import { KebabMenu, type KebabMenuItem } from "@/components/shared/KebabMenu";
 import {
 	deleteSurvey,
 	getSurveyList,
@@ -41,6 +44,61 @@ function formatDate(dateStr: string): string {
 }
 
 type FilterTab = "ALL" | "CREATED" | "PUBLISHED" | "CLOSED";
+
+function getSurveyKebabItems(
+	row: { id: string; status: string; name: string },
+	router: ReturnType<typeof useRouter>,
+): KebabMenuItem[] {
+	const items: KebabMenuItem[] = [];
+
+	if (row.status === "CREATED") {
+		items.push({
+			label: "Засах",
+			icon: <Pencil size={11} />,
+			onClick: () => router.push(`/dashboard/surveys/${row.id}/edit`),
+		});
+		items.push({
+			label: "Хуулах",
+			icon: <Copy size={11} />,
+			onClick: () => {},
+		});
+		items.push({
+			label: "Устгах",
+			icon: <Trash2 size={11} />,
+			onClick: () => {
+				if (window.confirm("Энэ шинжилгээг устгах уу?")) {
+					// TODO: use deleteMutation
+				}
+			},
+			variant: "destructive",
+		});
+	} else if (row.status === "PUBLISHED") {
+		items.push({
+			label: "Түгээх",
+			icon: <Share2 size={11} />,
+			onClick: () => {},
+		});
+		items.push({
+			label: "Засах",
+			icon: <Pencil size={11} />,
+			onClick: () => router.push(`/dashboard/surveys/${row.id}/edit`),
+		});
+		items.push({
+			label: "Үр дүн",
+			icon: <BarChart3 size={11} />,
+			onClick: () => router.push(`/dashboard/surveys/${row.id}/results`),
+		});
+	} else {
+		// CLOSED
+		items.push({
+			label: "Үр дүн",
+			icon: <BarChart3 size={11} />,
+			onClick: () => router.push(`/dashboard/surveys/${row.id}/results`),
+		});
+	}
+
+	return items;
+}
 
 const FILTER_TABS: { key: FilterTab; label: string }[] = [
 	{ key: "ALL", label: "Бүгд" },
@@ -386,6 +444,9 @@ export default function SurveysPage() {
 															</button>
 														</>
 													)}
+													<KebabMenu
+														items={getSurveyKebabItems(row, router)}
+													/>
 												</div>
 											</td>
 										</tr>
@@ -516,6 +577,9 @@ export default function SurveysPage() {
 													</button>
 												</>
 											)}
+											<KebabMenu
+												items={getSurveyKebabItems(row, router)}
+											/>
 										</div>
 									</div>
 								</div>
