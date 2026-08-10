@@ -41,6 +41,8 @@ import { usePublishSurvey } from "@/lib/hooks/usePublishSurvey";
 import { useSurveyDetail } from "@/lib/hooks/useSurveyDetail";
 import { useUpdateSurveyPage } from "@/lib/hooks/useUpdateSurveyPage";
 import { type ThemeName, themes } from "@/lib/theme";
+import { useQueryClient } from "@tanstack/react-query";
+import { createQuestion, deleteQuestion, updateSurveyPage } from "@/lib/api";
 
 function mapQuestion(q: SurveyQuestion): QuestionItem {
 	return {
@@ -266,6 +268,8 @@ export default function SurveyEditPage() {
 	const deleteQuestionMutation = useDeleteQuestion({
 		surveyId,
 	});
+
+	const queryClient = useQueryClient();
 
 	const publishMutation = usePublishSurvey({
 		surveyId,
@@ -643,12 +647,14 @@ export default function SurveyEditPage() {
 
 		toast.loading(TOAST.SAVE_LOADING, { id: "save-survey" });
 
+
 		try {
-			const pageMutations: Promise<unknown>[] = [];
+			// update pages (call API directly to avoid per-mutation invalidations)
+			const pageCalls: Promise<unknown>[] = [];
 
 			if (startPage) {
-				pageMutations.push(
-					updatePageMutation.mutateAsync({
+				pageCalls.push(
+					updateSurveyPage(surveyId, {
 						id: startPage.id,
 						qnSection: startPage.qnSection,
 						pageType: startPage.pageType,
@@ -661,8 +667,8 @@ export default function SurveyEditPage() {
 			}
 
 			if (endPage) {
-				pageMutations.push(
-					updatePageMutation.mutateAsync({
+				pageCalls.push(
+					updateSurveyPage(surveyId, {
 						id: endPage.id,
 						qnSection: endPage.qnSection,
 						pageType: endPage.pageType,
@@ -673,9 +679,9 @@ export default function SurveyEditPage() {
 				);
 			}
 
-			await Promise.all(pageMutations);
+			await Promise.all(pageCalls);
 
-			// Save questions sequentially to avoid race conditions
+			// Save questions sequentially to avoid race conditions. Call API directly so we don't invalidate on every op.
 			for (const q of questions) {
 				if (q.section === "PRIMARY_QUESTION") continue;
 
@@ -700,14 +706,21 @@ export default function SurveyEditPage() {
 					matrixRows: [],
 				};
 
-				const createResult = await createQuestionMutation.mutateAsync(payload);
+				const createResult = await createQuestion(surveyId, payload);
 				if (!createResult.success) {
 					throw new Error(
 						`Failed to save question: ${createResult.error || "Unknown error"}`,
 					);
 				}
-				await deleteQuestionMutation.mutateAsync({ id: q.id });
+
+				const delRes = await deleteQuestion(surveyId, { id: q.id });
+				if (!delRes.success) {
+					throw new Error(`Failed to delete placeholder question: ${delRes.error || "Unknown"}`);
+				}
 			}
+
+			// invalidate once at end
+			queryClient.invalidateQueries({ queryKey: ["surveyDetail", surveyId] });
 
 			toast.dismiss("save-survey");
 			toast.success(TOAST.SAVE_SUCCESS);
