@@ -492,6 +492,7 @@ export interface SurveyDetail {
 	};
 	customQuestions: {
 		CUSTOM_QUESTION_FIRST: SurveyQuestion[];
+		CUSTOM_QUESTION_LAST?: SurveyQuestion[];
 	};
 	design: SurveyDesign;
 	templateQuestions: SurveyQuestion[];

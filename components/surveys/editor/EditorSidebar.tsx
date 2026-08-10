@@ -1,16 +1,7 @@
 "use client";
 
 import { type AutoLayout, createLayout } from "animejs";
-import {
-	ArrowDown,
-	ArrowUp,
-	ChevronDown,
-	ChevronRight,
-	Flag,
-	Home,
-	Plus,
-	Trash2,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, Flag, Home, Plus } from "lucide-react";
 import {
 	forwardRef,
 	useImperativeHandle,
@@ -21,6 +12,7 @@ import {
 import type { CreateQuestionPayload } from "@/lib/api";
 import { PLACEHOLDER, SIDEBAR } from "@/lib/helptext";
 import AddQuestionPopover from "./AddQuestionPopover";
+import DndQuestionList from "./DndQuestionList";
 
 export type SectionType = "homepage" | "question" | "ending";
 
@@ -48,13 +40,22 @@ export interface EditorSidebarHandle {
 	animatePositions: () => void;
 }
 
+type QuestionCategory = "CUSTOM_QUESTION_FIRST" | "CUSTOM_QUESTION_LAST";
+
 interface EditorSidebarProps {
 	activeSection: SectionType;
 	activeQuestionId: string | null;
 	questions: QuestionItem[];
 	onSectionSelect: (section: SectionType, questionId?: string) => void;
 	onDeleteQuestion?: (questionId: string) => void;
-	onSwapQuestion?: (questionId: string, direction: "up" | "down") => void;
+	onReorderQuestions?: (
+		activeId: string,
+		overId: string,
+		activeCategory: QuestionCategory,
+		overCategory: QuestionCategory,
+		activeIndex: number,
+		overIndex: number,
+	) => void;
 	onCreateQuestion: (payload: CreateQuestionPayload) => Promise<unknown>;
 }
 
@@ -66,7 +67,7 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 			questions,
 			onSectionSelect,
 			onDeleteQuestion,
-			onSwapQuestion,
+			onReorderQuestions,
 			onCreateQuestion,
 		},
 		ref,
@@ -154,7 +155,12 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 							>
 								Асуултууд
 							</span>
-
+							<span
+								className="inline-flex h-4 min-w-[1.5rem] items-center justify-center border border-border bg-muted px-1.5 text-[8px] font-bold tabular-nums text-muted-foreground"
+								style={{ fontFamily: "'JetBrains Mono', monospace" }}
+							>
+								{regularQuestions.length}
+							</span>
 						</div>
 						<div className="flex items-center gap-1">
 							<div className="relative">
@@ -178,70 +184,43 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 						</div>
 					</div>
 
-					<div ref={questionsContainerRef} className="space-y-0.5">
-						{regularQuestions.map((q, index) => (
-							<div key={q.id} className="group relative">
-								<button
-									type="button"
-									onClick={() => onSectionSelect("question", q.id)}
-									className={`w-full flex items-center gap-2.5 px-2 py-2 text-left text-xs transition-colors ${
-										activeSection === "question" && activeQuestionId === q.id
-											? "bg-primary/10 text-primary border-l-2 border-primary"
-											: "text-foreground/80 hover:bg-muted border-l-2 border-transparent"
-									}`}
-									style={{ fontFamily: "'JetBrains Mono', monospace" }}
-								>
-									<span className="text-[11px] text-muted-foreground w-4 text-center shrink-0 tabular-nums">
-										{index + 1}.
-									</span>
-									<span className="truncate">
-										{q.title || PLACEHOLDER.QUESTION_TITLE}
-									</span>
-								</button>
-								<div className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
-									{onSwapQuestion && index > 0 && (
+					<div ref={questionsContainerRef}>
+						{onReorderQuestions ? (
+							<DndQuestionList
+								questions={regularQuestions}
+								activeQuestionId={activeQuestionId}
+								onSectionSelect={(section, questionId) =>
+									onSectionSelect(section, questionId)
+								}
+								onDeleteQuestion={onDeleteQuestion}
+								onReorder={onReorderQuestions}
+							/>
+						) : (
+							<div className="space-y-0.5">
+								{regularQuestions.map((q, index) => (
+									<div key={q.id} className="group relative">
 										<button
 											type="button"
-											onClick={(e) => {
-												e.stopPropagation();
-												onSwapQuestion(q.id, "up");
-											}}
-											className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-foreground"
-											title="Дээшлүүлэх"
+											onClick={() => onSectionSelect("question", q.id)}
+											className={`w-full flex items-center gap-2.5 px-2 py-2 text-left text-xs transition-colors ${
+												activeSection === "question" &&
+												activeQuestionId === q.id
+													? "bg-primary/10 text-primary border-l-2 border-primary"
+													: "text-foreground/80 hover:bg-muted border-l-2 border-transparent"
+											}`}
+											style={{ fontFamily: "'JetBrains Mono', monospace" }}
 										>
-											<ArrowUp size={11} />
+											<span className="text-[11px] text-muted-foreground w-4 text-center shrink-0 tabular-nums">
+												{index + 1}.
+											</span>
+											<span className="truncate">
+												{q.title || PLACEHOLDER.QUESTION_TITLE}
+											</span>
 										</button>
-									)}
-									{onSwapQuestion && index < regularQuestions.length - 1 && (
-										<button
-											type="button"
-											onClick={(e) => {
-												e.stopPropagation();
-												onSwapQuestion(q.id, "down");
-											}}
-											className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-foreground"
-											title="Доошлуулх"
-										>
-											<ArrowDown size={11} />
-										</button>
-									)}
-									{onDeleteQuestion && (
-										<button
-											type="button"
-											onClick={(e) => {
-												e.stopPropagation();
-												if (window.confirm("Устгах уу?")) {
-													onDeleteQuestion(q.id);
-												}
-											}}
-											className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-destructive"
-										>
-											<Trash2 size={11} />
-										</button>
-									)}
-								</div>
+									</div>
+								))}
 							</div>
-						))}
+						)}
 					</div>
 
 					{/* Үндсэн асуултууд */}

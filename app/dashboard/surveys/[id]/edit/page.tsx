@@ -195,11 +195,20 @@ export default function SurveyEditPage() {
 
 	useEffect(() => {
 		if (!surveyData) return;
-		const customQuestions =
+		const customFirstQuestions =
 			surveyData.customQuestions?.CUSTOM_QUESTION_FIRST ?? [];
+		const customLastQuestions =
+			surveyData.customQuestions?.CUSTOM_QUESTION_LAST ?? [];
 		const templateQuestions = surveyData.templateQuestions ?? [];
 		const merged = [
-			...customQuestions.map(mapQuestion),
+			...customFirstQuestions.map((q) => ({
+				...mapQuestion(q),
+				section: "CUSTOM_QUESTION_FIRST" as const,
+			})),
+			...customLastQuestions.map((q) => ({
+				...mapQuestion(q),
+				section: "CUSTOM_QUESTION_LAST" as const,
+			})),
 			...templateQuestions.map((q) => ({
 				...mapQuestion(q),
 				section: "PRIMARY_QUESTION" as const,
@@ -473,7 +482,7 @@ export default function SurveyEditPage() {
 		[],
 	);
 
-	const handleSwapQuestion = useCallback(
+	const _handleSwapQuestion = useCallback(
 		(questionId: string, direction: "up" | "down") => {
 			if (isAnimatingRef.current) return;
 			isAnimatingRef.current = true;
@@ -497,6 +506,82 @@ export default function SurveyEditPage() {
 			setTimeout(() => {
 				isAnimatingRef.current = false;
 			}, 400);
+		},
+		[],
+	);
+
+	type ReorderCategory = "CUSTOM_QUESTION_FIRST" | "CUSTOM_QUESTION_LAST";
+
+	const handleReorderQuestions = useCallback(
+		(
+			_activeId: string,
+			_overId: string,
+			activeCategory: ReorderCategory,
+			overCategory: ReorderCategory,
+			activeIndex: number,
+			overIndex: number,
+		) => {
+			setIsDirty(true);
+			setQuestions((prev) => {
+				const activeQuestions = prev.filter(
+					(q) => q.section === activeCategory,
+				);
+				const otherQuestions = prev.filter(
+					(q) => q.section !== activeCategory && q.section !== overCategory,
+				);
+				const overQuestions =
+					activeCategory === overCategory
+						? activeQuestions
+						: prev.filter((q) => q.section === overCategory);
+
+				if (activeCategory === overCategory) {
+					const reordered = [...activeQuestions];
+					const [moved] = reordered.splice(activeIndex, 1);
+					reordered.splice(overIndex, 0, moved);
+					return [
+						...otherQuestions,
+						...reordered.map((q, _i) => ({
+							...q,
+							options: (q.options ?? []).map((opt, optIdx) => ({
+								...opt,
+								order: optIdx + 1,
+							})),
+						})),
+					];
+				}
+
+				const movedItem = {
+					...activeQuestions[activeIndex],
+					section: overCategory,
+				};
+				const newActive = [
+					...activeQuestions.slice(0, activeIndex),
+					...activeQuestions.slice(activeIndex + 1),
+				];
+				const newOver = [
+					...overQuestions.slice(0, overIndex),
+					movedItem,
+					...overQuestions.slice(overIndex),
+				];
+
+				return [
+					...otherQuestions,
+					...newActive.map((q, _i) => ({
+						...q,
+						options: (q.options ?? []).map((opt, optIdx) => ({
+							...opt,
+							order: optIdx + 1,
+						})),
+					})),
+					...newOver.map((q, _i) => ({
+						...q,
+						options: (q.options ?? []).map((opt, optIdx) => ({
+							...opt,
+							order: optIdx + 1,
+						})),
+					})),
+				];
+			});
 		},
 		[],
 	);
@@ -705,7 +790,7 @@ export default function SurveyEditPage() {
 					questions={questions}
 					onSectionSelect={handleSectionSelect}
 					onDeleteQuestion={handleDeleteQuestion}
-					onSwapQuestion={handleSwapQuestion}
+					onReorderQuestions={handleReorderQuestions}
 					onCreateQuestion={handleCreateQuestionFromPopover}
 				/>
 				<EditorPreview
