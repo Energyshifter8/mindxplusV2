@@ -189,6 +189,8 @@ export default function SurveyEditPage() {
 
 	const [questions, setQuestions] = useState<QuestionItem[]>([]);
 	const [isDirty, setIsDirty] = useState(false);
+	// local flag to prevent duplicate save requests from rapid clicks
+	const [localSaving, setLocalSaving] = useState(false);
 
 	const sidebarRef = useRef<EditorSidebarHandle>(null);
 	const isAnimatingRef = useRef(false);
@@ -625,12 +627,16 @@ export default function SurveyEditPage() {
 	);
 
 	const handleSave = useCallback(async () => {
+		if (localSaving) return; // prevent duplicate saves
+		setLocalSaving(true);
+
 		// Validate
 		const hasEmptyTitle = questions.some((q) => !q.title.trim());
 		const hasEmptyOption = questions.some((q) =>
 			q.options.some((opt) => !opt.content.trim()),
 		);
 		if (hasEmptyTitle || hasEmptyOption) {
+			setLocalSaving(false);
 			toast.error(TOAST.VALIDATION_ERROR);
 			return;
 		}
@@ -709,6 +715,8 @@ export default function SurveyEditPage() {
 		} catch (error) {
 			toast.dismiss("save-survey");
 			toast.error(error instanceof Error ? error.message : TOAST.SAVE_ERROR);
+		} finally {
+			setLocalSaving(false);
 		}
 	}, [
 		questions,
@@ -722,6 +730,7 @@ export default function SurveyEditPage() {
 		updatePageMutation,
 		createQuestionMutation,
 		deleteQuestionMutation,
+		localSaving,
 	]);
 
 	const handlePublishClick = useCallback(() => {
@@ -776,6 +785,7 @@ export default function SurveyEditPage() {
 				onDesignClick={() => setShowDesignModal(true)}
 				onSettingsClick={() => setShowSettingsModal(true)}
 				isSaving={
+					localSaving ||
 					updatePageMutation.isPending ||
 					createQuestionMutation.isPending ||
 					deleteQuestionMutation.isPending
