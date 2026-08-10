@@ -1,6 +1,6 @@
 // Toast messages
 export const TOAST = {
-	SAVE_LOADING: "Хадгаж байна...",
+	SAVE_LOADING: "Хадгалж байна...", 
 	SAVE_SUCCESS: "Хадгалагдлаа",
 	SAVE_ERROR: "Хадгалахад алдаа гарлаа",
 	PUBLISH_LOADING: "Нийтэлж байна...",
