@@ -107,8 +107,8 @@ export default function Sidebar({ warningMessage, user }: SidebarProps) {
 	return (
 		<aside className="flex h-screen w-[272px] flex-col border-r-2 border-border bg-card text-foreground">
 			{/* Workspace / Logo */}
-			<div className="flex items-center gap-2.5 px-5 py-5">
-				<MindXLogo size="sm" />
+			<div className="flex items-center px-5 py-4">
+				<MindXLogo size="md" />
 			</div>
 
 			{/* Navigation sections */}
