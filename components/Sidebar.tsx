@@ -5,7 +5,6 @@ import {
 	ChevronDown,
 	FilePlus,
 	Home,
-	LayoutGrid,
 	ListChecks,
 	Moon,
 	Sun,
@@ -16,6 +15,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
+import MindXLogo from "@/components/shared/MindXLogo";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -108,15 +108,7 @@ export default function Sidebar({ warningMessage, user }: SidebarProps) {
 		<aside className="flex h-screen w-[272px] flex-col border-r-2 border-border bg-card text-foreground">
 			{/* Workspace / Logo */}
 			<div className="flex items-center gap-2.5 px-5 py-5">
-				<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-					<LayoutGrid size={16} />
-				</div>
-				<span
-					className="text-sm font-bold uppercase tracking-wider text-foreground"
-					style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
-				>
-					MindX Plus
-				</span>
+				<MindXLogo size="sm" />
 			</div>
 
 			{/* Navigation sections */}

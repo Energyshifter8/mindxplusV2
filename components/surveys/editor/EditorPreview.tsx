@@ -3,6 +3,7 @@
 import { Mail, Play } from "lucide-react";
 import { PLACEHOLDER, PREVIEW } from "@/lib/helptext";
 import { getThemeColors, type ThemeName } from "@/lib/theme";
+import MindXLogo from "@/components/shared/MindXLogo";
 import type { QuestionItem, SectionType } from "./EditorSidebar";
 
 type PreviewDevice = "desktop" | "tablet" | "mobile";
@@ -69,38 +70,48 @@ export default function EditorPreview({
 				{/* Preview content */}
 				<div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
 					{activeSection === "homepage" && !activeQuestionId && (
-						<>
-							<h2
-								className="text-3xl font-black uppercase mb-4 leading-tight"
-								style={{
-									fontFamily: "'Barlow Condensed', sans-serif",
-									color: themeConfig.txtColor,
-								}}
-							>
-								{title || PLACEHOLDER.SURVEY_NAME}
-							</h2>
-							<p
-								className="text-xs mb-8 max-w-md leading-relaxed"
-								style={{
-									fontFamily: "'JetBrains Mono', monospace",
-									color: themeConfig.descColor,
-								}}
-							>
-								{description || PLACEHOLDER.DESCRIPTION}
-							</p>
-							<button
-								type="button"
-								className="flex items-center gap-2 px-6 py-3 text-[11px] uppercase tracking-widest font-bold transition-colors"
-								style={{
-									fontFamily: "'JetBrains Mono', monospace",
-									background: themeConfig.btnBg,
-									color: themeConfig.btnTxt,
-								}}
-							>
-								<Play size={14} />
-								{buttonText || PLACEHOLDER.BUTTON_TEXT}
-							</button>
-						</>
+						<div
+							className="flex flex-col items-center justify-between w-full min-h-full p-10"
+							style={{ background: "#f5f5e8" }}
+						>
+							<div className="flex-1 flex flex-col items-center justify-center w-full">
+								<h2
+									className="text-3xl font-black uppercase mb-3 leading-tight"
+									style={{
+										fontFamily: "'Barlow Condensed', sans-serif",
+										color: "#1a1f36",
+									}}
+								>
+									{title || PLACEHOLDER.SURVEY_NAME}
+								</h2>
+								<p
+									className="text-sm mb-8 max-w-md leading-relaxed"
+									style={{
+										fontFamily: "'JetBrains Mono', monospace",
+										color: "#6b7280",
+									}}
+								>
+									{description || PLACEHOLDER.DESCRIPTION}
+								</p>
+								<button
+									type="button"
+									className="h-10 px-6 flex items-center gap-2 text-[11px] uppercase tracking-widest font-bold text-white transition-colors"
+									style={{
+										fontFamily: "'JetBrains Mono', monospace",
+										background: "#1a1f36",
+										borderRadius: "20px",
+									}}
+								>
+									<Play size={14} />
+									{buttonText || PLACEHOLDER.BUTTON_TEXT}
+								</button>
+							</div>
+
+							{/* mindX+ logo footer */}
+							<div className="flex items-center justify-center pb-4 pt-8">
+								<MindXLogo size="lg" />
+							</div>
+						</div>
 					)}
 
 					{activeSection === "question" && activeQuestion && (
@@ -290,53 +301,7 @@ export default function EditorPreview({
 
 							{/* mindX+ logo footer */}
 							<div className="flex items-center justify-center pb-4 pt-8">
-								<svg
-									width="160"
-									height="44"
-									viewBox="0 0 160 44"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-									aria-label="mindX+ logo"
-								>
-									{/* mindX text */}
-									<text
-										x="0"
-										y="30"
-										fontFamily="'Barlow Condensed', sans-serif"
-										fontWeight="900"
-										fontSize="28"
-										fill="#1a1f36"
-										letterSpacing="-0.5"
-									>
-										mind
-									</text>
-									{/* X with 4 colored dots */}
-									<text
-										x="68"
-										y="30"
-										fontFamily="'Barlow Condensed', sans-serif"
-										fontWeight="900"
-										fontSize="28"
-										fill="#1a1f36"
-									>
-										X
-									</text>
-									<circle cx="63" cy="14" r="3.5" fill="#e53e3e" />
-									<circle cx="81" cy="14" r="3.5" fill="#dd6b20" />
-									<circle cx="63" cy="30" r="3.5" fill="#3182ce" />
-									<circle cx="81" cy="30" r="3.5" fill="#38a169" />
-									{/* + sign */}
-									<text
-										x="90"
-										y="30"
-										fontFamily="'Barlow Condensed', sans-serif"
-										fontWeight="700"
-										fontSize="24"
-										fill="#1a1f36"
-									>
-										+
-									</text>
-								</svg>
+								<MindXLogo size="lg" />
 							</div>
 						</div>
 					)}
