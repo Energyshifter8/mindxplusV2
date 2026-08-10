@@ -6,7 +6,7 @@ interface MindXLogoProps {
 const sizeMap = {
 	sm: { text: "text-base", plus: "text-sm", dot: "w-1.5 h-1.5", gap: "gap-0.5" },
 	md: { text: "text-xl", plus: "text-lg", dot: "w-2 h-2", gap: "gap-1" },
-	lg: { text: "text-2xl", plus: "text-xl", dot: "w-2.5 h-2.5", gap: "gap-1.5" },
+	lg: { text: "text-[1.625rem]", plus: "text-2xl", dot: "w-2.5 h-2.5", gap: "gap-1.5" },
 } as const;
 
 export default function MindXLogo({ size = "md", color }: MindXLogoProps) {
