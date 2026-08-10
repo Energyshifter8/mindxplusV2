@@ -168,7 +168,7 @@ export default function EditorPreview({
 									</span>
 								</div>
 							) : activeQuestion.questionType === "STAR_RATING" ? (
-								// Star rating preview
+								{/* Star rating preview */}
 								<div className="flex items-center gap-2">
 										{Array.from({ length: Math.max(5, activeQuestion.options.length || 5) }).map((_, i) => (
 											<button
@@ -182,7 +182,7 @@ export default function EditorPreview({
 										))}
 								</div>
 							) : activeQuestion.questionType === "NUMBER_RATING" ? (
-								// Number rating preview
+								{/* Number rating preview */}
 								<div className="flex items-center gap-2">
 										{(activeQuestion.options.length > 0 ? activeQuestion.options : Array.from({ length: 10 }, (_, i) => ({ order: i + 1, content: String(i + 1) }))).map((opt, idx) => (
 											<button
@@ -195,7 +195,7 @@ export default function EditorPreview({
 										))}
 								</div>
 							) : activeQuestion.questionType === "YES_NO" ? (
-								// Yes/No preview
+								{/* Yes/No preview */}
 								<div className="flex items-center gap-2">
 										<button type="button" className="px-4 py-1 border rounded text-[11px]">
 											Тийм
@@ -205,7 +205,7 @@ export default function EditorPreview({
 										</button>
 								</div>
 							) : activeQuestion.questionType === "DROPDOWN" ? (
-								// Dropdown preview
+								{/* Dropdown preview */}
 								<select className="w-full h-10 border-2" style={{ background: themeConfig.inputBg }}>
 										{(activeQuestion.options.length > 0 ? activeQuestion.options : [{ order: 1, content: PLACEHOLDER.OPTION }]).map((opt, idx) => (
 											<option key={`opt-${idx}`}>{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}</option>
