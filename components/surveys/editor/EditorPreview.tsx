@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Play } from "lucide-react";
+import { Mail, Play, Star as StarIcon } from "lucide-react";
 import MindXLogo from "@/components/shared/MindXLogo";
 import { PLACEHOLDER, PREVIEW } from "@/lib/helptext";
 import { getThemeColors, type ThemeName } from "@/lib/theme";
@@ -167,32 +167,76 @@ export default function EditorPreview({
 										{PLACEHOLDER.TEXT_INPUT}
 									</span>
 								</div>
+							) : activeQuestion.questionType === "STAR_RATING" ? (
+								// Star rating preview
+								<div className="flex items-center gap-2">
+										{Array.from({ length: Math.max(5, activeQuestion.options.length || 5) }).map((_, i) => (
+											<button
+											key={`star-${i}`}
+											type="button"
+											className="p-1"
+											aria-label={`star-${i + 1}`}
+											>
+											<StarIcon size={20} className="text-yellow-400" />
+											</button>
+										))}
+								</div>
+							) : activeQuestion.questionType === "NUMBER_RATING" ? (
+								// Number rating preview
+								<div className="flex items-center gap-2">
+										{(activeQuestion.options.length > 0 ? activeQuestion.options : Array.from({ length: 10 }, (_, i) => ({ order: i + 1, content: String(i + 1) }))).map((opt, idx) => (
+											<button
+											key={`num-${idx}`}
+											type="button"
+											className="px-3 py-1 border rounded-full text-[11px]"
+											>
+											{opt.content}
+											</button>
+										))}
+								</div>
+							) : activeQuestion.questionType === "YES_NO" ? (
+								// Yes/No preview
+								<div className="flex items-center gap-2">
+										<button type="button" className="px-4 py-1 border rounded text-[11px]">
+											Тийм
+										</button>
+										<button type="button" className="px-4 py-1 border rounded text-[11px]">
+											Үгүй
+										</button>
+								</div>
+							) : activeQuestion.questionType === "DROPDOWN" ? (
+								// Dropdown preview
+								<select className="w-full h-10 border-2" style={{ background: themeConfig.inputBg }}>
+										{(activeQuestion.options.length > 0 ? activeQuestion.options : [{ order: 1, content: PLACEHOLDER.OPTION }]).map((opt, idx) => (
+											<option key={`opt-${idx}`}>{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}</option>
+										))}
+								</select>
 							) : (
 								<div className="space-y-3">
-									{activeQuestion.options.length > 0
-										? activeQuestion.options.map((opt, idx) => (
+										{activeQuestion.options.length > 0
+											? activeQuestion.options.map((opt, idx) => (
 												<div
-													// biome-ignore lint/suspicious/noArrayIndexKey: option list
-													key={`option-${activeQuestion.id}-${idx}`}
-													className="h-10 flex items-center gap-3 px-3"
-													style={{
+												// biome-ignore lint/suspicious/noArrayIndexKey: option list
+												key={`option-${activeQuestion.id}-${idx}`}
+												className="h-10 flex items-center gap-3 px-3"
+												style={{
 														border: `2px solid ${themeConfig.optionBorder}`,
 														background: themeConfig.inputBg,
-													}}
+												}}
 												>
-													<OptionIndicator
+												<OptionIndicator
 														questionType={activeQuestion.questionType}
-													/>
-													<span
+												/>
+												<span
 														className="text-[11px]"
 														style={{
 															fontFamily: "'JetBrains Mono', monospace",
 															color: themeConfig.descColor,
 														}}
-													>
+												>
 														{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}
-													</span>
-													{opt.point > 0 && (
+												</span>
+												{opt.point > 0 && (
 														<span
 															className="ml-auto text-[9px]"
 															style={{
@@ -202,35 +246,35 @@ export default function EditorPreview({
 														>
 															{opt.point} {PREVIEW.POINTS_SUFFIX}
 														</span>
-													)}
+												)}
 												</div>
 											))
 										: Array.from({ length: 3 }, (_, idx) => (
 												<div
-													// biome-ignore lint/suspicious/noArrayIndexKey: empty slot list
-													key={`empty-${idx}`}
-													className="h-10 flex items-center gap-3 px-3"
-													style={{
+												// biome-ignore lint/suspicious/noArrayIndexKey: empty slot list
+												key={`empty-${idx}`}
+												className="h-10 flex items-center gap-3 px-3"
+												style={{
 														border: `2px solid ${themeConfig.optionBorder}`,
 														background: themeConfig.inputBg,
-													}}
+												}}
 												>
-													<OptionIndicator
+												<OptionIndicator
 														questionType={activeQuestion.questionType}
-													/>
-													<span
+												/>
+												<span
 														className="text-[11px]"
 														style={{
 															fontFamily: "'JetBrains Mono', monospace",
 															color: themeConfig.descColor,
 														}}
-													>
+												>
 														{PLACEHOLDER.OPTION} {idx + 1}
-													</span>
+												</span>
 												</div>
 											))}
 								</div>
-							)}
+							)
 						</div>
 					)}
 
