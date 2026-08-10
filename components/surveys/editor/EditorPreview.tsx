@@ -1,9 +1,9 @@
 "use client";
 
 import { Mail, Play } from "lucide-react";
+import MindXLogo from "@/components/shared/MindXLogo";
 import { PLACEHOLDER, PREVIEW } from "@/lib/helptext";
 import { getThemeColors, type ThemeName } from "@/lib/theme";
-import MindXLogo from "@/components/shared/MindXLogo";
 import type { QuestionItem, SectionType } from "./EditorSidebar";
 
 type PreviewDevice = "desktop" | "tablet" | "mobile";
@@ -69,35 +69,49 @@ export default function EditorPreview({
 			>
 				{/* Preview content */}
 				<div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
-				{activeSection === "homepage" && !activeQuestionId && (
-					<div className="flex flex-col items-center justify-between w-full h-full p-10" style={{ background: themeConfig.bgColor }}>
-						<div className="flex-1 flex flex-col items-center justify-center w-full">
-							<h2
-								className="text-3xl font-black uppercase mb-3 leading-tight"
-								style={{ fontFamily: "'Barlow Condensed', sans-serif", color: themeConfig.txtColor }}
-							>
-								{title || PLACEHOLDER.SURVEY_NAME}
-							</h2>
-							<p
-								className="text-sm mb-8 max-w-md leading-relaxed"
-								style={{ fontFamily: "'JetBrains Mono', monospace", color: themeConfig.descColor }}
-							>
-								{description || PLACEHOLDER.DESCRIPTION}
-							</p>
-							<button
-								type="button"
-								className="h-10 px-6 flex items-center gap-2 text-[11px] uppercase tracking-widest font-bold"
-								style={{ fontFamily: "'JetBrains Mono', monospace", background: themeConfig.btnBg, color: themeConfig.btnTxt, borderRadius: "20px" }}
-							>
-								<Play size={14} />
-								{buttonText || PLACEHOLDER.BUTTON_TEXT}
-							</button>
+					{activeSection === "homepage" && !activeQuestionId && (
+						<div
+							className="flex flex-col items-center justify-between w-full h-full p-10"
+							style={{ background: themeConfig.bgColor }}
+						>
+							<div className="flex-1 flex flex-col items-center justify-center w-full">
+								<h2
+									className="text-3xl font-black uppercase mb-3 leading-tight"
+									style={{
+										fontFamily: "'Barlow Condensed', sans-serif",
+										color: themeConfig.txtColor,
+									}}
+								>
+									{title || PLACEHOLDER.SURVEY_NAME}
+								</h2>
+								<p
+									className="text-sm mb-8 max-w-md leading-relaxed"
+									style={{
+										fontFamily: "'JetBrains Mono', monospace",
+										color: themeConfig.descColor,
+									}}
+								>
+									{description || PLACEHOLDER.DESCRIPTION}
+								</p>
+								<button
+									type="button"
+									className="h-10 px-6 flex items-center gap-2 text-[11px] uppercase tracking-widest font-bold"
+									style={{
+										fontFamily: "'JetBrains Mono', monospace",
+										background: themeConfig.btnBg,
+										color: themeConfig.btnTxt,
+										borderRadius: "20px",
+									}}
+								>
+									<Play size={14} />
+									{buttonText || PLACEHOLDER.BUTTON_TEXT}
+								</button>
+							</div>
+							<div className="pt-8 pb-2">
+								<MindXLogo size="md" color={themeConfig.txtColor} />
+							</div>
 						</div>
-						<div className="pt-8 pb-2">
-							<MindXLogo size="md" color={themeConfig.txtColor} />
-						</div>
-					</div>
-				)}
+					)}
 
 					{activeSection === "question" && activeQuestion && (
 						<div className="w-full max-w-lg text-left">
@@ -221,22 +235,37 @@ export default function EditorPreview({
 					)}
 
 					{activeSection === "ending" && !activeQuestionId && (
-						<div className="flex flex-col items-center justify-between w-full h-full p-10" style={{ background: themeConfig.bgColor }}>
+						<div
+							className="flex flex-col items-center justify-between w-full h-full p-10"
+							style={{ background: themeConfig.bgColor }}
+						>
 							<div className="flex-1 flex flex-col items-center justify-center w-full">
 								<h2
 									className="text-3xl font-black uppercase mb-3 leading-tight"
-									style={{ fontFamily: "'Barlow Condensed', sans-serif", color: themeConfig.txtColor }}
+									style={{
+										fontFamily: "'Barlow Condensed', sans-serif",
+										color: themeConfig.txtColor,
+									}}
 								>
 									{endingTitle || PLACEHOLDER.ENDING_TITLE}
 								</h2>
 								<p
 									className="text-sm mb-8 max-w-md leading-relaxed"
-									style={{ fontFamily: "'JetBrains Mono', monospace", color: themeConfig.descColor }}
+									style={{
+										fontFamily: "'JetBrains Mono', monospace",
+										color: themeConfig.descColor,
+									}}
 								>
 									{endingDescription || PLACEHOLDER.ENDING_DESCRIPTION}
 								</p>
 								<div className="flex flex-col items-center gap-3">
-									<span className="text-[10px] uppercase tracking-widest" style={{ fontFamily: "'JetBrains Mono', monospace", color: themeConfig.descColor }}>
+									<span
+										className="text-[10px] uppercase tracking-widest"
+										style={{
+											fontFamily: "'JetBrains Mono', monospace",
+											color: themeConfig.descColor,
+										}}
+									>
 										Имэйлээр үр дүнгээ хүлээн авах
 									</span>
 									<div className="flex items-center gap-2">
@@ -245,12 +274,23 @@ export default function EditorPreview({
 											placeholder="Имэйл"
 											readOnly
 											className="h-10 px-4 text-[11px] w-56 outline-none"
-											style={{ fontFamily: "'JetBrains Mono', monospace", borderRadius: "20px", color: themeConfig.txtColor, background: themeConfig.inputBg, border: `1px solid ${themeConfig.inputBorder}` }}
+											style={{
+												fontFamily: "'JetBrains Mono', monospace",
+												borderRadius: "20px",
+												color: themeConfig.txtColor,
+												background: themeConfig.inputBg,
+												border: `1px solid ${themeConfig.inputBorder}`,
+											}}
 										/>
 										<button
 											type="button"
 											className="h-10 px-5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider"
-											style={{ fontFamily: "'JetBrains Mono', monospace", background: themeConfig.btnBg, color: themeConfig.btnTxt, borderRadius: "20px" }}
+											style={{
+												fontFamily: "'JetBrains Mono', monospace",
+												background: themeConfig.btnBg,
+												color: themeConfig.btnTxt,
+												borderRadius: "20px",
+											}}
 										>
 											<Mail size={14} />
 											Хариу авах
