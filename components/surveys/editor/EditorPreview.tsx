@@ -147,8 +147,8 @@ export default function EditorPreview({
 			<div
 				className="min-h-[500px] flex flex-col transition-[width] duration-300"
 				style={{
-					width,
-					maxWidth: "100%",
+					width: "100%",
+					maxWidth: width,
 					background: themeConfig.bgColor,
 					border: `2px solid ${themeConfig.optionBorder}`,
 				}}
