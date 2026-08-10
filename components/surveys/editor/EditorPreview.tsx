@@ -3,38 +3,10 @@
 import { Mail, Play } from "lucide-react";
 import { PLACEHOLDER, PREVIEW } from "@/lib/helptext";
 import { getThemeColors, type ThemeName } from "@/lib/theme";
+import MindXLogo from "@/components/shared/MindXLogo";
 import type { QuestionItem, SectionType } from "./EditorSidebar";
 
 type PreviewDevice = "desktop" | "tablet" | "mobile";
-
-function LogoFooter() {
-	return (
-		<div className="flex items-center gap-1 select-none">
-			<span
-				className="text-xl font-black uppercase tracking-tight"
-				style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#1a1f36" }}
-			>
-				mind
-			</span>
-			<span
-				className="text-xl font-black uppercase tracking-tight relative"
-				style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#1a1f36" }}
-			>
-				X
-				<span className="absolute -top-1 -left-1.5 w-2 h-2 rounded-full bg-[#e53e3e]" />
-				<span className="absolute -top-1 -right-1.5 w-2 h-2 rounded-full bg-[#dd6b20]" />
-				<span className="absolute -bottom-1 -left-1.5 w-2 h-2 rounded-full bg-[#3182ce]" />
-				<span className="absolute -bottom-1 -right-1.5 w-2 h-2 rounded-full bg-[#38a169]" />
-			</span>
-			<span
-				className="text-lg font-bold"
-				style={{ fontFamily: "'Barlow Condensed', sans-serif", color: "#1a1f36" }}
-			>
-				+
-			</span>
-		</div>
-	);
-}
 
 interface EditorPreviewProps {
 	activeSection: SectionType;
@@ -122,7 +94,7 @@ export default function EditorPreview({
 							</button>
 						</div>
 						<div className="pt-8 pb-2">
-							<LogoFooter />
+							<MindXLogo size="md" />
 						</div>
 					</div>
 				)}
@@ -287,7 +259,7 @@ export default function EditorPreview({
 								</div>
 							</div>
 							<div className="pt-8 pb-2">
-								<LogoFooter />
+								<MindXLogo size="md" />
 							</div>
 						</div>
 					)}
