@@ -275,7 +275,7 @@ export default function EditorPreview({
 											))}
 								</div>
 							)
-						</div>
+							</div>
 					)}
 
 					{activeSection === "ending" && !activeQuestionId && (
