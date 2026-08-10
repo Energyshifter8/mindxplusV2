@@ -26,7 +26,6 @@ const nextConfig: NextConfig = {
 			"next-themes",
 			"animejs",
 		],
-		turbopackFileSystemCacheForDev: true,
 	},
 };
 
