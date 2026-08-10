@@ -21,7 +21,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import type { QuestionItem } from "./EditorSidebar";
 
 type QuestionCategory = "CUSTOM_QUESTION_FIRST" | "CUSTOM_QUESTION_LAST";
@@ -186,28 +186,47 @@ export default function DndQuestionList({
 	const lastIds = lastQuestions.map((_, i) => `last-${i}`);
 
 	const [activeDragOver, setActiveDragOver] = useState<string | null>(null);
+	const [overId, setOverId] = useState<string | null>(null);
+	const [overPosition, setOverPosition] = useState<"before" | "after" | null>(null);
 
 	function handleDragOver(event: DragOverEvent) {
 		const { over } = event;
 		if (!over) {
 			setActiveDragOver(null);
+			setOverId(null);
+			setOverPosition(null);
 			return;
 		}
-		const overId = over.id as string;
+
+		const rawOverId = over.id as string;
+		// Keep the old category-level flag for droppable zones
 		if (
-			overId === "CUSTOM_QUESTION_FIRST" ||
-			overId === "CUSTOM_QUESTION_LAST"
+			rawOverId === "CUSTOM_QUESTION_FIRST" ||
+			rawOverId === "CUSTOM_QUESTION_LAST"
 		) {
-			setActiveDragOver(overId);
+			setActiveDragOver(rawOverId);
 		} else {
-			const parsed = parseSortableId(overId);
+			const parsed = parseSortableId(rawOverId);
 			setActiveDragOver(parsed.category);
 		}
+
+		// Determine before/after by comparing active top to the over rect midpoint
+		let position: "before" | "after" | null = null;
+		const activeTop = event.active?.rect?.current?.translated?.top ?? event.active?.rect?.current?.top ?? null;
+		if (over.rect && activeTop !== null) {
+			const midpoint = over.rect.top + over.rect.height / 2;
+			position = activeTop < midpoint ? "before" : "after";
+		}
+
+		setOverId(rawOverId);
+		setOverPosition(position);
 	}
 
 	function handleDragEnd(event: DragEndEvent) {
 		const { active, over } = event;
 		setActiveDragOver(null);
+		setOverId(null);
+		setOverPosition(null);
 		if (!over || active.id === over.id) return;
 
 		const activeParsed = parseSortableId(active.id as string);
@@ -251,17 +270,35 @@ export default function DndQuestionList({
 						strategy={verticalListSortingStrategy}
 					>
 						<div className="space-y-0.5">
-							{firstQuestions.map((q, i) => (
-								<SortableQuestionItem
-									key={q.id}
-									question={q}
-									sortableId={`first-${i}`}
-									index={i}
-									isActive={activeQuestionId === q.id}
-									onSectionSelect={onSectionSelect}
-									onDeleteQuestion={onDeleteQuestion}
-								/>
-							))}
+							{firstQuestions.length > 0 && firstQuestions.map((q, i) => {
+								const itemId = `first-${i}`;
+								const showBefore = (
+									(i === 0 && overId === 'CUSTOM_QUESTION_FIRST' && overPosition === 'before') ||
+									(overId === itemId && overPosition === 'before')
+								);
+								const showAfter = (
+									(i === firstQuestions.length - 1 && overId === 'CUSTOM_QUESTION_FIRST' && overPosition === 'after') ||
+									(overId === itemId && overPosition === 'after')
+								);
+								return (
+									<Fragment key={itemId}>
+										{showBefore && (
+											<div className="mx-2 my-1 h-0.5 w-full bg-primary rounded-full" />
+										)}
+										<SortableQuestionItem
+											question={q}
+											sortableId={itemId}
+											index={i}
+											isActive={activeQuestionId === q.id}
+											onSectionSelect={onSectionSelect}
+											onDeleteQuestion={onDeleteQuestion}
+										/>
+										{showAfter && (
+											<div className="mx-2 my-1 h-0.5 w-full bg-primary rounded-full" />
+										)}
+									</Fragment>
+								);
+								})}
 						</div>
 					</SortableContext>
 					{firstQuestions.length === 0 && (
@@ -288,17 +325,35 @@ export default function DndQuestionList({
 						strategy={verticalListSortingStrategy}
 					>
 						<div className="space-y-0.5">
-							{lastQuestions.map((q, i) => (
-								<SortableQuestionItem
-									key={q.id}
-									question={q}
-									sortableId={`last-${i}`}
-									index={i}
-									isActive={activeQuestionId === q.id}
-									onSectionSelect={onSectionSelect}
-									onDeleteQuestion={onDeleteQuestion}
-								/>
-							))}
+							{lastQuestions.length > 0 && lastQuestions.map((q, i) => {
+								const itemId = `last-${i}`;
+								const showBefore = (
+									(i === 0 && overId === 'CUSTOM_QUESTION_LAST' && overPosition === 'before') ||
+									(overId === itemId && overPosition === 'before')
+								);
+								const showAfter = (
+									(i === lastQuestions.length - 1 && overId === 'CUSTOM_QUESTION_LAST' && overPosition === 'after') ||
+									(overId === itemId && overPosition === 'after')
+								);
+								return (
+									<Fragment key={itemId}>
+										{showBefore && (
+											<div className="mx-2 my-1 h-0.5 w-full bg-primary rounded-full" />
+										)}
+										<SortableQuestionItem
+											question={q}
+											sortableId={itemId}
+											index={i}
+											isActive={activeQuestionId === q.id}
+											onSectionSelect={onSectionSelect}
+											onDeleteQuestion={onDeleteQuestion}
+										/>
+										{showAfter && (
+											<div className="mx-2 my-1 h-0.5 w-full bg-primary rounded-full" />
+										)}
+									</Fragment>
+								);
+								})}
 						</div>
 					</SortableContext>
 					{lastQuestions.length === 0 && (
