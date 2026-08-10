@@ -196,7 +196,7 @@ export default function EditorRightPanel({
 		"w-full h-10 border-2 border-border bg-input-background px-3 text-sm text-foreground outline-none transition-colors focus:border-primary appearance-none";
 
 	return (
-		<div className="w-full lg:w-80 border-l-2 border-border bg-card flex flex-col shrink-0 overflow-y-auto">
+		<div className="w-full lg:w-80 border-l-2 border-border bg-card flex flex-col shrink-0 overflow-y-auto relative z-10">
 			<div className="p-4">
 				<div
 					className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-5"

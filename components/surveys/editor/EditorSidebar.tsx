@@ -121,7 +121,7 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 		}
 
 		return (
-			<div className="w-full lg:w-64 border-r-2 border-border bg-card flex flex-col shrink-0 overflow-y-auto">
+			<div className="w-full lg:w-64 border-r-2 border-border bg-card flex flex-col shrink-0 overflow-y-auto relative z-10">
 				{/* ЭХЛЭЛ */}
 				<div className="px-3 pt-4 pb-2">
 					<div

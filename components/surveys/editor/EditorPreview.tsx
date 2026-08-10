@@ -141,7 +141,7 @@ export default function EditorPreview({
 
 	return (
 		<div
-			className="flex-1 flex items-center justify-center overflow-auto p-6"
+		className="flex-1 flex items-center justify-center overflow-auto p-6 relative z-10"
 			style={{ background: "var(--background)" }}
 		>
 			<div
