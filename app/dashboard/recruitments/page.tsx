@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { lazy, Suspense, useState } from "react";
+import { KebabMenu, type KebabMenuItem } from "@/components/shared/KebabMenu";
 import {
 	EmptyState,
 	GridTexture,
@@ -23,7 +24,6 @@ import {
 	RecruitmentStatusBadge,
 	TableSkeleton,
 } from "@/components/shared/ListComponents";
-import { KebabMenu, type KebabMenuItem } from "@/components/shared/KebabMenu";
 import {
 	getRecruitmentList,
 	getRecruitmentStats,
@@ -86,18 +86,26 @@ function getRecruitmentKebabItems(
 			onClick: () => {},
 		});
 		items.push({
+			label: "Засах",
+			icon: <Pencil size={11} />,
+			onClick: () => router.push(`/dashboard/recruitments/${row.id}/edit`),
+		});
+		items.push({
 			label: "Үр дүн",
 			icon: <BarChart3 size={11} />,
-			onClick: () =>
-				router.push(`/dashboard/recruitments/${row.id}/results`),
+			onClick: () => router.push(`/dashboard/recruitments/${row.id}/results`),
 		});
 	} else {
 		// CLOSED, COMPLETED
 		items.push({
+			label: "Засах",
+			icon: <Pencil size={11} />,
+			onClick: () => router.push(`/dashboard/recruitments/${row.id}/edit`),
+		});
+		items.push({
 			label: "Үр дүн",
 			icon: <BarChart3 size={11} />,
-			onClick: () =>
-				router.push(`/dashboard/recruitments/${row.id}/results`),
+			onClick: () => router.push(`/dashboard/recruitments/${row.id}/results`),
 		});
 	}
 
@@ -393,21 +401,35 @@ export default function RecruitmentsPage() {
 													{(row.status === "PUBLISHED" ||
 														row.status === "CLOSED" ||
 														row.status === "COMPLETED") && (
-														<button
-															type="button"
-															onClick={() =>
-																router.push(
-																	`/dashboard/recruitments/${row.id}/results`,
-																)
-															}
-															className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors"
-															style={{
-																fontFamily: "'JetBrains Mono', monospace",
-															}}
-														>
-															<BarChart3 size={12} />
-															Үр дүн
-														</button>
+														<>
+															<button
+																type="button"
+																onClick={() =>
+																	router.push(
+																		`/dashboard/recruitments/${row.id}/edit`,
+																	)
+																}
+																className="p-1.5 text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+																title="Засах"
+															>
+																<Pencil size={13} />
+															</button>
+															<button
+																type="button"
+																onClick={() =>
+																	router.push(
+																		`/dashboard/recruitments/${row.id}/results`,
+																	)
+																}
+																className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors"
+																style={{
+																	fontFamily: "'JetBrains Mono', monospace",
+																}}
+															>
+																<BarChart3 size={12} />
+																Үр дүн
+															</button>
+														</>
 													)}
 													<KebabMenu
 														items={getRecruitmentKebabItems(row, router)}
@@ -505,19 +527,38 @@ export default function RecruitmentsPage() {
 											{(row.status === "PUBLISHED" ||
 												row.status === "CLOSED" ||
 												row.status === "COMPLETED") && (
-												<button
-													type="button"
-													onClick={() =>
-														router.push(
-															`/dashboard/recruitments/${row.id}/results`,
-														)
-													}
-													className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] uppercase tracking-widest font-bold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-													style={{ fontFamily: "'JetBrains Mono', monospace" }}
-												>
-													<BarChart3 size={11} />
-													Үр дүн
-												</button>
+												<>
+													<button
+														type="button"
+														onClick={() =>
+															router.push(
+																`/dashboard/recruitments/${row.id}/edit`,
+															)
+														}
+														className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] uppercase tracking-widest font-bold border border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+														style={{
+															fontFamily: "'JetBrains Mono', monospace",
+														}}
+													>
+														<Pencil size={11} />
+														Засах
+													</button>
+													<button
+														type="button"
+														onClick={() =>
+															router.push(
+																`/dashboard/recruitments/${row.id}/results`,
+															)
+														}
+														className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] uppercase tracking-widest font-bold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+														style={{
+															fontFamily: "'JetBrains Mono', monospace",
+														}}
+													>
+														<BarChart3 size={11} />
+														Үр дүн
+													</button>
+												</>
 											)}
 											<KebabMenu
 												items={getRecruitmentKebabItems(row, router)}

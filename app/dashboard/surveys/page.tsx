@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { KebabMenu, type KebabMenuItem } from "@/components/shared/KebabMenu";
 import {
 	EmptyState,
 	GridTexture,
@@ -23,7 +24,6 @@ import {
 	SurveyStatusBadge,
 	TableSkeleton,
 } from "@/components/shared/ListComponents";
-import { KebabMenu, type KebabMenuItem } from "@/components/shared/KebabMenu";
 import {
 	deleteSurvey,
 	getSurveyList,
@@ -444,9 +444,7 @@ export default function SurveysPage() {
 															</button>
 														</>
 													)}
-													<KebabMenu
-														items={getSurveyKebabItems(row, router)}
-													/>
+													<KebabMenu items={getSurveyKebabItems(row, router)} />
 												</div>
 											</td>
 										</tr>
@@ -577,9 +575,7 @@ export default function SurveysPage() {
 													</button>
 												</>
 											)}
-											<KebabMenu
-												items={getSurveyKebabItems(row, router)}
-											/>
+											<KebabMenu items={getSurveyKebabItems(row, router)} />
 										</div>
 									</div>
 								</div>

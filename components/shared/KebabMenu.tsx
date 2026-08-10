@@ -20,13 +20,22 @@ export function KebabMenu({ items }: { items: KebabMenuItem[] }) {
 		}
 	}, []);
 
+	const handleKeyDown = useCallback((e: KeyboardEvent) => {
+		if (e.key === "Escape") {
+			setOpen(false);
+		}
+	}, []);
+
 	useEffect(() => {
 		if (open) {
 			document.addEventListener("mousedown", handleClickOutside);
-			return () =>
+			document.addEventListener("keydown", handleKeyDown);
+			return () => {
 				document.removeEventListener("mousedown", handleClickOutside);
+				document.removeEventListener("keydown", handleKeyDown);
+			};
 		}
-	}, [open, handleClickOutside]);
+	}, [open, handleClickOutside, handleKeyDown]);
 
 	if (items.length === 0) return null;
 
