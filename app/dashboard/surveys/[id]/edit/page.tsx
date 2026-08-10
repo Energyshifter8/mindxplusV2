@@ -70,8 +70,8 @@ function EditorSkeleton() {
 				<div className="w-8 h-8 bg-muted animate-pulse" />
 				<div className="h-4 w-48 bg-muted animate-pulse" />
 			</div>
-			<div className="flex flex-1 overflow-hidden">
-				<div className="w-64 border-r-2 border-border bg-card p-4 space-y-3 shrink-0">
+			<div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
+				<div className="w-full lg:w-64 border-r-2 border-border bg-card p-4 space-y-3 shrink-0">
 					<div className="h-4 w-20 bg-muted animate-pulse" />
 					<div className="h-8 bg-muted animate-pulse" />
 					<div className="h-4 w-20 bg-muted animate-pulse mt-4" />
@@ -81,7 +81,7 @@ function EditorSkeleton() {
 				<div className="flex-1 flex items-center justify-center p-6">
 					<div className="h-[500px] w-full max-w-2xl bg-muted/30 animate-pulse" />
 				</div>
-				<div className="w-80 border-l-2 border-border bg-card p-4 space-y-5 shrink-0">
+				<div className="w-full lg:w-80 border-l-2 border-border bg-card p-4 space-y-5 shrink-0">
 					<div className="h-4 w-32 bg-muted animate-pulse" />
 					<div className="h-10 bg-muted animate-pulse" />
 					<div className="h-20 bg-muted animate-pulse" />
@@ -816,7 +816,7 @@ export default function SurveyEditPage() {
 				}
 				isPublishing={publishMutation.isPending}
 			/>
-			<div className="flex flex-1 overflow-hidden">
+			<div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
 				<EditorSidebar
 					ref={sidebarRef}
 					activeSection={activeSection}
