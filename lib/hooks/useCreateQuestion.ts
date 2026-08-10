@@ -28,20 +28,22 @@ export function useCreateQuestion({
 			toast.loading(TOAST.SAVE_LOADING, { id: "create-question" });
 		},
 		onSuccess: (response: ApiResponse<CreateQuestionResponse>) => {
+			// update the same toast instance for create flows
 			toast.dismiss("create-question");
 
 			if (!response.success) {
-				toast.error(response.error || TOAST.SAVE_ERROR);
+				toast.error(response.error || TOAST.SAVE_ERROR, { id: "create-question" });
 				return;
 			}
 
-			toast.success(TOAST.SAVE_SUCCESS);
+			// show a question-specific success message (keeps older generic save message separate)
+			toast.success("Асуулт амжилттай нэмэгдлээ", { id: "create-question" });
 			queryClient.invalidateQueries({ queryKey: ["surveyDetail", surveyId] });
 			onSuccess?.(response.data?.id ?? "");
 		},
 		onError: (error: Error) => {
 			toast.dismiss("create-question");
-			toast.error(error.message || TOAST.SAVE_ERROR);
+			toast.error(error.message || TOAST.SAVE_ERROR, { id: "create-question" });
 		},
 	});
 }
