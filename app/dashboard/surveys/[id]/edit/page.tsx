@@ -613,6 +613,13 @@ export default function SurveyEditPage() {
 
 	const handleCreateQuestionFromPopover = useCallback(
 		async (payload: CreateQuestionPayload) => {
+			const customCount = questions.filter(
+				(q) => q.section !== "PRIMARY_QUESTION",
+			).length;
+			if (customCount >= 5) {
+				toast.error(TOAST.QUESTION_LIMIT);
+				return;
+			}
 			const result = await createQuestionMutation.mutateAsync(payload);
 			if (result.success && result.data?.id) {
 				// optimistic insert so the selected type appears immediately
