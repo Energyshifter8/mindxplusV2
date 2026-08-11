@@ -196,9 +196,11 @@ export default function SurveyEditPage() {
 
 	const sidebarRef = useRef<EditorSidebarHandle>(null);
 	const isAnimatingRef = useRef(false);
+	const initializedRef = useRef(false);
 
 	useEffect(() => {
-		if (!surveyData) return;
+		if (!surveyData || initializedRef.current) return;
+		initializedRef.current = true;
 		const customFirstQuestions =
 			surveyData.customQuestions?.CUSTOM_QUESTION_FIRST ?? [];
 		const customLastQuestions =

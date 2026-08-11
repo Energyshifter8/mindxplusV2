@@ -217,7 +217,7 @@ export default function DndQuestionList({
 		let position: "before" | "after" | null = null;
 		const activeTop =
 			event.active?.rect?.current?.translated?.top ??
-			event.active?.rect?.current?.top ??
+			event.active?.rect?.current?.initial?.top ??
 			null;
 		if (over.rect && activeTop !== null) {
 			const midpoint = over.rect.top + over.rect.height / 2;

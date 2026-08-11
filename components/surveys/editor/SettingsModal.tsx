@@ -2,7 +2,7 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { setSurveyDeviceCheck, setSurveyPasscode } from "@/lib/api";
 
@@ -30,13 +30,15 @@ export default function SettingsModal({
 	const [localPassCodeProtected, setLocalPassCodeProtected] =
 		useState(passCodeProtected);
 	const [localPassCode, setLocalPassCode] = useState("");
+	const wasOpenRef = useRef(isOpen);
 
 	useEffect(() => {
-		if (isOpen) {
+		if (isOpen && !wasOpenRef.current) {
 			setLocalDeviceCheck(deviceCheck);
 			setLocalPassCodeProtected(passCodeProtected);
 			setLocalPassCode("");
 		}
+		wasOpenRef.current = isOpen;
 	}, [isOpen, deviceCheck, passCodeProtected]);
 
 	useEffect(() => {
