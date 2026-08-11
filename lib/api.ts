@@ -53,30 +53,10 @@ function redirectToLogin(reason: string) {
 async function doRefreshToken(): Promise<string> {
 	const token = localStorage.getItem("token");
 	if (!token) throw new Error("No token to refresh");
-	try {
-		const response = await api.post("/user/refresh", null, {
-			headers: { Authorization: `Bearer ${token}` },
-		});
-		return response.data.token;
-	} catch (err) {
-		if (axios.isAxiosError(err) && err.response) {
-			console.error(
-				"[auth] Refresh 401 response:",
-				err.response.status,
-				JSON.stringify(err.response.data),
-			);
-			console.error(
-				"[auth] Request sent to:",
-				err.config?.baseURL,
-				err.config?.url,
-			);
-			console.error(
-				"[auth] Authorization header sent:",
-				err.config?.headers?.Authorization,
-			);
-		}
-		throw err;
-	}
+	const response = await api.post("/user/refresh", null, {
+		headers: { Authorization: `Bearer ${token}` },
+	});
+	return response.data.token;
 }
 
 async function attemptRefreshWithRetry(): Promise<string> {
@@ -87,12 +67,8 @@ async function attemptRefreshWithRetry(): Promise<string> {
 			const newToken = await doRefreshToken();
 			localStorage.setItem("token", newToken);
 			return newToken;
-		} catch (firstErr) {
-			console.warn(
-				"[auth] First refresh attempt failed, retrying...",
-				firstErr,
-			);
-			await new Promise((r) => setTimeout(r, 1000));
+		} catch {
+			await new Promise((r) => setTimeout(r, 500));
 			try {
 				const newToken = await doRefreshToken();
 				localStorage.setItem("token", newToken);
@@ -164,22 +140,9 @@ export async function apiPost<T>(
 		const token =
 			typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-		let response = await api.post<T>(endpoint, body, {
+		const response = await api.post<T>(endpoint, body, {
 			headers: authHeaders(token),
 		});
-
-		if (response.status === 401) {
-			await handle401(`POST ${endpoint}`);
-			const newToken = localStorage.getItem("token");
-			if (newToken && newToken !== token) {
-				response = await api.post<T>(endpoint, body, {
-					headers: authHeaders(newToken),
-				});
-			}
-			if (response.status === 401) {
-				return { success: false, error: "Unauthorized" };
-			}
-		}
 
 		return { success: true, data: response.data };
 	} catch (error) {

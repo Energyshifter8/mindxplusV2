@@ -17,6 +17,8 @@ async function proxyRequest(
 	if (contentType) headers.set("Content-Type", contentType);
 	const authorization = request.headers.get("authorization");
 	if (authorization) headers.set("Authorization", authorization);
+	const cookie = request.headers.get("cookie");
+	if (cookie) headers.set("Cookie", cookie);
 
 	const fetchInit: RequestInit = { method, headers };
 
@@ -32,6 +34,44 @@ async function proxyRequest(
 	const responseHeaders = new Headers();
 	const respContentType = targetResponse.headers.get("content-type");
 	if (respContentType) responseHeaders.set("Content-Type", respContentType);
+
+	// Forward Set-Cookie headers from backend to browser
+	const setCookies: string[] =
+		targetResponse.headers.getSetCookie?.() ??
+		(() => {
+			const raw = targetResponse.headers.get("set-cookie");
+			return raw ? [raw] : [];
+		})();
+
+	if (setCookies.length > 0) {
+		const isLocalhost =
+			request.nextUrl.hostname === "localhost" ||
+			request.nextUrl.hostname === "127.0.0.1" ||
+			request.nextUrl.hostname === "0.0.0.0";
+
+		const resHeaders = new Headers(responseHeaders);
+
+		for (const sc of setCookies) {
+			let cleaned = sc;
+
+			// 1. Backend-ээс ирсэн Path=/user эсвэл бусад хязгаарлагдмал Path-ийг Path=/ болгож өөрчилнө.
+			// Ингэснээр браузер /api/... зам руу хүсэлт явуулахад cookie-гээ хавсаргаж явуулна.
+			cleaned = cleaned.replace(/Path=\/[^;]*/gi, "Path=/");
+
+			// 2. Localhost орчинд Secure болон Domain атрибутуудыг цэвэрлэнэ
+			if (isLocalhost) {
+				cleaned = cleaned.replace(/;\s*Secure/gi, "");
+				cleaned = cleaned.replace(/;\s*Domain=[^;]*/gi, "");
+			}
+
+			resHeaders.append("Set-Cookie", cleaned);
+		}
+
+		return new NextResponse(targetResponse.body, {
+			status: targetResponse.status,
+			headers: resHeaders,
+		});
+	}
 
 	return new NextResponse(targetResponse.body, {
 		status: targetResponse.status,
