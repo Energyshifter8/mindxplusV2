@@ -1,18 +1,10 @@
-function getApiBaseUrl(): string {
-	if (
-		typeof window !== "undefined" &&
-		window.location.hostname === "localhost"
-	) {
-		return "/api";
-	}
-	return process.env.NEXT_PUBLIC_API_URL || "";
-}
+import axios from "axios";
 
-const API_BASE_URL = getApiBaseUrl();
+// --- Axios instance (direct to backend, no proxy) ---
 
-function buildApiUrl(endpoint: string): string {
-	return `${API_BASE_URL.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
-}
+const api = axios.create({
+	baseURL: process.env.NEXT_PUBLIC_API_URL || "",
+});
 
 // --- Auth refresh machinery ---
 
@@ -35,34 +27,13 @@ function redirectToLogin(reason: string) {
 async function doRefreshToken(): Promise<string> {
 	const token = localStorage.getItem("token");
 	if (!token) throw new Error("No token to refresh");
-	const url = buildApiUrl("user/refresh");
-	console.warn(`[auth] Refreshing token via ${url}`);
-	console.warn(`[auth-debug] localStorage token (full): ${token}`);
-	const response = await fetch(url, {
-		method: "POST",
+	const response = await api.post("/user/refresh", null, {
 		headers: { Authorization: `Bearer ${token}` },
 	});
-	if (!response.ok) {
-		const body = await safeParseBody(response);
-		const detail =
-			typeof body === "object" && body !== null
-				? JSON.stringify(body)
-				: String(body ?? "");
-		console.warn(
-			`[auth] Refresh failed: ${response.status} ${response.statusText} — ${detail}`,
-		);
-		const err = new Error(
-			`Token refresh failed: ${response.status} — ${detail}`,
-		) as Error & { status: number };
-		err.status = response.status;
-		throw err;
-	}
-	const data = (await safeParseBody(response)) as { token: string };
-	return data.token;
+	return response.data.token;
 }
 
 async function attemptRefreshWithRetry(): Promise<string> {
-	// Single in-flight guard: if a refresh is already in progress, reuse it
 	if (refreshPromise) return refreshPromise;
 
 	refreshPromise = (async () => {
@@ -71,7 +42,6 @@ async function attemptRefreshWithRetry(): Promise<string> {
 			localStorage.setItem("token", newToken);
 			return newToken;
 		} catch (firstErr) {
-			// Retry once after a short delay on transient failure
 			console.warn(
 				"[auth] First refresh attempt failed, retrying...",
 				firstErr,
@@ -113,18 +83,24 @@ async function handle401(caller: string): Promise<void> {
 	}
 }
 
-async function safeParseBody(response: Response): Promise<unknown> {
-	const contentType = response.headers.get("content-type") || "";
-	const text = await response.text();
-	if (!text) return null;
-	if (contentType.includes("application/json")) {
-		try {
-			return JSON.parse(text);
-		} catch {
-			return text;
-		}
+// --- API helpers ---
+
+function authHeaders(token: string | null): Record<string, string> {
+	return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function extractError(data: unknown): string {
+	if (typeof data === "object" && data !== null) {
+		const d = data as Record<string, unknown>;
+		return (
+			(typeof d.message === "string" && d.message) ||
+			(typeof d.error === "string" && d.error) ||
+			(typeof d.detail === "string" && d.detail) ||
+			(typeof d.title === "string" && d.title) ||
+			"Request failed"
+		);
 	}
-	return text;
+	return "Request failed";
 }
 
 export interface ApiResponse<T> {
@@ -141,29 +117,17 @@ export async function apiPost<T>(
 	try {
 		const token =
 			typeof window !== "undefined" ? localStorage.getItem("token") : null;
-		const headers: Record<string, string> = {
-			"Content-Type": "application/json",
-		};
-		if (token) headers.Authorization = `Bearer ${token}`;
 
-		const url = buildApiUrl(endpoint);
-		const serialized = JSON.stringify(body);
-		let response = await fetch(url, {
-			method: "POST",
-			headers,
-			body: serialized,
+		let response = await api.post<T>(endpoint, body, {
+			headers: authHeaders(token),
 		});
 
 		if (response.status === 401) {
 			await handle401(`POST ${endpoint}`);
-			// Retry once with the new token
 			const newToken = localStorage.getItem("token");
 			if (newToken && newToken !== token) {
-				headers.Authorization = `Bearer ${newToken}`;
-				response = await fetch(url, {
-					method: "POST",
-					headers,
-					body: serialized,
+				response = await api.post<T>(endpoint, body, {
+					headers: authHeaders(newToken),
 				});
 			}
 			if (response.status === 401) {
@@ -171,36 +135,29 @@ export async function apiPost<T>(
 			}
 		}
 
-		if (!response.ok) {
-			const data = await safeParseBody(response);
-			const detail =
-				(typeof data === "object" &&
-					data !== null &&
-					((typeof (data as Record<string, unknown>).message === "string" &&
-						(data as Record<string, unknown>).message) ||
-						(Array.isArray((data as Record<string, unknown>).message) &&
-							((data as Record<string, unknown>).message as string[]).join(
-								", ",
-							)) ||
-						(typeof (data as Record<string, unknown>).error === "string" &&
-							(data as Record<string, unknown>).error) ||
-						(typeof (data as Record<string, unknown>).detail === "string" &&
-							(data as Record<string, unknown>).detail) ||
-						(typeof (data as Record<string, unknown>).title === "string" &&
-							(data as Record<string, unknown>).title))) ||
-				`HTTP ${response.status}`;
+		return { success: true, data: response.data };
+	} catch (error) {
+		if (axios.isAxiosError(error) && error.response) {
+			if (error.response.status === 401) {
+				await handle401(`POST ${endpoint}`);
+				const newToken = localStorage.getItem("token");
+				if (newToken) {
+					try {
+						const retryResponse = await api.post<T>(endpoint, body, {
+							headers: authHeaders(newToken),
+						});
+						return { success: true, data: retryResponse.data };
+					} catch {
+						return { success: false, error: "Unauthorized" };
+					}
+				}
+				return { success: false, error: "Unauthorized" };
+			}
 			return {
 				success: false,
-				error: detail as string,
+				error: extractError(error.response.data),
 			};
 		}
-
-		const data = await safeParseBody(response);
-		return {
-			success: true,
-			data: data as T,
-		};
-	} catch (error) {
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Network error",
@@ -212,59 +169,60 @@ export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 	try {
 		const token =
 			typeof window !== "undefined" ? localStorage.getItem("token") : null;
-		const headers: Record<string, string> = {};
-		if (token) headers.Authorization = `Bearer ${token}`;
 
-		const url = buildApiUrl(endpoint);
-		let response = await fetch(url, {
-			method: "GET",
-			headers,
+		const response = await api.get<T>(endpoint, {
+			headers: authHeaders(token),
 		});
 
-		if (response.status === 401) {
-			await handle401(`GET ${endpoint}`);
-			// Retry once with the new token
-			const newToken = localStorage.getItem("token");
-			if (newToken && newToken !== token) {
-				headers.Authorization = `Bearer ${newToken}`;
-				response = await fetch(url, {
-					method: "GET",
-					headers,
-				});
-			}
-			if (response.status === 401) {
+		return { success: true, data: response.data };
+	} catch (error) {
+		if (axios.isAxiosError(error) && error.response) {
+			if (error.response.status === 401) {
+				await handle401(`GET ${endpoint}`);
+				const newToken = localStorage.getItem("token");
+				if (newToken) {
+					try {
+						const retryResponse = await api.get<T>(endpoint, {
+							headers: authHeaders(newToken),
+						});
+						return { success: true, data: retryResponse.data };
+					} catch {
+						return { success: false, error: "Unauthorized" };
+					}
+				}
 				return { success: false, error: "Unauthorized" };
-			}
-		}
-
-		const data = await safeParseBody(response);
-
-		if (!response.ok) {
-			let errorMessage = `HTTP ${response.status}`;
-			if (typeof data === "object" && data !== null) {
-				const d = data as Record<string, unknown>;
-				errorMessage =
-					(typeof d.message === "string" && d.message) ||
-					(typeof d.error === "string" && d.error) ||
-					errorMessage;
 			}
 			return {
 				success: false,
-				error: errorMessage,
+				error: extractError(error.response.data),
 			};
 		}
-
-		return {
-			success: true,
-			data: data as T,
-		};
-	} catch (error) {
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Network error",
 		};
 	}
 }
+
+export const NineMinuteTimer = () => {
+	if (typeof window === "undefined") return;
+	const intervalTime = 7 * 60 * 1000;
+	const runFunction = async () => {
+		const token = localStorage.getItem("token");
+		if (!token || window.location.pathname.startsWith("/login")) return;
+		try {
+			await attemptRefreshWithRetry();
+			localStorage.setItem("lastExecution", Date.now().toString());
+		} catch {
+			// attemptRefreshWithRetry already called redirectToLogin if needed
+		}
+	};
+	runFunction();
+	const interval = setInterval(runFunction, intervalTime);
+	return () => clearInterval(interval);
+};
+
+// --- Types ---
 
 export interface ModuleStats {
 	totalPublishedSurveyCount: number;
@@ -640,7 +598,7 @@ export function updateSurveyPage(
 // --- Survey Publish types & API ---
 
 export interface PublishSurveyPayload {
-	value: string; // "YYYY-MM-DD" format
+	value: string;
 }
 
 export interface PublishSurveyResponse {
@@ -795,48 +753,3 @@ export function getPrimaryQuestionSummaries(
 		`customer/survey-analysis/insight/${id}/primary-question-summaries?${query.toString()}`,
 	);
 }
-
-export const refreshToken = async (): Promise<{ token: string }> => {
-	const token =
-		typeof window !== "undefined" ? localStorage.getItem("token") : null;
-	const url = buildApiUrl("user/refresh");
-	const response = await fetch(url, {
-		method: "POST",
-		headers: token ? { Authorization: `Bearer ${token}` } : {},
-	});
-
-	if (!response.ok) {
-		const data = await safeParseBody(response);
-		let errorMessage = "Token refresh failed";
-		if (typeof data === "object" && data !== null) {
-			const d = data as Record<string, unknown>;
-			errorMessage =
-				(typeof d.message === "string" && d.message) ||
-				(typeof d.error === "string" && d.error) ||
-				errorMessage;
-		}
-		const error = new Error(errorMessage) as Error & { status: number };
-		error.status = response.status;
-		throw error;
-	}
-
-	return (await safeParseBody(response)) as { token: string };
-};
-
-export const NineMinuteTimer = () => {
-	if (typeof window === "undefined") return;
-	const intervalTime = 7 * 60 * 1000;
-	const runFunction = async () => {
-		const token = localStorage.getItem("token");
-		if (!token || window.location.pathname.startsWith("/login")) return;
-		try {
-			await attemptRefreshWithRetry();
-			localStorage.setItem("lastExecution", Date.now().toString());
-		} catch {
-			// attemptRefreshWithRetry already called redirectToLogin if needed
-		}
-	};
-	runFunction();
-	const interval = setInterval(runFunction, intervalTime);
-	return () => clearInterval(interval);
-};
