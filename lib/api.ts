@@ -35,10 +35,10 @@ function redirectToLogin(reason: string) {
 async function doRefreshToken(): Promise<string> {
 	const token = localStorage.getItem("token");
 	if (!token) throw new Error("No token to refresh");
-	const url = buildApiUrl("user/auth/refresh");
+	const url = buildApiUrl("user/refresh");
 	console.warn(`[auth] Refreshing token via ${url}`);
 	const response = await fetch(url, {
-		method: "GET",
+		method: "POST",
 		headers: { Authorization: `Bearer ${token}` },
 	});
 	if (!response.ok) {
@@ -798,9 +798,9 @@ export function getPrimaryQuestionSummaries(
 export const refreshToken = async (): Promise<{ token: string }> => {
 	const token =
 		typeof window !== "undefined" ? localStorage.getItem("token") : null;
-	const url = buildApiUrl("user/auth/refresh");
+	const url = buildApiUrl("user/refresh");
 	const response = await fetch(url, {
-		method: "GET",
+		method: "POST",
 		headers: token ? { Authorization: `Bearer ${token}` } : {},
 	});
 
