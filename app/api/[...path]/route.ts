@@ -18,6 +18,11 @@ async function proxyRequest(
 	const authorization = request.headers.get("authorization");
 	if (authorization) headers.set("Authorization", authorization);
 
+	console.warn(`[proxy-debug] Incoming request: ${request.method} ${request.nextUrl.pathname}`);
+	console.warn(`[proxy-debug] Authorization header received: ${authorization || "(none)"}`);
+	console.warn(`[proxy-debug] Forwarding to: ${targetUrl}`);
+	console.warn(`[proxy-debug] Forwarding Authorization: ${authorization || "(none)"}`);
+
 	let body: string | undefined;
 	if (method !== "GET" && method !== "HEAD") {
 		body = await request.text();

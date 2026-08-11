@@ -37,6 +37,7 @@ async function doRefreshToken(): Promise<string> {
 	if (!token) throw new Error("No token to refresh");
 	const url = buildApiUrl("user/refresh");
 	console.warn(`[auth] Refreshing token via ${url}`);
+	console.warn(`[auth-debug] localStorage token (full): ${token}`);
 	const response = await fetch(url, {
 		method: "POST",
 		headers: { Authorization: `Bearer ${token}` },
