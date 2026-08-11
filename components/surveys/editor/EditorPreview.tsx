@@ -1,6 +1,7 @@
 "use client";
 
 import { Mail, Play, Star as StarIcon } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import MindXLogo from "@/components/shared/MindXLogo";
 import { PLACEHOLDER, PREVIEW } from "@/lib/helptext";
 import { getThemeColors, type ThemeName } from "@/lib/theme";
@@ -52,6 +53,20 @@ export default function EditorPreview({
 }: EditorPreviewProps) {
 	const width = deviceWidths[device];
 	const themeConfig = getThemeColors(theme);
+	const [previewRatings, setPreviewRatings] = useState<Record<string, number | null>>({});
+	const previewRating = activeQuestionId ? (previewRatings[activeQuestionId] ?? null) : null;
+	const setPreviewRating = useCallback((val: number | null) => {
+		setPreviewRatings((prev) => {
+			if (!activeQuestionId) return prev;
+			const next = { ...prev };
+			if (val === null) {
+				delete next[activeQuestionId];
+			} else {
+				next[activeQuestionId] = val;
+			}
+			return next;
+		});
+	}, [activeQuestionId]);
 
 	// Render preview content per question type to avoid complex nested JSX/ternary parsing
 	const questionPreview = activeQuestion
@@ -79,11 +94,21 @@ export default function EditorPreview({
 				);
 			}
 			if (qt === "STAR_RATING") {
+				const starCount = Math.max(5, activeQuestion.options.length || 5);
 				return (
 					<div className="flex items-center gap-2">
-						{Array.from({ length: Math.max(5, activeQuestion.options.length || 5) }).map((_, i) => (
-							<button key={`star-${i}`} type="button" className="p-1" aria-label={`star-${i + 1}`}>
-								<StarIcon size={20} className="text-yellow-400" />
+						{Array.from({ length: starCount }).map((_, i) => (
+							<button
+								key={`star-${i}`}
+								type="button"
+								className="p-1 cursor-pointer hover:scale-110 transition-transform"
+								aria-label={`star-${i + 1}`}
+								onClick={() => setPreviewRating(previewRating === i + 1 ? null : i + 1)}
+							>
+								<StarIcon
+									size={20}
+									className={i + 1 <= (previewRating ?? 0) ? "text-yellow-400 fill-yellow-400" : "text-yellow-400"}
+								/>
 							</button>
 						))}
 					</div>
@@ -92,18 +117,41 @@ export default function EditorPreview({
 			if (qt === "NUMBER_RATING") {
 				const opts = activeQuestion.options.length > 0 ? activeQuestion.options : Array.from({ length: 10 }, (_, i) => ({ order: i + 1, content: String(i + 1) }));
 				return (
-					<div className="flex items-center gap-2">
-						{opts.map((opt, idx) => (
-							<button key={`num-${idx}`} type="button" className="px-3 py-1 border rounded-full text-[11px]">{opt.content}</button>
-						))}
+					<div className="flex items-center gap-2 flex-wrap">
+						{opts.map((opt, idx) => {
+							const val = idx + 1;
+							const isSelected = previewRating === val;
+							return (
+								<button
+									key={`num-${idx}`}
+									type="button"
+									onClick={() => setPreviewRating(previewRating === val ? null : val)}
+									className={`px-3 py-1 border rounded-full text-[11px] cursor-pointer transition-colors ${isSelected ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted"}`}
+								>
+									{opt.content}
+								</button>
+							);
+						})}
 					</div>
 				);
 			}
 			if (qt === "YES_NO") {
 				return (
 					<div className="flex items-center gap-2">
-						<button type="button" className="px-4 py-1 border rounded text-[11px]">Тийм</button>
-						<button type="button" className="px-4 py-1 border rounded text-[11px]">Үгүй</button>
+						<button
+							type="button"
+							onClick={() => setPreviewRating(previewRating === 1 ? null : 1)}
+							className={`px-4 py-1 border rounded text-[11px] cursor-pointer transition-colors ${previewRating === 1 ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted"}`}
+						>
+							Тийм
+						</button>
+						<button
+							type="button"
+							onClick={() => setPreviewRating(previewRating === 2 ? null : 2)}
+							className={`px-4 py-1 border rounded text-[11px] cursor-pointer transition-colors ${previewRating === 2 ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted"}`}
+						>
+							Үгүй
+						</button>
 					</div>
 				);
 			}
