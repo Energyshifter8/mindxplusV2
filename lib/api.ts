@@ -1,9 +1,24 @@
 import axios from "axios";
 
-// --- Axios instance (direct to backend, no proxy) ---
+// --- Axios instance ---
+// On localhost: route through /api proxy to avoid CORS.
+// On staging: call the backend directly.
 
-const api = axios.create({
-	baseURL: process.env.NEXT_PUBLIC_API_URL || "",
+function getBaseUrl(): string {
+	if (
+		typeof window !== "undefined" &&
+		window.location.hostname === "localhost"
+	) {
+		return "/api";
+	}
+	return process.env.NEXT_PUBLIC_API_URL || "";
+}
+
+const api = axios.create();
+
+api.interceptors.request.use((config) => {
+	config.baseURL = getBaseUrl();
+	return config;
 });
 
 // --- Auth refresh machinery ---
@@ -27,10 +42,30 @@ function redirectToLogin(reason: string) {
 async function doRefreshToken(): Promise<string> {
 	const token = localStorage.getItem("token");
 	if (!token) throw new Error("No token to refresh");
-	const response = await api.post("/user/refresh", null, {
-		headers: { Authorization: `Bearer ${token}` },
-	});
-	return response.data.token;
+	try {
+		const response = await api.post("/user/refresh", undefined, {
+			headers: { Authorization: `Bearer ${token}` },
+		});
+		return response.data.token;
+	} catch (err) {
+		if (axios.isAxiosError(err) && err.response) {
+			console.error(
+				"[auth] Refresh 401 response:",
+				err.response.status,
+				JSON.stringify(err.response.data),
+			);
+			console.error(
+				"[auth] Request sent to:",
+				err.config?.baseURL,
+				err.config?.url,
+			);
+			console.error(
+				"[auth] Authorization header sent:",
+				err.config?.headers?.Authorization,
+			);
+		}
+		throw err;
+	}
 }
 
 async function attemptRefreshWithRetry(): Promise<string> {
