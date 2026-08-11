@@ -45,7 +45,7 @@ async function doRefreshToken(): Promise<string> {
 	const token = localStorage.getItem("token");
 	if (!token) throw new Error("No token to refresh");
 	try {
-		const response = await api.post("/user/auth/refresh", undefined, {
+		const response = await api.post("/user/auth/refresh", null, {
 			headers: { Authorization: `Bearer ${token}` },
 		});
 		return response.data.token;
@@ -243,7 +243,7 @@ export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 
 export const NineMinuteTimer = () => {
 	if (typeof window === "undefined") return;
-	const intervalTime = 7 * 60 * 1000;
+	const intervalTime = 8 * 60 * 1000;
 	const runFunction = async () => {
 		const token = localStorage.getItem("token");
 		if (!token || window.location.pathname.startsWith("/login")) return;
