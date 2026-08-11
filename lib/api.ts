@@ -4,11 +4,20 @@ import axios from "axios";
 // On localhost: route through /api proxy to avoid CORS.
 // On staging: call the backend directly.
 
+function isLocalhost(): boolean {
+	if (typeof window === "undefined") return false;
+	const h = window.location.hostname;
+	return (
+		h === "localhost" ||
+		h === "127.0.0.1" ||
+		h === "0.0.0.0" ||
+		h === "::1" ||
+		h.endsWith(".local")
+	);
+}
+
 function getBaseUrl(): string {
-	if (
-		typeof window !== "undefined" &&
-		window.location.hostname === "localhost"
-	) {
+	if (isLocalhost()) {
 		return "/api";
 	}
 	return process.env.NEXT_PUBLIC_API_URL || "";
@@ -45,7 +54,7 @@ async function doRefreshToken(): Promise<string> {
 	const token = localStorage.getItem("token");
 	if (!token) throw new Error("No token to refresh");
 	try {
-		const response = await api.post("/user/auth/refresh", null, {
+		const response = await api.post("/user/refresh", null, {
 			headers: { Authorization: `Bearer ${token}` },
 		});
 		return response.data.token;
