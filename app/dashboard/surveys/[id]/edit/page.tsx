@@ -198,6 +198,7 @@ export default function SurveyEditPage() {
 	const isAnimatingRef = useRef(false);
 	const initializedRef = useRef(false);
 
+	// Hydrate local state from server data once on load.
 	useEffect(() => {
 		if (!surveyData || initializedRef.current) return;
 		initializedRef.current = true;
@@ -222,6 +223,7 @@ export default function SurveyEditPage() {
 		];
 		setQuestions(merged);
 		if (surveyData.design?.themeType) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setSelectedTheme(normalizeThemeType(surveyData.design.themeType));
 		}
 		setHideWatermark(surveyData.design?.showAppLogo === false);
