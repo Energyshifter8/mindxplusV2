@@ -10,27 +10,93 @@ function getApiBaseUrl(): string {
 
 const API_BASE_URL = getApiBaseUrl();
 
-let isRedirectingToLogin = false;
+// --- Auth refresh machinery ---
 
-function handle401() {
-	if (isRedirectingToLogin) return;
-	if (typeof window === "undefined") return;
+let refreshPromise: Promise<string> | null = null;
 
-	if (window.location.pathname.startsWith("/login")) {
-		localStorage.removeItem("token");
-		localStorage.removeItem("accountInfo");
-		localStorage.removeItem("userProfile");
-		return;
-	}
-
-	isRedirectingToLogin = true;
+function clearAuthStorage() {
 	localStorage.removeItem("token");
 	localStorage.removeItem("accountInfo");
 	localStorage.removeItem("userProfile");
+}
+
+function redirectToLogin(reason: string) {
+	if (typeof window === "undefined") return;
+	if (window.location.pathname.startsWith("/login")) return;
+	console.warn(`[auth] Redirecting to /login: ${reason}`);
+	clearAuthStorage();
 	window.location.href = "/login";
-	setTimeout(() => {
-		isRedirectingToLogin = false;
-	}, 2000);
+}
+
+async function doRefreshToken(): Promise<string> {
+	const token = localStorage.getItem("token");
+	if (!token) throw new Error("No token to refresh");
+	const url = `${API_BASE_URL.replace(/\/+$/, "")}/user/auth/refresh`;
+	const response = await fetch(url, {
+		method: "GET",
+		headers: { Authorization: `Bearer ${token}` },
+	});
+	if (!response.ok) {
+		const err = new Error("Token refresh failed") as Error & {
+			status: number;
+		};
+		err.status = response.status;
+		throw err;
+	}
+	const data = (await safeParseBody(response)) as { token: string };
+	return data.token;
+}
+
+async function attemptRefreshWithRetry(): Promise<string> {
+	// Single in-flight guard: if a refresh is already in progress, reuse it
+	if (refreshPromise) return refreshPromise;
+
+	refreshPromise = (async () => {
+		try {
+			const newToken = await doRefreshToken();
+			localStorage.setItem("token", newToken);
+			return newToken;
+		} catch (firstErr) {
+			// Retry once after a short delay on transient failure
+			console.warn(
+				"[auth] First refresh attempt failed, retrying...",
+				firstErr,
+			);
+			await new Promise((r) => setTimeout(r, 1000));
+			try {
+				const newToken = await doRefreshToken();
+				localStorage.setItem("token", newToken);
+				return newToken;
+			} catch (retryErr) {
+				// Both attempts failed — session is genuinely expired
+				const status = (retryErr as { status?: number })?.status ?? "unknown";
+				redirectToLogin(`Token refresh failed after retry (status ${status})`);
+				throw retryErr;
+			}
+		} finally {
+			refreshPromise = null;
+		}
+	})();
+
+	return refreshPromise;
+}
+
+async function handle401(caller: string): Promise<void> {
+	if (typeof window === "undefined") return;
+	if (window.location.pathname.startsWith("/login")) {
+		clearAuthStorage();
+		return;
+	}
+	const token = localStorage.getItem("token");
+	if (!token) {
+		redirectToLogin(`${caller}: no token in storage`);
+		return;
+	}
+	try {
+		await attemptRefreshWithRetry();
+	} catch {
+		// redirectToLogin already called inside attemptRefreshWithRetry
+	}
 }
 
 async function safeParseBody(response: Response): Promise<unknown> {
@@ -68,15 +134,27 @@ export async function apiPost<T>(
 
 		const url = `${API_BASE_URL.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
 		const serialized = JSON.stringify(body);
-		const response = await fetch(url, {
+		let response = await fetch(url, {
 			method: "POST",
 			headers,
 			body: serialized,
 		});
 
 		if (response.status === 401) {
-			handle401();
-			return { success: false, error: "Unauthorized" };
+			await handle401(`POST ${endpoint}`);
+			// Retry once with the new token
+			const newToken = localStorage.getItem("token");
+			if (newToken && newToken !== token) {
+				headers.Authorization = `Bearer ${newToken}`;
+				response = await fetch(url, {
+					method: "POST",
+					headers,
+					body: serialized,
+				});
+			}
+			if (response.status === 401) {
+				return { success: false, error: "Unauthorized" };
+			}
 		}
 
 		if (!response.ok) {
@@ -124,14 +202,25 @@ export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 		if (token) headers.Authorization = `Bearer ${token}`;
 
 		const url = `${API_BASE_URL.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
-		const response = await fetch(url, {
+		let response = await fetch(url, {
 			method: "GET",
 			headers,
 		});
 
 		if (response.status === 401) {
-			handle401();
-			return { success: false, error: "Unauthorized" };
+			await handle401(`GET ${endpoint}`);
+			// Retry once with the new token
+			const newToken = localStorage.getItem("token");
+			if (newToken && newToken !== token) {
+				headers.Authorization = `Bearer ${newToken}`;
+				response = await fetch(url, {
+					method: "GET",
+					headers,
+				});
+			}
+			if (response.status === 401) {
+				return { success: false, error: "Unauthorized" };
+			}
 		}
 
 		const data = await safeParseBody(response);
@@ -703,9 +792,6 @@ export const refreshToken = async (): Promise<{ token: string }> => {
 	});
 
 	if (!response.ok) {
-		if (response.status === 401) {
-			handle401();
-		}
 		const data = await safeParseBody(response);
 		let errorMessage = "Token refresh failed";
 		if (typeof data === "object" && data !== null) {
@@ -730,16 +816,10 @@ export const NineMinuteTimer = () => {
 		const token = localStorage.getItem("token");
 		if (!token || window.location.pathname.startsWith("/login")) return;
 		try {
-			const res = await refreshToken();
-			localStorage.setItem("token", res.token);
+			await attemptRefreshWithRetry();
 			localStorage.setItem("lastExecution", Date.now().toString());
-		} catch (e: unknown) {
-			const err = e as { status?: number } | undefined;
-			if (err?.status === 401) {
-				localStorage.removeItem("token");
-				localStorage.removeItem("accountInfo");
-				localStorage.removeItem("userProfile");
-			}
+		} catch {
+			// attemptRefreshWithRetry already called redirectToLogin if needed
 		}
 	};
 	runFunction();
