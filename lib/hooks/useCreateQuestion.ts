@@ -32,7 +32,9 @@ export function useCreateQuestion({
 			toast.dismiss("create-question");
 
 			if (!response.success) {
-				toast.error(response.error || TOAST.SAVE_ERROR, { id: "create-question" });
+				toast.error(response.error || TOAST.SAVE_ERROR, {
+					id: "create-question",
+				});
 				return;
 			}
 

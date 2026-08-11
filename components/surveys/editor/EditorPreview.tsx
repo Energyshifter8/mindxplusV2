@@ -32,17 +32,17 @@ const deviceWidths: Record<PreviewDevice, string> = {
 function OptionIndicator({
 	questionType,
 	selected,
-}: { questionType: string; selected?: boolean }) {
+}: {
+	questionType: string;
+	selected?: boolean;
+}) {
 	if (questionType === "MULTIPLE_CHOICE") {
 		return (
 			<div
 				className={`w-3.5 h-3.5 border-2 shrink-0 ${selected ? "border-primary bg-primary" : "border-[#444444]"}`}
 			>
 				{selected && (
-					<svg
-						viewBox="0 0 14 14"
-						className="w-full h-full text-white p-0.5"
-					>
+					<svg viewBox="0 0 14 14" className="w-full h-full text-white p-0.5">
 						<polyline
 							points="2 7 5.5 10.5 12 3.5"
 							fill="none"
@@ -168,10 +168,7 @@ export default function EditorPreview({
 					);
 				}
 				if (qt === "STAR_RATING") {
-					const starCount = Math.max(
-						5,
-						activeQuestion.options.length || 5,
-					);
+					const starCount = Math.max(5, activeQuestion.options.length || 5);
 					return (
 						<div className="flex items-center gap-2">
 							{Array.from({ length: starCount }).map((_, i) => (
@@ -181,9 +178,7 @@ export default function EditorPreview({
 									className="p-1 cursor-pointer hover:scale-110 transition-transform"
 									aria-label={`star-${i + 1}`}
 									onClick={() =>
-										setPreviewRating(
-											previewRating === i + 1 ? null : i + 1,
-										)
+										setPreviewRating(previewRating === i + 1 ? null : i + 1)
 									}
 								>
 									<StarIcon
@@ -217,9 +212,7 @@ export default function EditorPreview({
 										key={`num-${idx}`}
 										type="button"
 										onClick={() =>
-											setPreviewRating(
-												previewRating === val ? null : val,
-											)
+											setPreviewRating(previewRating === val ? null : val)
 										}
 										className={`px-3 py-1 border rounded-full text-[11px] cursor-pointer transition-colors ${isSelected ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted"}`}
 									>
@@ -235,18 +228,14 @@ export default function EditorPreview({
 						<div className="flex items-center gap-2">
 							<button
 								type="button"
-								onClick={() =>
-									setPreviewRating(previewRating === 1 ? null : 1)
-								}
+								onClick={() => setPreviewRating(previewRating === 1 ? null : 1)}
 								className={`px-4 py-1 border rounded text-[11px] cursor-pointer transition-colors ${previewRating === 1 ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted"}`}
 							>
 								Тийм
 							</button>
 							<button
 								type="button"
-								onClick={() =>
-									setPreviewRating(previewRating === 2 ? null : 2)
-								}
+								onClick={() => setPreviewRating(previewRating === 2 ? null : 2)}
 								className={`px-4 py-1 border rounded text-[11px] cursor-pointer transition-colors ${previewRating === 2 ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted"}`}
 							>
 								Үгүй
@@ -266,8 +255,7 @@ export default function EditorPreview({
 						>
 							{opts.map((opt, idx) => (
 								<option key={`opt-${idx}`}>
-									{opt.content ||
-										`${PLACEHOLDER.OPTION} ${idx + 1}`}
+									{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}
 								</option>
 							))}
 						</select>
@@ -302,8 +290,7 @@ export default function EditorPreview({
 													color: themeConfig.descColor,
 												}}
 											>
-												{opt.content ||
-													`${PLACEHOLDER.OPTION} ${idx + 1}`}
+												{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}
 											</span>
 											{opt.point > 0 && (
 												<span
@@ -417,10 +404,8 @@ export default function EditorPreview({
 									}}
 								>
 									{PREVIEW.QUESTION_PREFIX}{" "}
-									{questions.findIndex(
-										(q) => q.id === activeQuestionId,
-									) + 1}{" "}
-									/ {questions.length}
+									{questions.findIndex((q) => q.id === activeQuestionId) + 1} /{" "}
+									{questions.length}
 								</span>
 								{activeQuestion.isRequired && (
 									<span
