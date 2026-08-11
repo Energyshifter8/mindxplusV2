@@ -134,16 +134,7 @@ The UI follows a dark, grid-textured design language:
 ### Installation
 
 ```bash
-pnpm install
-```
-
-### Environment Variables
-
-Create `.env.local`:
-
-```env
-NEXT_PUBLIC_API_URL=https://service-staging.mindxplus.com
-```
+pnpm instal```
 
 ### Development
 
