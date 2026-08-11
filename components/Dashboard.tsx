@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { FileText, Inbox, LogOut, Plus, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import {
 	type CompletedInvitation,
 	getLatestCompletedInvitations,
@@ -38,7 +38,7 @@ function GridTexture() {
 	);
 }
 
-function MiniStatCard({
+const MiniStatCard = memo(function MiniStatCard({
 	label,
 	value,
 	icon,
@@ -86,7 +86,7 @@ function MiniStatCard({
 			</div>
 		</div>
 	);
-}
+});
 
 function PanelCard({
 	title,
@@ -135,7 +135,7 @@ function PanelCard({
 	);
 }
 
-function DataTable({
+const DataTable = memo(function DataTable({
 	columns,
 	rows,
 	emptyText,
@@ -218,7 +218,7 @@ function DataTable({
 			</table>
 		</div>
 	);
-}
+});
 
 function formatDate(dateStr: string): string {
 	if (!dateStr) return "—";

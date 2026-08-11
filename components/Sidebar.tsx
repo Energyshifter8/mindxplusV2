@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useSyncExternalStore } from "react";
+import { memo, useSyncExternalStore } from "react";
 import MindXLogo from "@/components/shared/MindXLogo";
 import { cn } from "@/lib/utils";
 
@@ -66,7 +66,13 @@ const navSections: { title: string; items: NavItem[] }[] = [
 	},
 ];
 
-function SidebarItem({ item, isActive }: { item: NavItem; isActive: boolean }) {
+const SidebarItem = memo(function SidebarItem({
+	item,
+	isActive,
+}: {
+	item: NavItem;
+	isActive: boolean;
+}) {
 	const Icon = item.icon;
 	return (
 		<Link
@@ -86,7 +92,7 @@ function SidebarItem({ item, isActive }: { item: NavItem; isActive: boolean }) {
 			<span>{item.label}</span>
 		</Link>
 	);
-}
+});
 
 export default function Sidebar({ warningMessage, user }: SidebarProps) {
 	const pathname = usePathname();
