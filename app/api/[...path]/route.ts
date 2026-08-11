@@ -18,16 +18,16 @@ async function proxyRequest(
 	const authorization = request.headers.get("authorization");
 	if (authorization) headers.set("Authorization", authorization);
 
-	let body: string | undefined;
+	const fetchInit: RequestInit = { method, headers };
+
 	if (method !== "GET" && method !== "HEAD") {
-		body = await request.text();
+		const bodyText = await request.text();
+		if (bodyText) {
+			fetchInit.body = bodyText;
+		}
 	}
 
-	const targetResponse = await fetch(targetUrl, {
-		method,
-		headers,
-		body,
-	});
+	const targetResponse = await fetch(targetUrl, fetchInit);
 
 	const responseHeaders = new Headers();
 	const respContentType = targetResponse.headers.get("content-type");

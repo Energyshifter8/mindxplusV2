@@ -36,14 +36,16 @@ function redirectToLogin(reason: string) {
 	if (window.location.pathname.startsWith("/login")) return;
 	console.warn(`[auth] Redirecting to /login: ${reason}`);
 	clearAuthStorage();
-	window.location.href = "/login";
+	setTimeout(() => {
+		window.location.href = "/login";
+	}, 3000);
 }
 
 async function doRefreshToken(): Promise<string> {
 	const token = localStorage.getItem("token");
 	if (!token) throw new Error("No token to refresh");
 	try {
-		const response = await api.post("/user/refresh", undefined, {
+		const response = await api.post("/user/auth/refresh", undefined, {
 			headers: { Authorization: `Bearer ${token}` },
 		});
 		return response.data.token;
