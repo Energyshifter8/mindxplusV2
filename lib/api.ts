@@ -37,9 +37,17 @@ async function doRefreshToken(): Promise<string> {
 		headers: { Authorization: `Bearer ${token}` },
 	});
 	if (!response.ok) {
-		const err = new Error("Token refresh failed") as Error & {
-			status: number;
-		};
+		const body = await safeParseBody(response);
+		const detail =
+			typeof body === "object" && body !== null
+				? JSON.stringify(body)
+				: String(body ?? "");
+		console.warn(
+			`[auth] Refresh failed: ${response.status} ${response.statusText} — ${detail}`,
+		);
+		const err = new Error(
+			`Token refresh failed: ${response.status} — ${detail}`,
+		) as Error & { status: number };
 		err.status = response.status;
 		throw err;
 	}
@@ -68,9 +76,9 @@ async function attemptRefreshWithRetry(): Promise<string> {
 				localStorage.setItem("token", newToken);
 				return newToken;
 			} catch (retryErr) {
-				// Both attempts failed — session is genuinely expired
-				const status = (retryErr as { status?: number })?.status ?? "unknown";
-				redirectToLogin(`Token refresh failed after retry (status ${status})`);
+				const msg =
+					retryErr instanceof Error ? retryErr.message : String(retryErr);
+				redirectToLogin(`Token refresh failed after retry: ${msg}`);
 				throw retryErr;
 			}
 		} finally {
@@ -811,7 +819,7 @@ export const refreshToken = async (): Promise<{ token: string }> => {
 
 export const NineMinuteTimer = () => {
 	if (typeof window === "undefined") return;
-	const intervalTime = 9 * 60 * 1000;
+	const intervalTime = 7 * 60 * 1000;
 	const runFunction = async () => {
 		const token = localStorage.getItem("token");
 		if (!token || window.location.pathname.startsWith("/login")) return;
