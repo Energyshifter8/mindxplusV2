@@ -10,6 +10,10 @@ function getApiBaseUrl(): string {
 
 const API_BASE_URL = getApiBaseUrl();
 
+function buildApiUrl(endpoint: string): string {
+	return `${API_BASE_URL.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
+}
+
 // --- Auth refresh machinery ---
 
 let refreshPromise: Promise<string> | null = null;
@@ -31,7 +35,8 @@ function redirectToLogin(reason: string) {
 async function doRefreshToken(): Promise<string> {
 	const token = localStorage.getItem("token");
 	if (!token) throw new Error("No token to refresh");
-	const url = `${API_BASE_URL.replace(/\/+$/, "")}/user/auth/refresh`;
+	const url = buildApiUrl("user/auth/refresh");
+	console.warn(`[auth] Refreshing token via ${url}`);
 	const response = await fetch(url, {
 		method: "GET",
 		headers: { Authorization: `Bearer ${token}` },
@@ -140,7 +145,7 @@ export async function apiPost<T>(
 		};
 		if (token) headers.Authorization = `Bearer ${token}`;
 
-		const url = `${API_BASE_URL.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
+		const url = buildApiUrl(endpoint);
 		const serialized = JSON.stringify(body);
 		let response = await fetch(url, {
 			method: "POST",
@@ -209,7 +214,7 @@ export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 		const headers: Record<string, string> = {};
 		if (token) headers.Authorization = `Bearer ${token}`;
 
-		const url = `${API_BASE_URL.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
+		const url = buildApiUrl(endpoint);
 		let response = await fetch(url, {
 			method: "GET",
 			headers,
@@ -793,7 +798,7 @@ export function getPrimaryQuestionSummaries(
 export const refreshToken = async (): Promise<{ token: string }> => {
 	const token =
 		typeof window !== "undefined" ? localStorage.getItem("token") : null;
-	const url = `${API_BASE_URL.replace(/\/+$/, "")}/user/auth/refresh`;
+	const url = buildApiUrl("user/auth/refresh");
 	const response = await fetch(url, {
 		method: "GET",
 		headers: token ? { Authorization: `Bearer ${token}` } : {},
