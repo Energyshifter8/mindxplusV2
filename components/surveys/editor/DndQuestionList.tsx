@@ -113,7 +113,6 @@ function SortableQuestionItem({
 	return (
 		/* biome-ignore lint/a11y/useKeyWithClickEvents: dnd-kit attributes/listeners handle keyboard interaction */
 		/* biome-ignore lint/a11y/noStaticElementInteractions: dnd-kit requires interactive div for sortable */
-		/* biome-ignore lint/a11y/useSemanticElements: dnd-kit requires div for sortable */
 		<div
 			ref={setNodeRef}
 			style={style}

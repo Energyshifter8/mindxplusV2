@@ -42,7 +42,11 @@ function OptionIndicator({
 				className={`w-3.5 h-3.5 border-2 shrink-0 ${selected ? "border-primary bg-primary" : "border-[#444444]"}`}
 			>
 				{selected && (
-					<svg viewBox="0 0 14 14" className="w-full h-full text-white p-0.5">
+					<svg
+						viewBox="0 0 14 14"
+						className="w-full h-full text-white p-0.5"
+						aria-hidden="true"
+					>
 						<polyline
 							points="2 7 5.5 10.5 12 3.5"
 							fill="none"
@@ -173,6 +177,7 @@ export default function EditorPreview({
 						<div className="flex items-center gap-2">
 							{Array.from({ length: starCount }).map((_, i) => (
 								<button
+									// biome-ignore lint/suspicious/noArrayIndexKey: static preview list, order never changes
 									key={`star-${i}`}
 									type="button"
 									className="p-1 cursor-pointer hover:scale-110 transition-transform"
@@ -209,6 +214,7 @@ export default function EditorPreview({
 								const isSelected = previewRating === val;
 								return (
 									<button
+										// biome-ignore lint/suspicious/noArrayIndexKey: static preview list, order never changes
 										key={`num-${idx}`}
 										type="button"
 										onClick={() =>
@@ -254,6 +260,7 @@ export default function EditorPreview({
 							style={{ background: themeConfig.inputBg }}
 						>
 							{opts.map((opt, idx) => (
+								// biome-ignore lint/suspicious/noArrayIndexKey: static preview list, order never changes
 								<option key={`opt-${idx}`}>
 									{opt.content || `${PLACEHOLDER.OPTION} ${idx + 1}`}
 								</option>
@@ -268,6 +275,7 @@ export default function EditorPreview({
 									const isSelected = previewSelected.has(idx);
 									return (
 										<button
+											// biome-ignore lint/suspicious/noArrayIndexKey: static preview list, order never changes
 											key={`option-${activeQuestion.id}-${idx}`}
 											type="button"
 											onClick={() => toggleOption(idx)}
@@ -308,6 +316,7 @@ export default function EditorPreview({
 								})
 							: Array.from({ length: 3 }, (_, idx) => (
 									<div
+										// biome-ignore lint/suspicious/noArrayIndexKey: static placeholder list, order never changes
 										key={`empty-${idx}`}
 										className="h-10 flex items-center gap-3 px-3"
 										style={{

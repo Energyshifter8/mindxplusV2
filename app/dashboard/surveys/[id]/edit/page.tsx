@@ -642,7 +642,7 @@ export default function SurveyEditPage() {
 			}
 			return result;
 		},
-		[questions, createQuestionMutation],
+		[createQuestionMutation],
 	);
 
 	const handleSave = useCallback(async () => {
