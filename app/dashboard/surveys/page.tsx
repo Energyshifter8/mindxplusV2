@@ -132,7 +132,7 @@ export default function SurveysPage() {
 	});
 
 	const queryClient = useQueryClient();
-	const deleteMutation = useMutation({
+	const _deleteMutation = useMutation({
 		mutationFn: deleteSurvey,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["surveyList"] });
@@ -367,9 +367,7 @@ export default function SurveysPage() {
 														<button
 															type="button"
 															onClick={() =>
-																router.push(
-																	`/dashboard/surveys/${row.id}/edit`,
-																)
+																router.push(`/dashboard/surveys/${row.id}/edit`)
 															}
 															className="p-1.5 text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
 															title="Засах"
@@ -496,9 +494,7 @@ export default function SurveysPage() {
 												<button
 													type="button"
 													onClick={() =>
-														router.push(
-															`/dashboard/surveys/${row.id}/results`,
-														)
+														router.push(`/dashboard/surveys/${row.id}/results`)
 													}
 													className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] uppercase tracking-widest font-bold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
 													style={{

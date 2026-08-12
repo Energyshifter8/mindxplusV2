@@ -24,14 +24,23 @@ export function useCreateQuestion({
 	return useMutation({
 		mutationFn: (payload: CreateQuestionPayload) =>
 			createQuestion(surveyId, payload),
-		onMutate: () => {
+		onMutate: (payload) => {
+			console.log(
+				"[useCreateQuestion] onMutate - payload:",
+				JSON.stringify(payload, null, 2),
+			);
 			toast.loading(TOAST.SAVE_LOADING, { id: "create-question" });
 		},
 		onSuccess: (response: ApiResponse<CreateQuestionResponse>) => {
 			// update the same toast instance for create flows
 			toast.dismiss("create-question");
+			console.log(
+				"[useCreateQuestion] onSuccess - response:",
+				JSON.stringify(response, null, 2),
+			);
 
 			if (!response.success) {
+				console.error("[useCreateQuestion] API error:", response.error);
 				toast.error(response.error || TOAST.SAVE_ERROR, {
 					id: "create-question",
 				});
@@ -44,6 +53,7 @@ export function useCreateQuestion({
 			onSuccess?.(response.data?.id ?? "");
 		},
 		onError: (error: Error) => {
+			console.error("[useCreateQuestion] onError:", error);
 			toast.dismiss("create-question");
 			toast.error(error.message || TOAST.SAVE_ERROR, { id: "create-question" });
 		},

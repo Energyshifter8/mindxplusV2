@@ -79,8 +79,12 @@ function buildBlankPayload(questionType: string): CreateQuestionPayload {
 
 	let options: CreateQuestionPayload["options"] = [];
 
-	if (questionType === "SINGLE_CHOICE" || questionType === "MULTIPLE_CHOICE") {
-		options = [makeOption(1), makeOption(2)];
+	if (
+		questionType === "SINGLE_CHOICE" ||
+		questionType === "MULTIPLE_CHOICE" ||
+		questionType === "DROPDOWN"
+	) {
+		options = [makeOption(1, "Сонголт 1"), makeOption(2, "Сонголт 2")];
 	} else if (questionType === "YES_NO") {
 		options = [makeOption(1, "Тийм"), makeOption(2, "Үгүй")];
 	} else if (questionType === "STAR_RATING") {
@@ -175,15 +179,39 @@ export default function AddQuestionPopover({
 	if (!isOpen || !popoverPos) return null;
 
 	async function handleTypeSelect(questionType: string) {
+		console.log("[AddQuestionPopover] handleTypeSelect:", questionType);
 		const payload = buildBlankPayload(questionType);
-		await onCreateQuestion(payload);
-		onClose();
+		console.log(
+			"[AddQuestionPopover] payload:",
+			JSON.stringify(payload, null, 2),
+		);
+		try {
+			await onCreateQuestion(payload);
+			console.log("[AddQuestionPopover] onCreateQuestion succeeded");
+			onClose();
+		} catch (err) {
+			console.error("[AddQuestionPopover] onCreateQuestion failed:", err);
+		}
 	}
 
 	async function handlePresetSelect(tmpl: TemplateQuestion) {
+		console.log(
+			"[AddQuestionPopover] handlePresetSelect:",
+			tmpl.template,
+			tmpl.questionType,
+		);
 		const payload = buildPresetPayload(tmpl);
-		await onCreateQuestion(payload);
-		onClose();
+		console.log(
+			"[AddQuestionPopover] payload:",
+			JSON.stringify(payload, null, 2),
+		);
+		try {
+			await onCreateQuestion(payload);
+			console.log("[AddQuestionPopover] onCreateQuestion succeeded");
+			onClose();
+		} catch (err) {
+			console.error("[AddQuestionPopover] onCreateQuestion failed:", err);
+		}
 	}
 
 	const sortedPresets = [...templateQuestionsMock].sort(

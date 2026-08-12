@@ -328,10 +328,12 @@ export default function SurveyEditPage() {
 							makeOpt(i + 1, `${i + 1} оноо`),
 						);
 					} else if (
-						(value === "SINGLE_CHOICE" || value === "MULTIPLE_CHOICE") &&
+						(value === "SINGLE_CHOICE" ||
+							value === "MULTIPLE_CHOICE" ||
+							value === "DROPDOWN") &&
 						q.options.length < 2
 					) {
-						options = [makeOpt(1), makeOpt(2)];
+						options = [makeOpt(1, "Сонголт 1"), makeOpt(2, "Сонголт 2")];
 					}
 
 					const optionCount = options.length;
@@ -617,30 +619,45 @@ export default function SurveyEditPage() {
 
 	const handleCreateQuestionFromPopover = useCallback(
 		async (payload: CreateQuestionPayload) => {
-			const result = await createQuestionMutation.mutateAsync(payload);
-			if (result.success && result.data?.id) {
-				// optimistic insert so the selected type appears immediately
-				const newQ: QuestionItem = {
-					id: result.data.id,
-					title: payload.content,
-					questionType: payload.questionType,
-					isRequired: payload.isRequired,
-					minAnswerCount: payload.minAnswerCount,
-					maxAnswerCount: payload.maxAnswerCount,
-					options: (payload.options ?? []).map((opt) => ({
-						id: String(opt.order),
-						content: opt.content,
-						point: opt.point,
-						order: opt.order,
-					})),
-					section: payload.section,
-					toBeAssessed: payload.toBeAssessed,
-				};
-				setQuestions((prev) => [...prev, newQ]);
-				setActiveQuestionId(result.data.id);
-				setActiveSection("question");
+			console.log(
+				"[createQuestion] payload:",
+				JSON.stringify(payload, null, 2),
+			);
+			try {
+				const result = await createQuestionMutation.mutateAsync(payload);
+				console.log(
+					"[createQuestion] result:",
+					JSON.stringify(result, null, 2),
+				);
+				if (result.success && result.data?.id) {
+					// optimistic insert so the selected type appears immediately
+					const newQ: QuestionItem = {
+						id: result.data.id,
+						title: payload.content,
+						questionType: payload.questionType,
+						isRequired: payload.isRequired,
+						minAnswerCount: payload.minAnswerCount,
+						maxAnswerCount: payload.maxAnswerCount,
+						options: (payload.options ?? []).map((opt) => ({
+							id: String(opt.order),
+							content: opt.content,
+							point: opt.point,
+							order: opt.order,
+						})),
+						section: payload.section,
+						toBeAssessed: payload.toBeAssessed,
+					};
+					setQuestions((prev) => [...prev, newQ]);
+					setActiveQuestionId(result.data.id);
+					setActiveSection("question");
+				} else {
+					console.error("[createQuestion] API returned error:", result.error);
+				}
+				return result;
+			} catch (err) {
+				console.error("[createQuestion] unexpected error:", err);
+				throw err;
 			}
-			return result;
 		},
 		[createQuestionMutation],
 	);
