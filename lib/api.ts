@@ -17,9 +17,6 @@ function isLocalhost(): boolean {
 }
 
 function getBaseUrl(): string {
-	if (isLocalhost()) {
-		return "/api";
-	}
 	return process.env.NEXT_PUBLIC_API_URL || "";
 }
 
@@ -201,7 +198,6 @@ export const NineMinuteTimer = () => {
 			// attemptRefreshWithRetry already called redirectToLogin if needed
 		}
 	};
-	runFunction();
 	const interval = setInterval(runFunction, intervalTime);
 	return () => clearInterval(interval);
 };
