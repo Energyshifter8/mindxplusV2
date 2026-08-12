@@ -9,6 +9,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { toast } from "sonner";
 import type { CreateQuestionPayload } from "@/lib/api";
 import { PLACEHOLDER, SIDEBAR } from "@/lib/helptext";
 import AddQuestionPopover from "./AddQuestionPopover";
@@ -59,6 +60,8 @@ interface EditorSidebarProps {
 	onCreateQuestion: (payload: CreateQuestionPayload) => Promise<unknown>;
 }
 
+const MAX_CUSTOM_QUESTIONS = 20;
+
 const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 	function EditorSidebar(
 		{
@@ -108,6 +111,12 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 		);
 
 		function handleAddClick() {
+			if (regularQuestions.length >= MAX_CUSTOM_QUESTIONS) {
+				toast.error(
+					`${MAX_CUSTOM_QUESTIONS}-с ихгүй нэмэлт асуулт нэмэх боломжтой`,
+				);
+				return;
+			}
 			if (addBtnRef.current) {
 				const rect = addBtnRef.current.getBoundingClientRect();
 				let top = rect.top;
@@ -167,9 +176,14 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 								ref={addBtnRef}
 								type="button"
 								onClick={handleAddClick}
+								disabled={regularQuestions.length >= MAX_CUSTOM_QUESTIONS}
 								onPointerDown={(e) => e.stopPropagation()}
-								className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-primary transition-colors"
-								title={SIDEBAR.ADD_QUESTION}
+								className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-primary transition-colors disabled:opacity-30 disabled:pointer-events-none"
+								title={
+									regularQuestions.length >= MAX_CUSTOM_QUESTIONS
+										? `${MAX_CUSTOM_QUESTIONS}-с ихгүй`
+										: SIDEBAR.ADD_QUESTION
+								}
 							>
 								<Plus size={13} />
 							</button>

@@ -24,20 +24,12 @@ export function useCreateQuestion({
 	return useMutation({
 		mutationFn: (payload: CreateQuestionPayload) =>
 			createQuestion(surveyId, payload),
-		onMutate: (payload) => {
-			console.log(
-				"[useCreateQuestion] onMutate - payload:",
-				JSON.stringify(payload, null, 2),
-			);
+		onMutate: (_payload) => {
 			toast.loading(TOAST.SAVE_LOADING, { id: "create-question" });
 		},
 		onSuccess: (response: ApiResponse<CreateQuestionResponse>) => {
 			// update the same toast instance for create flows
 			toast.dismiss("create-question");
-			console.log(
-				"[useCreateQuestion] onSuccess - response:",
-				JSON.stringify(response, null, 2),
-			);
 
 			if (!response.success) {
 				console.error("[useCreateQuestion] API error:", response.error);
