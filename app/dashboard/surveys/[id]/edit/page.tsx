@@ -329,7 +329,7 @@ export default function SurveyEditPage() {
 						);
 					} else if (
 						(value === "SINGLE_CHOICE" ||
-							value === "MULTIPLE_CHOICE" ||
+							value === "MULTI_CHOICE" ||
 							value === "DROPDOWN") &&
 						q.options.length < 2
 					) {
@@ -337,7 +337,7 @@ export default function SurveyEditPage() {
 					}
 
 					const optionCount = options.length;
-					const isMultiple = value === "MULTIPLE_CHOICE";
+					const isMultiple = value === "MULTI_CHOICE";
 					return {
 						...q,
 						questionType: value,
@@ -435,7 +435,7 @@ export default function SurveyEditPage() {
 					...q,
 					options: [...q.options, newOption],
 					maxAnswerCount:
-						q.questionType === "MULTIPLE_CHOICE"
+						q.questionType === "MULTI_CHOICE"
 							? q.options.length + 1
 							: q.maxAnswerCount,
 				};
@@ -462,7 +462,7 @@ export default function SurveyEditPage() {
 						...item,
 						options: newOptions,
 						maxAnswerCount:
-							item.questionType === "MULTIPLE_CHOICE"
+							item.questionType === "MULTI_CHOICE"
 								? Math.min(item.maxAnswerCount, newOptions.length)
 								: item.maxAnswerCount,
 					};

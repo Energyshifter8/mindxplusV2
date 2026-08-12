@@ -25,11 +25,16 @@ async function proxyRequest(
 		if (contentType.includes("application/json")) {
 			try {
 				const body = await request.json();
+				const serialized = JSON.stringify(body);
+				console.log("[PROXY] target:", targetUrl);
+				console.log("[PROXY] body length:", serialized.length);
+				console.log("[PROXY] body:", serialized);
 				headers.set("Content-Type", "application/json");
-				fetchInit.body = JSON.stringify(body);
+				fetchInit.body = serialized;
 			} catch {
 				const bodyText = await request.text();
 				if (bodyText) {
+					console.log("[PROXY] fallback text body length:", bodyText.length);
 					headers.set("Content-Type", contentType);
 					fetchInit.body = bodyText;
 				}
@@ -44,6 +49,7 @@ async function proxyRequest(
 	}
 
 	const targetResponse = await fetch(targetUrl, fetchInit);
+	console.log("[PROXY] response status:", targetResponse.status, targetUrl);
 
 	const responseHeaders = new Headers();
 	const respContentType = targetResponse.headers.get("content-type");

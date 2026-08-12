@@ -34,7 +34,7 @@ const QUESTION_TYPES = [
 		color: "text-blue-500",
 	},
 	{
-		value: "MULTIPLE_CHOICE",
+		value: "MULTI_CHOICE",
 		label: "Олон сонголттой асуулт",
 		icon: CheckSquare,
 		color: "text-purple-500",
@@ -81,7 +81,7 @@ function buildBlankPayload(questionType: string): CreateQuestionPayload {
 
 	if (
 		questionType === "SINGLE_CHOICE" ||
-		questionType === "MULTIPLE_CHOICE" ||
+		questionType === "MULTI_CHOICE" ||
 		questionType === "DROPDOWN"
 	) {
 		options = [makeOption(1, "Сонголт 1"), makeOption(2, "Сонголт 2")];

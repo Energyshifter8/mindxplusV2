@@ -36,7 +36,7 @@ function OptionIndicator({
 	questionType: string;
 	selected?: boolean;
 }) {
-	if (questionType === "MULTIPLE_CHOICE") {
+	if (questionType === "MULTI_CHOICE") {
 		return (
 			<div
 				className={`w-3.5 h-3.5 border-2 shrink-0 ${selected ? "border-primary bg-primary" : "border-[#444444]"}`}

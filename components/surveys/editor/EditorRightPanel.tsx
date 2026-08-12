@@ -6,7 +6,7 @@ import type { QuestionItem, SectionType } from "./EditorSidebar";
 
 const QUESTION_TYPES = [
 	{ value: "SINGLE_CHOICE", label: QUESTION.TYPE_SINGLE },
-	{ value: "MULTIPLE_CHOICE", label: QUESTION.TYPE_MULTIPLE },
+	{ value: "MULTI_CHOICE", label: QUESTION.TYPE_MULTIPLE },
 	{ value: "SCALE", label: QUESTION.TYPE_SCALE },
 	{ value: "TEXT", label: QUESTION.TYPE_TEXT },
 	{ value: "DROPDOWN", label: QUESTION.TYPE_DROPDOWN },
@@ -322,7 +322,7 @@ export default function EditorRightPanel({
 							</button>
 						</div>
 
-						{activeQuestion.questionType === "MULTIPLE_CHOICE" && (
+						{activeQuestion.questionType === "MULTI_CHOICE" && (
 							<div className="grid grid-cols-2 gap-3">
 								<div>
 									<FieldLabel>{QUESTION.MIN_ANSWER}</FieldLabel>
