@@ -87,23 +87,28 @@ async function attemptRefreshWithRetry(): Promise<string> {
 	return refreshPromise;
 }
 
-async function handle401(caller: string): Promise<void> {
-	if (typeof window === "undefined") return;
-	if (window.location.pathname.startsWith("/login")) {
-		clearAuthStorage();
-		return;
-	}
-	const token = localStorage.getItem("token");
-	if (!token) {
-		redirectToLogin(`${caller}: no token in storage`);
-		return;
-	}
-	try {
-		await attemptRefreshWithRetry();
-	} catch {
-		// redirectToLogin already called inside attemptRefreshWithRetry
-	}
-}
+// Axios interceptor: auto-refresh on 401 and retry once
+api.interceptors.response.use(
+	(response) => response,
+	async (error) => {
+		const originalRequest = error.config;
+		if (
+			error.response?.status === 401 &&
+			!originalRequest._retry &&
+			!window.location.pathname.startsWith("/login")
+		) {
+			originalRequest._retry = true;
+			try {
+				const newToken = await attemptRefreshWithRetry();
+				originalRequest.headers.Authorization = `Bearer ${newToken}`;
+				return api(originalRequest);
+			} catch {
+				redirectToLogin("Token refresh failed in interceptor");
+			}
+		}
+		return Promise.reject(error);
+	},
+);
 
 // --- API helpers ---
 
@@ -147,21 +152,6 @@ export async function apiPost<T>(
 		return { success: true, data: response.data };
 	} catch (error) {
 		if (axios.isAxiosError(error) && error.response) {
-			if (error.response.status === 401) {
-				await handle401(`POST ${endpoint}`);
-				const newToken = localStorage.getItem("token");
-				if (newToken) {
-					try {
-						const retryResponse = await api.post<T>(endpoint, body, {
-							headers: authHeaders(newToken),
-						});
-						return { success: true, data: retryResponse.data };
-					} catch {
-						return { success: false, error: "Unauthorized" };
-					}
-				}
-				return { success: false, error: "Unauthorized" };
-			}
 			return {
 				success: false,
 				error: extractError(error.response.data),
@@ -186,21 +176,6 @@ export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 		return { success: true, data: response.data };
 	} catch (error) {
 		if (axios.isAxiosError(error) && error.response) {
-			if (error.response.status === 401) {
-				await handle401(`GET ${endpoint}`);
-				const newToken = localStorage.getItem("token");
-				if (newToken) {
-					try {
-						const retryResponse = await api.get<T>(endpoint, {
-							headers: authHeaders(newToken),
-						});
-						return { success: true, data: retryResponse.data };
-					} catch {
-						return { success: false, error: "Unauthorized" };
-					}
-				}
-				return { success: false, error: "Unauthorized" };
-			}
 			return {
 				success: false,
 				error: extractError(error.response.data),
