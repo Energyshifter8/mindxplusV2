@@ -13,8 +13,6 @@ async function proxyRequest(
 	const targetUrl = `${STAGING_API}/${targetPath}${hasTrailingSlash ? "/" : ""}${search}`;
 
 	const headers = new Headers();
-	const contentType = request.headers.get("content-type");
-	if (contentType) headers.set("Content-Type", contentType);
 	const authorization = request.headers.get("authorization");
 	if (authorization) headers.set("Authorization", authorization);
 	const cookie = request.headers.get("cookie");
@@ -23,9 +21,25 @@ async function proxyRequest(
 	const fetchInit: RequestInit = { method, headers };
 
 	if (method !== "GET" && method !== "HEAD") {
-		const bodyText = await request.text();
-		if (bodyText) {
-			fetchInit.body = bodyText;
+		const contentType = request.headers.get("content-type") || "";
+		if (contentType.includes("application/json")) {
+			try {
+				const body = await request.json();
+				headers.set("Content-Type", "application/json");
+				fetchInit.body = JSON.stringify(body);
+			} catch {
+				const bodyText = await request.text();
+				if (bodyText) {
+					headers.set("Content-Type", contentType);
+					fetchInit.body = bodyText;
+				}
+			}
+		} else {
+			const bodyText = await request.text();
+			if (bodyText) {
+				if (contentType) headers.set("Content-Type", contentType);
+				fetchInit.body = bodyText;
+			}
 		}
 	}
 
