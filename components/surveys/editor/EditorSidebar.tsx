@@ -163,25 +163,23 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 							</span>
 						</div>
 						<div className="flex items-center gap-1">
-							<div className="relative">
-								<button
-									ref={addBtnRef}
-									type="button"
-									onClick={handleAddClick}
-									onPointerDown={(e) => e.stopPropagation()}
-									className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-primary transition-colors"
-									title={SIDEBAR.ADD_QUESTION}
-								>
-									<Plus size={13} />
-								</button>
-								<AddQuestionPopover
-									isOpen={popoverOpen}
-									onClose={() => setPopoverOpen(false)}
-									onCreateQuestion={onCreateQuestion}
-									anchorRef={addBtnRef}
-									popoverPos={popoverPos}
-								/>
-							</div>
+							<button
+								ref={addBtnRef}
+								type="button"
+								onClick={handleAddClick}
+								onPointerDown={(e) => e.stopPropagation()}
+								className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-primary transition-colors"
+								title={SIDEBAR.ADD_QUESTION}
+							>
+								<Plus size={13} />
+							</button>
+							<AddQuestionPopover
+								isOpen={popoverOpen}
+								onClose={() => setPopoverOpen(false)}
+								onCreateQuestion={onCreateQuestion}
+								anchorRef={addBtnRef}
+								popoverPos={popoverPos}
+							/>
 						</div>
 					</div>
 

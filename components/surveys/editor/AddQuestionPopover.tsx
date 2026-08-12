@@ -10,6 +10,7 @@ import {
 	Type,
 } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import type { CreateQuestionPayload } from "@/lib/api";
 import {
 	type TemplateQuestion,
@@ -155,6 +156,15 @@ export default function AddQuestionPopover({
 
 	useEffect(() => {
 		if (!isOpen) return;
+		function handleScroll() {
+			onClose();
+		}
+		window.addEventListener("scroll", handleScroll, true);
+		return () => window.removeEventListener("scroll", handleScroll, true);
+	}, [isOpen, onClose]);
+
+	useEffect(() => {
+		if (!isOpen) return;
 		function handleKey(e: KeyboardEvent) {
 			if (e.key === "Escape") onClose();
 		}
@@ -180,10 +190,10 @@ export default function AddQuestionPopover({
 		(a, b) => a.sortOrder - b.sortOrder,
 	);
 
-	return (
+	return createPortal(
 		<div
 			ref={popoverRef}
-			className="fixed z-[100] w-72 max-h-[80vh] overflow-y-auto border-2 border-border bg-card shadow-lg"
+			className="fixed z-[9999] w-72 max-h-[80vh] overflow-y-auto border-2 border-border bg-card shadow-lg"
 			style={{ top: popoverPos.top, left: popoverPos.left }}
 			onPointerDown={(e) => e.stopPropagation()}
 		>
@@ -237,6 +247,7 @@ export default function AddQuestionPopover({
 					))}
 				</div>
 			</div>
-		</div>
+		</div>,
+		document.body,
 	);
 }
