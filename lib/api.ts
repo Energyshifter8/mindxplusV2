@@ -3,6 +3,9 @@ import axios from "axios";
 // --- Axios instance ---
 
 function getBaseUrl(): string {
+	if (typeof window !== "undefined") {
+		return "/api";
+	}
 	return process.env.NEXT_PUBLIC_API_URL || "";
 }
 
