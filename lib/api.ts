@@ -6,7 +6,7 @@ function getBaseUrl(): string {
 	return process.env.NEXT_PUBLIC_API_URL || "";
 }
 
-const api = axios.create();
+const api = axios.create({ withCredentials: true });
 
 api.interceptors.request.use((config) => {
 	config.baseURL = getBaseUrl();
@@ -68,6 +68,14 @@ async function attemptRefreshWithRetry(): Promise<string> {
 	})();
 
 	return refreshPromise;
+}
+
+export async function preRefreshToken(): Promise<void> {
+	try {
+		await attemptRefreshWithRetry();
+	} catch {
+		// attemptRefreshWithRetry already handles redirectToLogin
+	}
 }
 
 // Axios interceptor: auto-refresh on 401 and retry once
@@ -174,6 +182,7 @@ export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 export const NineMinuteTimer = () => {
 	if (typeof window === "undefined") return;
 	const intervalTime = 8 * 60 * 1000;
+	const initialDelay = 3000;
 	const runFunction = async () => {
 		const token = localStorage.getItem("token");
 		if (!token || window.location.pathname.startsWith("/login")) return;
@@ -184,8 +193,15 @@ export const NineMinuteTimer = () => {
 			// attemptRefreshWithRetry already called redirectToLogin if needed
 		}
 	};
-	const interval = setInterval(runFunction, intervalTime);
-	return () => clearInterval(interval);
+	let intervalId: ReturnType<typeof setInterval> | null = null;
+	const initialTimeout = setTimeout(() => {
+		runFunction();
+		intervalId = setInterval(runFunction, intervalTime);
+	}, initialDelay);
+	return () => {
+		clearTimeout(initialTimeout);
+		if (intervalId) clearInterval(intervalId);
+	};
 };
 
 // --- Types ---
