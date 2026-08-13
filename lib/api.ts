@@ -184,7 +184,7 @@ export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 
 export const NineMinuteTimer = () => {
 	if (typeof window === "undefined") return;
-	const intervalTime = 8 * 60 * 1000;
+	const intervalTime = 9 * 60 * 1000;
 	const initialDelay = 3000;
 	const runFunction = async () => {
 		const token = localStorage.getItem("token");
