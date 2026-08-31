@@ -357,7 +357,7 @@ export default function AuthForm() {
 
 	const signupMutation = useMutation({
 		mutationFn: (data: { email: string; password: string }) =>
-			apiPost<LoginResponse>("/api/auth/register", data),
+			apiPost<LoginResponse>("user/register", data),
 		onSuccess: (response) => {
 			if (!response.success) {
 				setError(response.error || "Бүртгэл амжилтгүй боллоо");
