@@ -111,8 +111,8 @@ function QuestionCard({
 				</p>
 			</div>
 			<div className="space-y-2.5">
-				{question.options.map((option) => (
-					<div key={option.optionContent}>
+				{question.options.map((option, idx) => (
+					<div key={`${option.optionContent}-${idx}`}>
 						<div className="flex items-center justify-between mb-1">
 							<span
 								className="text-xs text-foreground truncate max-w-[70%]"
