@@ -179,15 +179,9 @@ export default function AddQuestionPopover({
 	if (!isOpen || !popoverPos) return null;
 
 	async function handleTypeSelect(questionType: string) {
-		console.log("[AddQuestionPopover] handleTypeSelect:", questionType);
 		const payload = buildBlankPayload(questionType);
-		console.log(
-			"[AddQuestionPopover] payload:",
-			JSON.stringify(payload, null, 2),
-		);
 		try {
 			await onCreateQuestion(payload);
-			console.log("[AddQuestionPopover] onCreateQuestion succeeded");
 			onClose();
 		} catch (err) {
 			console.error("[AddQuestionPopover] onCreateQuestion failed:", err);
@@ -195,19 +189,9 @@ export default function AddQuestionPopover({
 	}
 
 	async function handlePresetSelect(tmpl: TemplateQuestion) {
-		console.log(
-			"[AddQuestionPopover] handlePresetSelect:",
-			tmpl.template,
-			tmpl.questionType,
-		);
 		const payload = buildPresetPayload(tmpl);
-		console.log(
-			"[AddQuestionPopover] payload:",
-			JSON.stringify(payload, null, 2),
-		);
 		try {
 			await onCreateQuestion(payload);
-			console.log("[AddQuestionPopover] onCreateQuestion succeeded");
 			onClose();
 		} catch (err) {
 			console.error("[AddQuestionPopover] onCreateQuestion failed:", err);

@@ -619,16 +619,8 @@ export default function SurveyEditPage() {
 
 	const handleCreateQuestionFromPopover = useCallback(
 		async (payload: CreateQuestionPayload) => {
-			console.log(
-				"[createQuestion] payload:",
-				JSON.stringify(payload, null, 2),
-			);
 			try {
 				const result = await createQuestionMutation.mutateAsync(payload);
-				console.log(
-					"[createQuestion] result:",
-					JSON.stringify(result, null, 2),
-				);
 				if (result.success && result.data?.id) {
 					// optimistic insert so the selected type appears immediately
 					const newQ: QuestionItem = {
@@ -680,11 +672,12 @@ export default function SurveyEditPage() {
 		toast.loading(TOAST.SAVE_LOADING, { id: "save-survey" });
 
 		try {
-			// update pages (call API directly to avoid per-mutation invalidations)
-			const pageCalls: Promise<unknown>[] = [];
+			// Build all operations upfront, then run in parallel
+			const operations: Promise<unknown>[] = [];
 
+			// Page updates
 			if (startPage) {
-				pageCalls.push(
+				operations.push(
 					updateSurveyPage(surveyId, {
 						id: startPage.id,
 						qnSection: startPage.qnSection,
@@ -698,7 +691,7 @@ export default function SurveyEditPage() {
 			}
 
 			if (endPage) {
-				pageCalls.push(
+				operations.push(
 					updateSurveyPage(surveyId, {
 						id: endPage.id,
 						qnSection: endPage.qnSection,
@@ -710,11 +703,60 @@ export default function SurveyEditPage() {
 				);
 			}
 
-			await Promise.all(pageCalls);
+			// Build a lookup of original server questions for change detection
+			const serverQuestionsMap = new Map<
+				string,
+				{
+					id: string;
+					content: string;
+					questionType: string;
+					isRequired: boolean;
+					minAnswerCount: number;
+					maxAnswerCount: number;
+					options: { content: string; point: number }[];
+				}
+			>(
+				[
+					...(surveyData?.customQuestions?.CUSTOM_QUESTION_FIRST ?? []),
+					...(surveyData?.customQuestions?.CUSTOM_QUESTION_LAST ?? []),
+				].map((q) => [q.id, q]),
+			);
 
-			// Save questions sequentially to avoid race conditions. Call API directly so we don't invalidate on every op.
+			function hasQuestionChanged(
+				local: QuestionItem,
+				server: {
+					content: string;
+					questionType: string;
+					isRequired: boolean;
+					minAnswerCount: number;
+					maxAnswerCount: number;
+					options: { content: string; point: number }[];
+				},
+			): boolean {
+				if (local.title !== server.content) return true;
+				if (local.questionType !== server.questionType) return true;
+				if (local.isRequired !== server.isRequired) return true;
+				if (local.minAnswerCount !== server.minAnswerCount) return true;
+				if (local.maxAnswerCount !== server.maxAnswerCount) return true;
+				if (local.options.length !== server.options.length) return true;
+				for (let i = 0; i < local.options.length; i++) {
+					const lo = local.options[i];
+					const so = server.options[i];
+					if (!so || lo.content !== so.content || lo.point !== so.point)
+						return true;
+				}
+				return false;
+			}
+
+			// Question operations — only for changed questions, all in parallel
 			for (const q of questions) {
 				if (q.section === "PRIMARY_QUESTION") continue;
+
+				const serverQ = serverQuestionsMap.get(q.id);
+				const isExisting = !!serverQ;
+
+				// Skip unchanged existing questions
+				if (isExisting && !hasQuestionChanged(q, serverQ)) continue;
 
 				const payload: CreateQuestionPayload = {
 					id: 0,
@@ -737,20 +779,29 @@ export default function SurveyEditPage() {
 					matrixRows: [],
 				};
 
-				const createResult = await createQuestion(surveyId, payload);
-				if (!createResult.success) {
-					throw new Error(
-						`Failed to save question: ${createResult.error || "Unknown error"}`,
-					);
-				}
-
-				const delRes = await deleteQuestion(surveyId, { id: q.id });
-				if (!delRes.success) {
-					throw new Error(
-						`Failed to delete placeholder question: ${delRes.error || "Unknown"}`,
-					);
-				}
+				operations.push(
+					(async () => {
+						const createResult = await createQuestion(surveyId, payload);
+						if (!createResult.success) {
+							throw new Error(
+								`Failed to save question: ${createResult.error || "Unknown error"}`,
+							);
+						}
+						// Only delete if this was an existing server question
+						if (isExisting) {
+							const delRes = await deleteQuestion(surveyId, { id: q.id });
+							if (!delRes.success) {
+								throw new Error(
+									`Failed to delete old question: ${delRes.error || "Unknown"}`,
+								);
+							}
+						}
+					})(),
+				);
 			}
+
+			// Promise.all aborts all on first error
+			await Promise.all(operations);
 
 			// invalidate once at end
 			queryClient.invalidateQueries({ queryKey: ["surveyDetail", surveyId] });
@@ -774,6 +825,7 @@ export default function SurveyEditPage() {
 		effectiveEndingTitle,
 		effectiveEndingDescription,
 		surveyId,
+		surveyData,
 		queryClient,
 		localSaving,
 	]);
@@ -894,9 +946,7 @@ export default function SurveyEditPage() {
 					onClose={() => setShowDesignModal(false)}
 					currentTheme={selectedTheme}
 					onThemeChange={setSelectedTheme}
-					onLogoUpload={(file) => {
-						console.log("Logo uploaded:", file.name);
-					}}
+					onLogoUpload={(_file) => {}}
 					hideWatermark={hideWatermark}
 					onHideWatermarkChange={setHideWatermark}
 				/>
