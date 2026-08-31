@@ -24,6 +24,7 @@ import {
 	SurveyStatusBadge,
 	TableSkeleton,
 } from "@/components/shared/ListComponents";
+import ShareSurveyModal from "@/components/surveys/ShareSurveyModal";
 import {
 	deleteSurvey,
 	getSurveyList,
@@ -48,6 +49,7 @@ type FilterTab = "ALL" | "CREATED" | "PUBLISHED" | "CLOSED";
 function getSurveyKebabItems(
 	row: { id: string; status: string; name: string },
 	router: ReturnType<typeof useRouter>,
+	onShare: (id: string) => void,
 ): KebabMenuItem[] {
 	const items: KebabMenuItem[] = [];
 
@@ -76,7 +78,7 @@ function getSurveyKebabItems(
 		items.push({
 			label: "Түгээх",
 			icon: <Share2 size={11} />,
-			onClick: () => {},
+			onClick: () => onShare(row.id),
 		});
 	} else {
 		// CLOSED
@@ -102,6 +104,7 @@ export default function SurveysPage() {
 	const [activeTab, setActiveTab] = useState<FilterTab>("ALL");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+	const [shareModalSurveyId, setShareModalSurveyId] = useState<string | null>(null);
 
 	const {
 		data: surveyStats,
@@ -156,6 +159,7 @@ export default function SurveysPage() {
 	}, [surveyListRes]);
 
 	return (
+		<>
 		<div className="min-h-full w-full">
 			<div className="p-6 lg:p-10">
 				{/* Header */}
@@ -378,7 +382,7 @@ export default function SurveysPage() {
 													{row.status === "PUBLISHED" && (
 														<button
 															type="button"
-															onClick={() => {}}
+															onClick={() => setShareModalSurveyId(row.id)}
 															className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors"
 															style={{
 																fontFamily: "'JetBrains Mono', monospace",
@@ -405,7 +409,7 @@ export default function SurveysPage() {
 															Үр дүн
 														</button>
 													)}
-													<KebabMenu items={getSurveyKebabItems(row, router)} />
+													<KebabMenu items={getSurveyKebabItems(row, router, setShareModalSurveyId)} />
 												</div>
 											</td>
 										</tr>
@@ -480,7 +484,7 @@ export default function SurveysPage() {
 											{row.status === "PUBLISHED" && (
 												<button
 													type="button"
-													onClick={() => {}}
+													onClick={() => setShareModalSurveyId(row.id)}
 													className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] uppercase tracking-widest font-bold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
 													style={{
 														fontFamily: "'JetBrains Mono', monospace",
@@ -505,7 +509,7 @@ export default function SurveysPage() {
 													Үр дүн
 												</button>
 											)}
-											<KebabMenu items={getSurveyKebabItems(row, router)} />
+											<KebabMenu items={getSurveyKebabItems(row, router, setShareModalSurveyId)} />
 										</div>
 									</div>
 								</div>
@@ -515,5 +519,13 @@ export default function SurveysPage() {
 				</div>
 			</div>
 		</div>
+		{shareModalSurveyId && (
+			<ShareSurveyModal
+				surveyId={shareModalSurveyId}
+				open={!!shareModalSurveyId}
+				onClose={() => setShareModalSurveyId(null)}
+			/>
+		)}
+		</>
 	);
 }
