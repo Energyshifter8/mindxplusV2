@@ -161,12 +161,12 @@ export default memo(function ShareSurveyModal({
 
 				{/* Share link */}
 				<div className="mb-6">
-					<label
+					<span
 						className="mb-2 block text-[10px] uppercase tracking-widest text-muted-foreground"
 						style={{ fontFamily: "'JetBrains Mono', monospace" }}
 					>
 						Шинжилгээнд оролцох холбоос
-					</label>
+					</span>
 					<div className="flex items-stretch gap-2">
 						<div className="flex-1 min-w-0 h-10 border-2 border-border bg-input px-3 flex items-center">
 							<span
@@ -200,12 +200,12 @@ export default memo(function ShareSurveyModal({
 
 				{/* QR code */}
 				<div>
-					<label
+					<span
 						className="mb-3 block text-[10px] uppercase tracking-widest text-muted-foreground"
 						style={{ fontFamily: "'JetBrains Mono', monospace" }}
 					>
 						QR код татаж хуваалцах
-					</label>
+					</span>
 					<div className="flex flex-col items-center gap-4">
 						<div className="border-2 border-border bg-white p-3">
 							<canvas ref={canvasRef} width={300} height={300} />

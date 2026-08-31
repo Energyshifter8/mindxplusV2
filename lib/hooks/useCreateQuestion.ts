@@ -32,7 +32,6 @@ export function useCreateQuestion({
 			toast.dismiss("create-question");
 
 			if (!response.success) {
-				console.error("[useCreateQuestion] API error:", response.error);
 				toast.error(response.error || TOAST.SAVE_ERROR, {
 					id: "create-question",
 				});
@@ -45,7 +44,6 @@ export function useCreateQuestion({
 			onSuccess?.(response.data?.id ?? "");
 		},
 		onError: (error: Error) => {
-			console.error("[useCreateQuestion] onError:", error);
 			toast.dismiss("create-question");
 			toast.error(error.message || TOAST.SAVE_ERROR, { id: "create-question" });
 		},

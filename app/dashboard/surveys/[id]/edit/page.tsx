@@ -619,37 +619,31 @@ export default function SurveyEditPage() {
 
 	const handleCreateQuestionFromPopover = useCallback(
 		async (payload: CreateQuestionPayload) => {
-			try {
-				const result = await createQuestionMutation.mutateAsync(payload);
-				if (result.success && result.data?.id) {
-					// optimistic insert so the selected type appears immediately
-					const newQ: QuestionItem = {
-						id: result.data.id,
-						title: payload.content,
-						questionType: payload.questionType,
-						isRequired: payload.isRequired,
-						minAnswerCount: payload.minAnswerCount,
-						maxAnswerCount: payload.maxAnswerCount,
-						options: (payload.options ?? []).map((opt) => ({
-							id: String(opt.order),
-							content: opt.content,
-							point: opt.point,
-							order: opt.order,
-						})),
-						section: payload.section,
-						toBeAssessed: payload.toBeAssessed,
-					};
-					setQuestions((prev) => [...prev, newQ]);
-					setActiveQuestionId(result.data.id);
-					setActiveSection("question");
-				} else {
-					console.error("[createQuestion] API returned error:", result.error);
-				}
-				return result;
-			} catch (err) {
-				console.error("[createQuestion] unexpected error:", err);
-				throw err;
+			const result = await createQuestionMutation.mutateAsync(payload);
+			if (result.success && result.data?.id) {
+				// optimistic insert so the selected type appears immediately
+				const newQ: QuestionItem = {
+					id: result.data.id,
+					title: payload.content,
+					questionType: payload.questionType,
+					isRequired: payload.isRequired,
+					minAnswerCount: payload.minAnswerCount,
+					maxAnswerCount: payload.maxAnswerCount,
+					options: (payload.options ?? []).map((opt) => ({
+						id: String(opt.order),
+						content: opt.content,
+						point: opt.point,
+						order: opt.order,
+					})),
+					section: payload.section,
+					toBeAssessed: payload.toBeAssessed,
+				};
+				setQuestions((prev) => [...prev, newQ]);
+				setActiveQuestionId(result.data.id);
+				setActiveSection("question");
+			} else {
 			}
+			return result;
 		},
 		[createQuestionMutation],
 	);

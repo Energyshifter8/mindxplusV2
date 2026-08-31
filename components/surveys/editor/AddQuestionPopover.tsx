@@ -183,9 +183,7 @@ export default function AddQuestionPopover({
 		try {
 			await onCreateQuestion(payload);
 			onClose();
-		} catch (err) {
-			console.error("[AddQuestionPopover] onCreateQuestion failed:", err);
-		}
+		} catch (_err) {}
 	}
 
 	async function handlePresetSelect(tmpl: TemplateQuestion) {
@@ -193,9 +191,7 @@ export default function AddQuestionPopover({
 		try {
 			await onCreateQuestion(payload);
 			onClose();
-		} catch (err) {
-			console.error("[AddQuestionPopover] onCreateQuestion failed:", err);
-		}
+		} catch (_err) {}
 	}
 
 	const sortedPresets = [...templateQuestionsMock].sort(

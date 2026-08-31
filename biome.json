@@ -24,6 +24,7 @@
 				"useValidTypeof": "error"
 			},
 			"suspicious": {
+				"noConsole": "error",
 				"noExplicitAny": "warn",
 				"noDoubleEquals": "error",
 				"useDefaultSwitchClauseLast": "error"

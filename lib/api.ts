@@ -26,10 +26,9 @@ function clearAuthStorage() {
 	localStorage.removeItem("userProfile");
 }
 
-function redirectToLogin(reason: string) {
+function redirectToLogin(_reason: string) {
 	if (typeof window === "undefined") return;
 	if (window.location.pathname.startsWith("/login")) return;
-	console.warn(`[auth] Redirecting to /login: ${reason}`);
 	clearAuthStorage();
 	setTimeout(() => {
 		window.location.href = "/login";
