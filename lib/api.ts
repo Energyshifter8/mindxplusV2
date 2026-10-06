@@ -23,109 +23,53 @@ function getBaseUrl(): string {
 	return process.env.NEXT_PUBLIC_API_URL || "";
 }
 
-const api = axios.create({ withCredentials: true });
+// Staging апп-ын axios тохиргоотой ижил: timeout 30с, withCredentials (refresh cookie).
+const api = axios.create({ withCredentials: true, timeout: 30000 });
 
-api.interceptors.request.use((config) => {
-	config.baseURL = getBaseUrl();
-	return config;
-});
-
-// --- Auth refresh machinery ---
-
-let refreshPromise: Promise<string> | null = null;
-
-function clearAuthStorage() {
-	localStorage.removeItem("token");
-	localStorage.removeItem("accountInfo");
-	localStorage.removeItem("userProfile");
-}
-
-function redirectToLogin(_reason: string) {
-	if (typeof window === "undefined") return;
-	if (window.location.pathname.startsWith("/login")) return;
-	clearAuthStorage();
-	setTimeout(() => {
-		window.location.href = "/login";
-	}, 3000);
-}
-
-async function doRefreshToken(): Promise<string> {
-	const token = localStorage.getItem("token");
-	if (!token) throw new Error("No token to refresh");
-	const response = await api.post("/user/refresh", null, {
-		headers: { Authorization: `Bearer ${token}` },
-	});
-	return response.data.token;
-}
-
-async function attemptRefreshWithRetry(): Promise<string> {
-	if (refreshPromise) return refreshPromise;
-
-	refreshPromise = (async () => {
-		try {
-			const newToken = await doRefreshToken();
-			localStorage.setItem("token", newToken);
-			return newToken;
-		} catch {
-			await new Promise((r) => setTimeout(r, 500));
-			try {
-				const newToken = await doRefreshToken();
-				localStorage.setItem("token", newToken);
-				return newToken;
-			} catch (retryErr) {
-				const msg =
-					retryErr instanceof Error ? retryErr.message : String(retryErr);
-				redirectToLogin(`Token refresh failed after retry: ${msg}`);
-				throw retryErr;
-			}
-		} finally {
-			refreshPromise = null;
-		}
-	})();
-
-	return refreshPromise;
-}
-
-export async function preRefreshToken(): Promise<void> {
-	try {
-		await attemptRefreshWithRetry();
-	} catch {
-		// attemptRefreshWithRetry already handles redirectToLogin
-	}
-}
-
-// Axios interceptor: auto-refresh on 401 and retry once
-api.interceptors.response.use(
-	(response) => response,
-	async (error) => {
-		const originalRequest = error.config;
-		if (
-			error.response?.status === 401 &&
-			!originalRequest._retry &&
-			!window.location.pathname.startsWith("/login")
-		) {
-			originalRequest._retry = true;
-			try {
-				const newToken = await attemptRefreshWithRetry();
-				originalRequest.headers.Authorization = `Bearer ${newToken}`;
-				return api(originalRequest);
-			} catch {
-				redirectToLogin("Token refresh failed in interceptor");
-			}
-		}
-		return Promise.reject(error);
-	},
-);
-
-// --- API helpers ---
-
-function authHeaders(token: string | null): Record<string, string> {
-	return token ? { Authorization: `Bearer ${token}` } : {};
-}
+// Staging: эдгээр endpoint-оос Authorization header-ийг хасна (📦 bundle)
+const UNAUTHENTICATED_PATHS = [
+	"/user/login",
+	"/user/signup",
+	"/user/verify",
+	"/user/send-code",
+];
 
 function currentToken(): string | null {
 	return typeof window !== "undefined" ? localStorage.getItem("token") : null;
 }
+
+api.interceptors.request.use((config) => {
+	config.baseURL = getBaseUrl();
+	const path = `/${(config.url ?? "").split("?")[0].replace(/^\/+/, "")}`;
+	if (UNAUTHENTICATED_PATHS.includes(path)) {
+		config.headers.delete("Authorization");
+	} else {
+		const token = currentToken();
+		if (token) config.headers.set("Authorization", `Bearer ${token}`);
+	}
+	// Accept-Language: mn-MN-ийг proxy (app/api/[...path]/route.ts) тавина.
+	return config;
+});
+
+// Staging-д 401 үед автоматаар refresh + давтах interceptor байхгүй (📦 bundle):
+// хугацаа дууссан token-ийг lib/auth.ts-ийн scheduler ба layout-ын шалгалт барина.
+
+// --- Auth endpoint-ууд (staging-ийн ажигласан path; swagger-т байхгүй — docs/swagger/mismatches.md E7, E8) ---
+
+/** POST /user/refresh `{}` (refresh cookie + Authorization) → `{token}` */
+export async function refreshTokenRequest(): Promise<string> {
+	const response = await api.post<{ token?: string }>("/user/refresh", {});
+	const token = response.data?.token;
+	if (!token) throw new Error("Refresh response without token");
+	return token;
+}
+
+/** POST /user/logout (body-гүй) */
+export async function logoutRequest(): Promise<void> {
+	await api.post("/user/logout");
+}
+
+// --- API helpers ---
 
 export interface ApiResponse<T> {
 	success: boolean;
@@ -161,9 +105,7 @@ export async function apiPost<T>(
 	body: object,
 ): Promise<ApiResponse<T>> {
 	try {
-		const response = await api.post<T>(endpoint, body, {
-			headers: authHeaders(currentToken()),
-		});
+		const response = await api.post<T>(endpoint, body);
 
 		return { success: true, data: response.data };
 	} catch (error) {
@@ -173,9 +115,7 @@ export async function apiPost<T>(
 
 export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 	try {
-		const response = await api.get<T>(endpoint, {
-			headers: authHeaders(currentToken()),
-		});
+		const response = await api.get<T>(endpoint);
 
 		return { success: true, data: response.data };
 	} catch (error) {
@@ -191,10 +131,7 @@ export async function apiGetOrThrow<T>(
 	config?: Omit<AxiosRequestConfig, "headers">,
 ): Promise<T> {
 	try {
-		const response = await api.get<T>(endpoint, {
-			...config,
-			headers: authHeaders(currentToken()),
-		});
+		const response = await api.get<T>(endpoint, config);
 		return response.data;
 	} catch (error) {
 		throw toApiError(error);
@@ -206,9 +143,7 @@ export async function apiPostOrThrow<T>(
 	body: unknown,
 ): Promise<T> {
 	try {
-		const response = await api.post<T>(endpoint, body, {
-			headers: authHeaders(currentToken()),
-		});
+		const response = await api.post<T>(endpoint, body);
 		return response.data;
 	} catch (error) {
 		throw toApiError(error);
@@ -242,31 +177,6 @@ export interface SpringPage<T> {
 	empty: boolean;
 	numberOfElements: number;
 }
-
-export const NineMinuteTimer = () => {
-	if (typeof window === "undefined") return;
-	const intervalTime = 9 * 60 * 1000;
-	const initialDelay = 3000;
-	const runFunction = async () => {
-		const token = localStorage.getItem("token");
-		if (!token || window.location.pathname.startsWith("/login")) return;
-		try {
-			await attemptRefreshWithRetry();
-			localStorage.setItem("lastExecution", Date.now().toString());
-		} catch {
-			// attemptRefreshWithRetry already called redirectToLogin if needed
-		}
-	};
-	let intervalId: ReturnType<typeof setInterval> | null = null;
-	const initialTimeout = setTimeout(() => {
-		runFunction();
-		intervalId = setInterval(runFunction, intervalTime);
-	}, initialDelay);
-	return () => {
-		clearTimeout(initialTimeout);
-		if (intervalId) clearInterval(intervalId);
-	};
-};
 
 // --- Types ---
 
@@ -666,7 +576,7 @@ export async function downloadTestReport(
 	try {
 		const response = await api.get<Blob>(
 			`${testReportPath(invitationId, answerId)}/download`,
-			{ responseType: "blob", headers: authHeaders(currentToken()) },
+			{ responseType: "blob" },
 		);
 		const header = response.headers["content-disposition"];
 		return {

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { NineMinuteTimer } from "@/lib/api";
+import { startTokenRefreshScheduler } from "@/lib/auth";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
 	const [queryClient] = useState(
@@ -30,10 +30,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 			}),
 	);
 
-	useEffect(() => {
-		const cleanup = NineMinuteTimer();
-		return cleanup;
-	}, []);
+	// Staging-ийн адил: ачаалахад refresh хийхгүй, ~9 минутын дараа (lib/auth.ts)
+	useEffect(() => startTokenRefreshScheduler(), []);
 
 	return (
 		<ThemeProvider
