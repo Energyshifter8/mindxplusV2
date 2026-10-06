@@ -1,16 +1,9 @@
-import SidebarGate from "@/components/SidebarGate";
+import { AppShell } from "@/components/shell/AppShell";
 
 export default function DashboardLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
-	return (
-		<SidebarGate
-			user={{ name: "Хэрэглэгч", email: "user@example.com" }}
-			warningMessage="Таны багцын хугацаа дуусах гэж байна."
-		>
-			{children}
-		</SidebarGate>
-	);
+	return <AppShell>{children}</AppShell>;
 }
