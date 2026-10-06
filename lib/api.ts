@@ -1,5 +1,6 @@
 import axios, { type AxiosRequestConfig } from "axios";
 import {
+	ApiError,
 	extractErrorText,
 	normalizeErrorCode,
 	type ProblemDetail,
@@ -9,10 +10,29 @@ import {
 } from "@/lib/api-errors";
 import type {
 	InvitationStatus,
+	RecommendAnswer,
 	RecruitmentStatus,
 	TestColor,
 } from "@/lib/constants/roleAssessment";
 import type { ApiPageParams } from "@/lib/pagination";
+import type {
+	CategoryWithCount,
+	DateDTO,
+	DesignDTO,
+	DesignOwnerType,
+	EmailDTO,
+	IdDTO,
+	Rating,
+	RecruitmentBriefView,
+	RecruitmentInfo,
+	RecruitmentSettings,
+	RestResponse,
+	StrDTO,
+	Talent,
+	TalentEntity,
+	ThemeType,
+	UpdateDesign,
+} from "@/lib/types/api";
 
 // --- Axios instance ---
 
@@ -626,6 +646,433 @@ export async function createRecruitment(
 	return { success: true, data: { id } };
 }
 
+// --- Customer recruitments: удирдлага, setup, каталог, урилга, дизайн ---
+// Path / method / body: staging bundle 📦 (setup: app/(editor)/role-assessment/[id]),
+// schema: swagger (lib/types/api.ts). GET бүгд staging дээр ✅ (2026-10-06).
+// POST-уудыг staging руу илгээгээгүй — хүсэлтийн хэлбэрийг mock adapter-аар
+// шалгасан (docs/role-assessment-unverified.md U33–U40).
+
+/** Сервер рүү явахаас өмнө илэрсэн буруу аргумент (хүсэлт илгээгдээгүй). */
+function invalidArgument(message: string): ApiError {
+	return new ApiError(message, { code: "invalid_argument" });
+}
+
+/** swagger StrDTO.str minLength 1 — хоосон утгыг серверт илгээхгүй. */
+function requireText(value: string, label: string): string {
+	const text = value.trim();
+	if (!text) throw invalidArgument(`${label} хоосон байна`);
+	return text;
+}
+
+/** swagger RestResponseVoid: 200 дотор `success: false` ирвэл алдаа гэж үзнэ. */
+function assertRestSuccess(data: unknown): void {
+	const r = data as RestResponse<unknown> | null;
+	if (typeof r === "object" && r !== null && r.success === false) {
+		throw new ApiError(r.message || "Request failed", { status: r.status });
+	}
+}
+
+const API_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * swagger `format: date` → `YYYY-MM-DD`. `Date`-ийг локал цагийн бүсээр
+ * форматлана (staging: `dayjs(...).format("YYYY-MM-DD")` 📦).
+ */
+export function toApiDate(value: string | Date): string {
+	if (value instanceof Date) {
+		if (Number.isNaN(value.getTime())) throw invalidArgument("Огноо буруу");
+		const m = String(value.getMonth() + 1).padStart(2, "0");
+		const d = String(value.getDate()).padStart(2, "0");
+		return `${value.getFullYear()}-${m}-${d}`;
+	}
+	if (!API_DATE.test(value)) throw invalidArgument("Огноо YYYY-MM-DD биш");
+	return value;
+}
+
+// my-recruitments-controller
+
+/** GET /customer/recruitments/status/{id} — swagger-т бий, staging апп дууддаггүй; ✅ GET */
+export function fetchRecruitmentBrief(id: string) {
+	return apiGetOrThrow<RecruitmentBriefView>(
+		`/customer/recruitments/status/${encodeURIComponent(id)}`,
+	);
+}
+
+/** POST /customer/recruitments/{id}/rename `{str: name}` 📦 → 200 body-гүй */
+export async function renameRecruitment(id: string, name: string) {
+	const body: StrDTO = { str: requireText(name, "Нэр") };
+	await apiPostOrThrow<unknown>(
+		`/customer/recruitments/${encodeURIComponent(id)}/rename`,
+		body,
+	);
+}
+
+/** POST /customer/recruitments/close `{str: id}` 📦 → 200 body-гүй */
+export async function closeRecruitment(id: string) {
+	const body: StrDTO = { str: requireText(id, "Үнэлгээний id") };
+	await apiPostOrThrow<unknown>("/customer/recruitments/close", body);
+}
+
+/** POST /customer/recruitments/delete `{str: id}` 📦 → 200 body-гүй */
+export async function deleteRecruitment(id: string) {
+	const body: StrDTO = { str: requireText(id, "Үнэлгээний id") };
+	await apiPostOrThrow<unknown>("/customer/recruitments/delete", body);
+}
+
+// recruitment-set-up-controller (setup wizard: мэдээлэл → тест → асуулт → нийтлэх)
+
+/** GET /customer/recruitment-setup/settings ✅ — сонгох тест/асуултын дээд хязгаар */
+export function fetchRecruitmentSettings() {
+	return apiGetOrThrow<RecruitmentSettings>(
+		"/customer/recruitment-setup/settings",
+	);
+}
+
+/** GET /customer/recruitment-setup/{id}/information ✅ */
+export function fetchRecruitmentInformation(id: string) {
+	return apiGetOrThrow<RecruitmentInfo>(
+		`/customer/recruitment-setup/${encodeURIComponent(id)}/information`,
+	);
+}
+
+export interface UpdateRecruitmentInfoPayload {
+	jobTitle: string;
+	jobDescription: string;
+	companyName: string;
+	companyDescription?: string;
+}
+
+const RECRUITMENT_INFO_MAX = 100;
+
+/**
+ * POST /customer/recruitment-setup/{id}/update-information — body RecruitmentInfo 📦.
+ * swagger: jobTitle, companyName ≤100; jobDescription minLength 1. Staging "Үргэлжлүүлэх"
+ * товч гурвуулаа хоосон биш үед л идэвхтэй.
+ */
+export async function updateRecruitmentInformation(
+	id: string,
+	payload: UpdateRecruitmentInfoPayload,
+) {
+	const jobTitle = requireText(payload.jobTitle, "Ажлын байрны нэр");
+	const jobDescription = requireText(
+		payload.jobDescription,
+		"Ажлын тодорхойлолт",
+	);
+	const companyName = requireText(payload.companyName, "Компанийн нэр");
+	if (jobTitle.length > RECRUITMENT_INFO_MAX) {
+		throw invalidArgument("Ажлын байрны нэр 100 тэмдэгтээс урт");
+	}
+	if (companyName.length > RECRUITMENT_INFO_MAX) {
+		throw invalidArgument("Компанийн нэр 100 тэмдэгтээс урт");
+	}
+	const body: RecruitmentInfo = {
+		jobTitle,
+		jobDescription,
+		companyName,
+		companyDescription: payload.companyDescription ?? "",
+	};
+	assertRestSuccess(
+		await apiPostOrThrow<unknown>(
+			`/customer/recruitment-setup/${encodeURIComponent(id)}/update-information`,
+			body,
+		),
+	);
+}
+
+/**
+ * GET /customer/recruitment-setup/{id}/tests ✅ — сонгосон тестийн catalog `id`-ууд
+ * (= RecruitmentTest.id, `testId` БИШ — detail-тэй тулгаж ✅).
+ */
+export function fetchRecruitmentTestIds(id: string) {
+	return apiGetOrThrow<string[]>(
+		`/customer/recruitment-setup/${encodeURIComponent(id)}/tests`,
+	);
+}
+
+/** POST /customer/recruitment-setup/{id}/set-tests — body `string[]` (catalog id) 📦 */
+export async function setRecruitmentTests(id: string, testIds: string[]) {
+	const body = [...new Set(testIds.map((t) => t.trim()).filter(Boolean))];
+	assertRestSuccess(
+		await apiPostOrThrow<unknown>(
+			`/customer/recruitment-setup/${encodeURIComponent(id)}/set-tests`,
+			body,
+		),
+	);
+}
+
+/** GET /customer/recruitment-setup/{id}/questions ✅ — сонгосон асуултын `id` (int64) */
+export function fetchRecruitmentQuestionIds(id: string) {
+	return apiGetOrThrow<number[]>(
+		`/customer/recruitment-setup/${encodeURIComponent(id)}/questions`,
+	);
+}
+
+/** POST /customer/recruitment-setup/{id}/set-questions — body `int64[]` 📦 */
+export async function setRecruitmentQuestions(
+	id: string,
+	questionIds: number[],
+) {
+	if (!questionIds.every((q) => Number.isSafeInteger(q) && q > 0)) {
+		throw invalidArgument("Асуултын id буруу");
+	}
+	const body = [...new Set(questionIds)];
+	assertRestSuccess(
+		await apiPostOrThrow<unknown>(
+			`/customer/recruitment-setup/${encodeURIComponent(id)}/set-questions`,
+			body,
+		),
+	);
+}
+
+/** POST /customer/recruitment-setup/publish `{str: id}` 📦 */
+export async function publishRecruitment(id: string) {
+	const body: StrDTO = { str: requireText(id, "Үнэлгээний id") };
+	assertRestSuccess(
+		await apiPostOrThrow<unknown>("/customer/recruitment-setup/publish", body),
+	);
+}
+
+// my-hiring-test-controller (каталог)
+
+/** GET /customer/role-assessments/categories ✅ — `id` нь шүүлтүүрийн түлхүүр */
+export function fetchTestCategories() {
+	return apiGetOrThrow<CategoryWithCount[]>(
+		"/customer/role-assessments/categories",
+	);
+}
+
+/**
+ * GET /customer/role-assessments/tests?category= ✅ — `category` нь CategoryWithCount.id,
+ * хоосон бол бүгд. Staging хоосон `category=`-ийг ч илгээдэг 📦.
+ * Хариунд swagger-ийн `content`, `roleLevels` ирдэггүй ✅ (дэлгэрэнгүйг #10-аас).
+ */
+export function fetchCatalogTests(category = "") {
+	return apiGetOrThrow<RecruitmentTest[]>(
+		`/customer/role-assessments/tests?category=${encodeURIComponent(category)}`,
+	);
+}
+
+/** GET /customer/role-assessments/question-categories ✅ */
+export function fetchQuestionCategories() {
+	return apiGetOrThrow<CategoryWithCount[]>(
+		"/customer/role-assessments/question-categories",
+	);
+}
+
+/** GET /customer/role-assessments/questions?category= ✅ — хариунд `category` ирдэггүй */
+export function fetchCatalogQuestions(category = "") {
+	return apiGetOrThrow<RecruitmentCustomQuestion[]>(
+		`/customer/role-assessments/questions?category=${encodeURIComponent(category)}`,
+	);
+}
+
+/**
+ * POST /customer/role-assessments/recommend — body: асуулт бүрийн хариулт,
+ * RECOMMEND_QUESTIONS-ийн дарааллаар (`string[]`) 📦. swagger: → HiringTestPublicDTO[].
+ */
+export async function recommendTests(
+	answers: RecommendAnswer[],
+): Promise<RecruitmentTest[]> {
+	const data = await apiPostOrThrow<unknown>(
+		"/customer/role-assessments/recommend",
+		answers,
+	);
+	if (Array.isArray(data)) return data as RecruitmentTest[];
+	// bundle-derived, unverified: staging апп `{tests}` / `{content}` хэлбэрийг ч хүлээн авдаг
+	const d = data as { tests?: unknown; content?: unknown } | null;
+	if (Array.isArray(d?.tests)) return d.tests as RecruitmentTest[];
+	if (Array.isArray(d?.content)) return d.content as RecruitmentTest[];
+	return [];
+}
+
+// my-talent-controller (урилга)
+
+export interface InviteTalentPayload {
+	recruitmentId: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+	/** Хоосон бол `null` илгээнэ (staging 📦) */
+	phoneNumber?: string | null;
+	/** swagger date; staging анхдагч +7 хоног (UI талд) */
+	dueDate: string | Date;
+}
+
+/**
+ * POST /customer/hiring-invitations/invite — body Talent 📦 → 200 string.
+ * Нэр/имэйлийн дүрмийг (2–20 үсэг, 5–50) сервер шалгаж, талбар бүрийн Монгол
+ * мессежийг ProblemDetail.errors-оор буцаана (getFieldErrors).
+ */
+export async function inviteTalent(payload: InviteTalentPayload) {
+	const phone = payload.phoneNumber?.trim() ?? "";
+	const body: Talent = {
+		recruitmentId: requireText(payload.recruitmentId, "Үнэлгээний id"),
+		email: payload.email.trim(),
+		firstName: payload.firstName.trim(),
+		lastName: payload.lastName.trim(),
+		phoneNumber: phone === "" ? null : phone,
+		dueDate: toApiDate(payload.dueDate),
+	};
+	return apiPostOrThrow<string>("/customer/hiring-invitations/invite", body);
+}
+
+const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * POST /customer/hiring-invitations/search-by-email `{value}` 📦 →
+ * RestResponseTalentEntity. Өмнө уригдсан талентыг олж формыг бөглөхөд.
+ * Олдоогүй (404/204), нэр/утасгүй, эсвэл имэйл буруу хэлбэртэй бол `null` (staging 📦).
+ */
+export async function searchTalentByEmail(
+	email: string,
+): Promise<TalentEntity | null> {
+	const value = email.trim();
+	if (!EMAIL_SHAPE.test(value)) return null;
+	const body: EmailDTO = { value };
+	let data: unknown;
+	try {
+		data = (
+			await api.post<unknown>(
+				"/customer/hiring-invitations/search-by-email",
+				body,
+			)
+		).data;
+	} catch (error) {
+		// 204 нь алдаа биш — хоосон body доор `null` болно
+		if (axios.isAxiosError(error) && error.response?.status === 404)
+			return null;
+		throw toApiError(error);
+	}
+	if (data === null || typeof data !== "object") return null;
+	const entity = (
+		"data" in data ? (data as RestResponse<TalentEntity>).data : data
+	) as (TalentEntity & { mobileNo?: string | null }) | null | undefined;
+	if (!entity || typeof entity !== "object") return null;
+	const filled = (v: unknown) => typeof v === "string" && v.trim() !== "";
+	const hasDetails =
+		filled(entity.firstName) ||
+		filled(entity.lastName) ||
+		filled(entity.phoneNumber) ||
+		filled(entity.mobileNo);
+	return hasDetails ? entity : null;
+}
+
+/** POST /customer/hiring-invitations/{invitationId}/extend `{value: date}` 📦 → Talent */
+export function extendInvitation(invitationId: string, dueDate: string | Date) {
+	const body: DateDTO = { value: toApiDate(dueDate) };
+	return apiPostOrThrow<Talent>(
+		`/customer/hiring-invitations/${encodeURIComponent(invitationId)}/extend`,
+		body,
+	);
+}
+
+/** POST /customer/hiring-invitations/{invitationId}/rate `{points}` 📦 — swagger int 0..5 */
+export async function rateInvitation(invitationId: string, points: number) {
+	if (!Number.isInteger(points) || points < 0 || points > 5) {
+		throw invalidArgument("Үнэлгээ 0–5 бүхэл тоо байх ёстой");
+	}
+	const body: Rating = { points };
+	assertRestSuccess(
+		await apiPostOrThrow<unknown>(
+			`/customer/hiring-invitations/${encodeURIComponent(invitationId)}/rate`,
+			body,
+		),
+	);
+}
+
+/** POST /customer/hiring-invitations/{invitationId}/notes/add `{str}` 📦 → InvitationNoteView */
+export async function addInvitationNote(invitationId: string, note: string) {
+	const body: StrDTO = { str: requireText(note, "Тэмдэглэл") };
+	return apiPostOrThrow<InvitationNote>(
+		`/customer/hiring-invitations/${encodeURIComponent(invitationId)}/notes/add`,
+		body,
+	);
+}
+
+/** POST /customer/hiring-invitations/talents/bookmark `{id: int64}` 📦 — toggle, body-гүй хариу */
+export async function toggleTalentBookmark(talentId: number | string) {
+	const id =
+		typeof talentId === "number"
+			? talentId
+			: Number.parseInt(talentId.trim(), 10);
+	if (!Number.isSafeInteger(id)) {
+		throw invalidArgument("Талентын дугаар буруу байна");
+	}
+	const body: IdDTO = { id };
+	await apiPostOrThrow<unknown>(
+		"/customer/hiring-invitations/talents/bookmark",
+		body,
+	);
+}
+
+// design-controller — үнэлгээнд ownerType = "RECRUITMENT" (staging 📦, GET ✅)
+
+function designPath(ownerType: DesignOwnerType, ownerId: string) {
+	return `/customer/designs/${ownerType}/${encodeURIComponent(ownerId)}`;
+}
+
+/** GET /customer/designs/themes ✅ */
+export function fetchDesignThemes() {
+	return apiGetOrThrow<ThemeType[]>("/customer/designs/themes");
+}
+
+/** GET /customer/designs/{ownerType}/{ownerId} ✅ */
+export function fetchDesign(ownerType: DesignOwnerType, ownerId: string) {
+	return apiGetOrThrow<DesignDTO>(designPath(ownerType, ownerId));
+}
+
+/**
+ * POST /customer/designs/{ownerType}/{ownerId}/update — body UpdateDesign (swagger).
+ * Анхаар: хариунд байрлал `imagePosition`, body-д `logoPosition`.
+ * Staging апп үнэлгээнд энэ endpoint-ийг дууддаггүй (зөвхөн survey) — U38.
+ */
+export function updateDesign(
+	ownerType: DesignOwnerType,
+	ownerId: string,
+	body: UpdateDesign,
+) {
+	return apiPostOrThrow<DesignDTO>(
+		`${designPath(ownerType, ownerId)}/update`,
+		body,
+	);
+}
+
+/**
+ * POST …/upload-logo — multipart, талбар `logo` 📦 → 200 string.
+ * Content-Type (boundary-тай)-г browser тавина; proxy binary-г дамжуулна.
+ */
+export async function uploadDesignLogo(
+	ownerType: DesignOwnerType,
+	ownerId: string,
+	logo: Blob,
+) {
+	if (logo.size === 0) throw invalidArgument("Лого файл хоосон байна");
+	const form = new FormData();
+	form.append("logo", logo);
+	return apiPostOrThrow<string>(
+		`${designPath(ownerType, ownerId)}/upload-logo`,
+		form,
+	);
+}
+
+/** POST …/remove-logo `{id}` — `id` нь DesignDTO.id (staging: `design.id` 📦) */
+export async function removeDesignLogo(
+	ownerType: DesignOwnerType,
+	ownerId: string,
+	designId: number,
+) {
+	if (!Number.isSafeInteger(designId) || designId <= 0) {
+		throw invalidArgument("Дизайны id буруу");
+	}
+	const body: IdDTO = { id: designId };
+	assertRestSuccess(
+		await apiPostOrThrow<unknown>(
+			`${designPath(ownerType, ownerId)}/remove-logo`,
+			body,
+		),
+	);
+}
+
 /** GET /customer/hiring-invitations/latest-completed (#24) — staging ✅ ажигласан. */
 export interface CompletedInvitation {
 	id: string;
@@ -644,9 +1091,11 @@ export interface CompletedInvitation {
 	ratingPoints: number | null;
 }
 
+/** swagger: `limit` 5..10 (анхдагч 5). Хүрээнээс гарсан утгыг 400 болохоос өмнө тааруулна. */
 export function getLatestCompletedInvitations(limit = 5) {
+	const safeLimit = Math.min(10, Math.max(5, Math.trunc(limit) || 5));
 	return apiGet<CompletedInvitation[]>(
-		`/customer/hiring-invitations/latest-completed?limit=${limit}`,
+		`/customer/hiring-invitations/latest-completed?limit=${safeLimit}`,
 	);
 }
 
@@ -675,9 +1124,16 @@ export function getHiringInvitations(params?: {
 	size?: number;
 	/** Хайлт. `name` параметрийг API тоодоггүй, `q` ажилладаг (staging ✅). */
 	q?: string;
+	/** Зөвхөн тэмдэглэсэн талентууд. Staging зөвхөн `true` үед илгээдэг 📦, шүүлт ✅ */
+	marked?: boolean;
 }) {
 	return apiGet<TalentListPage>(
-		`/customer/hiring-invitations/talents${buildQuery({ ...params })}`,
+		`/customer/hiring-invitations/talents${buildQuery({
+			page: params?.page,
+			size: params?.size,
+			q: params?.q?.trim(),
+			marked: params?.marked === true ? true : undefined,
+		})}`,
 	);
 }
 

@@ -214,3 +214,180 @@ export interface InvitationProjection {
 	recruitmentId?: string;
 	phoneNumber?: string | null;
 }
+
+// --- Customer recruitments: setup / catalog / invitations / design ---
+// Swagger schema + staging дээр GET-ээр ✅ ажигласан хэлбэр (2026-10-06).
+
+/** swagger: RecruitmentBriefView — GET /customer/recruitments/status/{id} ✅ */
+export interface RecruitmentBriefView {
+	id?: string;
+	name?: string;
+	createdAt?: string;
+	publishedAt?: string | null;
+	closedAt?: string | null;
+	status?: PublishStatus;
+}
+
+/** swagger: RecruitmentSettings — staging ✅ `{maxTestCount: 4, maxQuestionCount: 3}` */
+export interface RecruitmentSettings {
+	maxTestCount?: number;
+	maxQuestionCount?: number;
+}
+
+/**
+ * swagger: RecruitmentInfo (request-д `jobTitle`, `jobDescription`, `companyName` required).
+ * Шинэ (CREATED) үнэлгээнд `jobDescription: null` ирдэг ✅.
+ */
+export interface RecruitmentInfo {
+	/** 0–100 */
+	jobTitle: string;
+	/** minLength 1. Staging: rich text (HTML) */
+	jobDescription: string | null;
+	/** 0–100 */
+	companyName: string;
+	/** Staging: rich text (HTML) */
+	companyDescription?: string | null;
+}
+
+/**
+ * swagger: CategoryWithCount. `id` нь шүүлтүүрийн түлхүүр (`hiring_soft_skill`,
+ * `q_background` …), харин тест дээрх `category` нь `name` (label) байдаг ✅.
+ * `count` staging дээр 0 ирдэг ✅ — тоо гэж бүү ашигла.
+ */
+export interface CategoryWithCount {
+	id?: string;
+	name?: string;
+	count?: number;
+}
+
+/** swagger: HiringTestPublicDTO.roleLevels */
+export type RoleLevel = "ENTRY" | "SENIOR" | "MANAGER";
+
+/** swagger: Email — search-by-email body */
+export interface EmailDTO {
+	/** minLength 5 */
+	value: string;
+}
+
+/** swagger: DateDTO — `value` нь date (YYYY-MM-DD) */
+export interface DateDTO {
+	value?: string;
+}
+
+/** swagger: Rating — `points` int 0..5 */
+export interface Rating {
+	points: number;
+}
+
+/** swagger: IdDTO */
+export interface IdDTO {
+	id: number;
+}
+
+/** swagger: StrDTO — `str` minLength 1 */
+export interface StrDTO {
+	str: string;
+}
+
+/** swagger: RestResponse* */
+export interface RestResponse<T> {
+	message?: string;
+	status?: number;
+	success?: boolean;
+	data?: T;
+}
+
+/** swagger: FullName */
+export interface FullName {
+	firstName: string;
+	lastName: string;
+}
+
+/**
+ * swagger: Talent — POST invite-ийн body, POST {id}/extend-ийн хариу.
+ * Нэр: 2–20, `^\p{L}[\p{L}'\-\s]*$`; email 5–50.
+ */
+export interface Talent {
+	id?: string;
+	recruitmentId: string;
+	email: string;
+	lastName: string;
+	firstName: string;
+	phoneNumber?: string | null;
+	/** date (YYYY-MM-DD) */
+	dueDate?: string;
+	status?: InvitationStatusDto;
+	fullName?: string;
+	fullNameObject?: FullName;
+}
+
+/** swagger: InvitationEntity */
+export interface InvitationEntity {
+	createdAt?: string;
+	updatedAt?: string;
+	createdBy?: string;
+	updatedBy?: string;
+	id?: string;
+	talentId: number;
+	recruitmentId: string;
+	customerId: number;
+	/** date */
+	dueDate?: string;
+	completedAt?: string | null;
+	token: string;
+	avgRatingPoints?: number | null;
+	status: InvitationStatusDto;
+	expired?: boolean;
+}
+
+/** swagger: TalentEntity — search-by-email-ийн `data` */
+export interface TalentEntity {
+	createdAt?: string;
+	updatedAt?: string;
+	createdBy?: string;
+	updatedBy?: string;
+	id?: number;
+	customerId: number;
+	email: string;
+	firstName: string;
+	lastName: string;
+	phoneNumber?: string | null;
+	avgRatePoints?: number | null;
+	invitations?: InvitationEntity[];
+}
+
+/** swagger: DesignDTO.designOwnerType. Path-д staging RECRUITMENT (том үсэг) илгээдэг 📦 */
+export type DesignOwnerType =
+	| "SURVEY"
+	| "SURVEY_TEMPLATE"
+	| "HIRING_TEST"
+	| "RECRUITMENT";
+
+/** swagger: GET /customer/designs/themes ✅ */
+export type ThemeType = "LIGHT" | "YALE" | "DARK" | "MIRAGE" | "PURPLE";
+
+/** swagger: UpdateDesign.logoPosition / DesignDTO.imagePosition */
+export type LogoPosition = "TOP_LEFT" | "TOP_MIDDLE" | "TOP_RIGHT";
+
+/**
+ * swagger: DesignDTO — GET /customer/designs/RECRUITMENT/{id} ✅.
+ * Лого байхгүй үед `logoUrl` огт ирэхгүй ✅. Байрлал хариунд `imagePosition`,
+ * харин update-ийн body-д `logoPosition` гэж нэрлэгддэг.
+ */
+export interface DesignDTO {
+	id?: number;
+	designOwnerId?: string;
+	designOwnerType?: DesignOwnerType;
+	themeType?: ThemeType;
+	imagePosition?: LogoPosition;
+	showAppLogo?: boolean;
+	hasLogo?: boolean;
+	logoUrl?: string;
+}
+
+/** swagger: UpdateDesign (бүгд required) */
+export interface UpdateDesign {
+	themeType: ThemeType;
+	logoPosition: LogoPosition;
+	showAppLogo: boolean;
+}

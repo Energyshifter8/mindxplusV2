@@ -123,3 +123,42 @@ export const PROCTORING_EVENTS: {
 		hasDuration: false,
 	},
 ];
+
+// POST /customer/role-assessments/recommend — body нь асуулт бүрт сонгосон
+// хариултын `value`, асуултын дарааллаар (string[]). Асуулт, утга: staging bundle 📦.
+export const RECOMMEND_QUESTIONS = [
+	{
+		id: "question1",
+		title: "Та бөлгөж буй сонгон шалгаруулалт аль түвшний ажлын байр вэ?",
+		options: [
+			{ value: "entry", label: "Шинэ ажилтан" },
+			{ value: "senior", label: "Менежер, ахлах мэргэжилтэн түвшин" },
+			{ value: "manager", label: "Удирдах албан тушаал" },
+		],
+	},
+	{
+		id: "question2",
+		title: "Тухайн ажлын байрны гол зорилго ямар чадварт илүү төвлөрдөг вэ?",
+		options: [
+			{ value: "execution", label: "Гүйцэтгэл ба хэрэгжүүлэлт" },
+			{ value: "leadership", label: "Манлайлал ба зохион байгуулалт" },
+			{ value: "strategy", label: "Стратеги ба байгууллагын нөлөө" },
+		],
+	},
+	{
+		id: "question3",
+		title:
+			"Ажлын байрны онцлогоос шалтгаалан ямар төрлийн зөөлөн ур чадвар үнэлэх нь илүү чухал вэ?",
+		options: [
+			{ value: "self-discipline", label: "Хувийн ур чадвар ба сахилга бат" },
+			{
+				value: "teamwork",
+				label: "Хүмүүсийн харилцаа ба багийн хамтын ажиллагаа",
+			},
+			{ value: "strategic", label: "Стратеги сэтгэлгээ ба манлайлал" },
+		],
+	},
+] as const;
+
+export type RecommendAnswer =
+	(typeof RECOMMEND_QUESTIONS)[number]["options"][number]["value"];

@@ -22,7 +22,7 @@
 | E3 | `GET /customer/surveys-home/statistics` | ✅ `SurveyHomeStatistics {totalPublishedSurveyCount:int64, totalRespondentCount:int64, surveyBalance:int32}` | — | Ижил |
 | E4 | `GET /customer/recruitments/?page=0&size=6` | ✅ `size` анхдагч **9**, `status` string, `name` maxLength 100. `RecruitmentListView.status` 5 утгатай | Бидний enum-д `PUBLISHING`, `SUSPENDED` байгаагүй | Enum-д нэмсэн (label staging UI-аас) |
 | E5 | `GET /customer/recruitments/statistics` | ✅ `HiringHomeStatistics` | — | Ижил |
-| E6 | `GET /customer/hiring-invitations/latest-completed` (параметргүй) | ✅ `limit` анхдагч 5, **min 5**, max 10. `InvitationProjection` (`ratingPoints:int32`) | Локал `limit=5` илгээдэг байсан (утга ижил, параметр илүүдэл) | Параметргүй болгосон |
+| E6 | `GET /customer/hiring-invitations/latest-completed` (параметргүй) | ✅ `limit` анхдагч 5, **min 5**, max 10. `InvitationProjection` (`ratingPoints:int32`) | Локал `limit=5` илгээдэг (staging параметргүй; хариу ижил ✅) | `limit=5` хэвээр (swagger-ийн хүрээнд), 5..10-д тааруулдаг болгосон |
 | E7 | `POST /user/refresh` `{}` (withCredentials) 📦 | ✗ **Байхгүй**. Оронд нь `GET /user/auth/refresh` (header `Authorization` required) → `TokenDTO {token}` | Path/method өөр | **Staging-ийг дагав** (`POST /user/refresh`) — локал proxy-оор ажиллаж байгаа ✅ |
 | E8 | `POST /user/logout` 📦 | ✗ **Байхгүй** | Swagger-т бүртгэгдээгүй | Staging-ийг дагав; бодитоор ажиллуулж шалгаагүй (session дуусна) |
 | — | `GET /customer/account` (localStorage `accountInfo` байхгүй үед) 📦 | ✅ `AccountDTO {planType: FREE\|BASIC\|STANDARD\|PREMIUM\|CUSTOM, employeeLimit, planName, months: QUARTER\|YEAR, paidAmount, startDate, dueDate, dataAccess, hasTrialSurvey, expired}` | — | Sidebar-ын багцын анхааруулгад |
@@ -40,6 +40,33 @@
 | #23 | `GET …/talents/{id}/invitations` | `InvitationDTO` **`completedAt` байгаа**, `ratingPoints: double` | Ажигласан мөрөнд `completedAt` огт ирээгүй (null-ыг хасдаг) | U6: "Бөглөсөн" = `completedAt` (байвал) |
 | #15 | `GET …/{recruitmentId}/{invitationId}` | `TalentResult`; `PersonalReport.assessorType` 8 утга; `SubContent.points: double`; `BehaviorEventSummary {eventType, count, seconds}` | — | U24: `seconds` бодит талбар |
 | #19/#20 | `GET /customer/hiring/test-result/report/{invitationId}/{testAnswerId}[/download]` | `text/html` / `string(byte)` | Параметрийн нэр `testAnswerId` (бид `answerId` гэж нэрлэдэг — утга нь `TestResult.answerId`) | Ижил |
+
+## Customer recruitments — endpoint давхарга (2026-10-06)
+
+Эх сурвалж: setup хуудасны bundle (`app/(editor)/role-assessment/[id]`, 📦), swagger, staging дээр
+localhost proxy-оор GET ✅. POST-уудыг staging руу илгээгээгүй (docs/role-assessment-unverified.md U33–U40).
+
+| # | Endpoint (staging) | Swagger | Зөрүү / ажиглалт | Шийдвэр (`lib/api.ts`) |
+|---|---|---|---|---|
+| R1 | `GET /customer/recruitments/status/{id}` | `RecruitmentBriefView` | Staging апп дууддаггүй; 200 ✅ | `fetchRecruitmentBrief` |
+| R2 | `POST /customer/recruitments/{id}/rename` `{str: name}`, `/close` `{str: id}`, `/delete` `{str: id}` 📦 | `StrDTO {str*}` → 200 schema-гүй | — | `renameRecruitment`, `closeRecruitment`, `deleteRecruitment` |
+| R3 | `GET /customer/recruitment-setup/settings` | `RecruitmentSettings` | ✅ `{maxTestCount: 4, maxQuestionCount: 3}` | `fetchRecruitmentSettings` |
+| R4 | `GET/POST /customer/recruitment-setup/{id}/information` / `update-information` | `RecruitmentInfo {jobTitle*, jobDescription* (min 1), companyName*, companyDescription}` | CREATED дээр `jobDescription: null` ✅ (swagger required). Staging UI `companyName`-ийг дотооддоо `request` гэж нэрлэдэг ч body-д `companyName` 📦 | Хариу `string \| null`; body-д гурван талбарыг хоосон биш, ≤100 шалгана |
+| R5 | `GET …/{id}/tests` → `string[]`, `POST …/set-tests` `string[]` | ✅ | Утга нь catalog **`id`** (`testId` биш) — detail-ийн `tests[].id`-тэй тулгаж ✅ | `fetchRecruitmentTestIds`, `setRecruitmentTests` (давхардал хасна) |
+| R6 | `GET …/{id}/questions` → `int64[]`, `POST …/set-questions` `int64[]` | ✅ | ✅ `customQuestions[].id`-тэй таарна | `fetchRecruitmentQuestionIds`, `setRecruitmentQuestions` |
+| R7 | `POST /customer/recruitment-setup/publish` `{str: id}` 📦 | `StrDTO` → `RestResponseVoid` | — | `publishRecruitment` |
+| R8 | `GET /customer/role-assessments/categories`, `question-categories` | `CategoryWithCount {id, name, count}` | `count` үргэлж **0** ✅ — тоо гэж ашиглахгүй. `id` = шүүлтүүрийн түлхүүр (`hiring_soft_skill`, `q_background`…) | `fetchTestCategories`, `fetchQuestionCategories` |
+| R9 | `GET /customer/role-assessments/tests?category=` (хоосон ч илгээдэг 📦) | `HiringTestPublicDTO[]` (+`content`, `roleLevels`) | Жагсаалтад `content`, `roleLevels` **ирдэггүй**, `pageSize` ирдэг ✅. Хариуны `category` нь label (`name`), query-ийнх нь `id` | `fetchCatalogTests` → `RecruitmentTest[]` |
+| R10 | `GET /customer/role-assessments/questions?category=` | `HiringQuestionDTO[]` (+`category`) | `category` **ирдэггүй** ✅ | `fetchCatalogQuestions` → `RecruitmentCustomQuestion[]` |
+| R11 | `POST /customer/role-assessments/recommend` — body 3 хариултын утга (`entry\|senior\|manager`, `execution\|leadership\|strategy`, `self-discipline\|teamwork\|strategic`) 📦 | `string[]` → `HiringTestPublicDTO[]` | Bundle `{tests, answerIds}` / `{content}`-ийг ч уншдаг | `recommendTests`; асуулт/утга `RECOMMEND_QUESTIONS` |
+| R12 | `POST /customer/hiring-invitations/invite` `{recruitmentId, email, firstName, lastName, phoneNumber \| null, dueDate: YYYY-MM-DD}` 📦 | `Talent` (нэр 2–20 `\p{L}`, email 5–50) → `string` | — | `inviteTalent` (trim, хоосон утас → `null`, `Date` → локал `YYYY-MM-DD`) |
+| R13 | `POST …/search-by-email` `{value}` 📦 | `Email` → `RestResponseTalentEntity` | Bundle `data`-г задалж, 404/нэргүй бол `null`; `mobileNo` (swagger-т байхгүй) | `searchTalentByEmail` → `TalentEntity \| null` |
+| R14 | `POST …/{invitationId}/extend` `{value: date}`, `/rate` `{points}`, `/notes/add` `{str}`, `talents/bookmark` `{id}` 📦 | `DateDTO` → `Talent`; `Rating {points* 0..5}`; `StrDTO` → `InvitationNoteView`; `IdDTO` | — | `extendInvitation`, `rateInvitation`, `addInvitationNote`, `toggleTalentBookmark` |
+| R15 | `GET …/talents?…&marked=true` (зөвхөн `true` үед 📦) | ✅ `marked: boolean` | Шүүлт ажилладаг ✅ (29 → 1) | `getHiringInvitations({marked})` |
+| R16 | `/customer/designs/RECRUITMENT/{id}` (+ `/upload-logo` multipart `logo`, `/remove-logo` `{id}`) 📦 | `{ownerType}` нь энгийн string; `DesignDTO.designOwnerType` enum | Үнэлгээнд **`RECRUITMENT`** (том үсэг), survey-д `survey` 📦. GET 200 ✅. `logoUrl` лого байхгүй үед ирэхгүй ✅. Хариунд `imagePosition`, update body-д `logoPosition` | `fetchDesign`, `uploadDesignLogo`, `removeDesignLogo` (`id` = `DesignDTO.id`) |
+| R17 | `POST /customer/designs/{ownerType}/{ownerId}/update` | `UpdateDesign {themeType*, logoPosition*, showAppLogo*}` → `DesignDTO` | Staging апп үнэлгээнд дууддаггүй (survey-д `designs/survey/{id}/update`) | `updateDesign` — U38 |
+| R18 | `GET /customer/designs/themes` | enum массив | ✅ `LIGHT, YALE, DARK, MIRAGE, PURPLE` | `fetchDesignThemes` |
+| P1 | Proxy multipart | — | `request.text()` binary-г эвддэг байсан (mock-оор 0 байт ✅) | `arrayBuffer()` + boundary-тай Content-Type дамжуулна |
 
 ## Бусад (survey, auth) — дараагийн хуудсуудад
 

@@ -43,10 +43,12 @@ async function proxyRequest(
 				}
 			}
 		} else {
-			const bodyText = await request.text();
-			if (bodyText) {
+			// multipart (лого upload г.м.) binary агуулдаг: text() UTF-8 болгож
+			// эвддэг тул байтаар нь, boundary-тай Content-Type-тай нь дамжуулна.
+			const bodyBytes = await request.arrayBuffer();
+			if (bodyBytes.byteLength > 0) {
 				if (contentType) headers.set("Content-Type", contentType);
-				fetchInit.body = bodyText;
+				fetchInit.body = bodyBytes;
 			}
 		}
 	}

@@ -144,6 +144,8 @@ const ERROR_MESSAGES: Record<string, string> = {
 	validation_exception: "Оруулсан мэдээлэл буруу байна",
 	// bundle-derived, unverified: plan_expired code бодит хүсэлтээр ажиглагдаагүй
 	plan_expired: "Таны багцын хугацаа дууссан байна",
+	// client-side: хүсэлт илгээхээс өмнө илэрсэн буруу аргумент (lib/api.ts)
+	invalid_argument: "Оруулсан мэдээлэл буруу байна",
 	// client-side: хариу хүлээгдсэн хэлбэрт таарсангүй
 	unexpected_response:
 		"Сервер хүлээгдээгүй хариу буцаалаа. Жагсаалтаа шинэчилж шалгана уу",
@@ -172,7 +174,9 @@ export function getErrorMessage(source: unknown, fallback?: string): string {
 
 /** 4xx (олдсонгүй, эрхгүй, багц дууссан г.м.) дахин оролдоход засрахгүй. */
 export function isRetryableError(error: unknown): boolean {
-	if (!(error instanceof ApiError) || error.status === undefined) return true;
+	if (!(error instanceof ApiError)) return true;
+	if (error.code === "invalid_argument") return false;
+	if (error.status === undefined) return true;
 	return error.status >= 500;
 }
 
