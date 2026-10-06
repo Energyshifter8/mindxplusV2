@@ -10,10 +10,15 @@
 (() => {
 	const shape = (v, depth = 0) => {
 		if (v === null) return "null";
-		if (Array.isArray(v)) return v.length ? [shape(v[0], depth + 1), v.length] : [];
+		if (Array.isArray(v))
+			return v.length ? [shape(v[0], depth + 1), v.length] : [];
 		if (typeof v === "object") {
 			if (depth > 1) return "object";
-			return Object.fromEntries(Object.keys(v).sort().map((k) => [k, shape(v[k], depth + 1)]));
+			return Object.fromEntries(
+				Object.keys(v)
+					.sort()
+					.map((k) => [k, shape(v[k], depth + 1)]),
+			);
 		}
 		return typeof v;
 	};
@@ -26,36 +31,59 @@
 				return `string(${body.length})`;
 			}
 		}
-		if (typeof FormData !== "undefined" && body instanceof FormData) return `FormData[${[...body.keys()].join(",")}]`;
+		if (typeof FormData !== "undefined" && body instanceof FormData)
+			return `FormData[${[...body.keys()].join(",")}]`;
 		return typeof body;
 	};
 	const normPath = (url, origin) => {
 		const u = new URL(url, origin);
-		let path = u.pathname.replace(/^\/api(?=\/)/, "");
-		return { host: u.host, path, query: [...u.searchParams.keys()].sort().map((k) => `${k}=${u.searchParams.get(k)}`).join("&") };
+		const path = u.pathname.replace(/^\/api(?=\/)/, "");
+		return {
+			host: u.host,
+			path,
+			query: [...u.searchParams.keys()]
+				.sort()
+				.map((k) => `${k}=${u.searchParams.get(k)}`)
+				.join("&"),
+		};
 	};
 
 	function installNetPatch(win) {
 		if (win.__parityPatched) return;
 		win.__parityPatched = true;
-		const log = (win.__parityNet = win.__parityNet || []);
-		const t0 = win.performance.timeOrigin;
+		win.__parityNet = win.__parityNet || [];
+		const log = win.__parityNet;
 
 		const origFetch = win.fetch;
-		win.fetch = async function (input, init = {}) {
+		win.fetch = async function (input, init = {}, ...rest) {
 			const req = input instanceof win.Request ? input : null;
 			const url = req ? req.url : String(input);
 			const method = (init.method || req?.method || "GET").toUpperCase();
 			const hdrs = new win.Headers(init.headers || req?.headers || {});
-			const entry = { via: "fetch", method, ...normPath(url, win.location.origin), headers: [...hdrs.keys()].sort(), body: bodyShape(init.body), start: Math.round(win.performance.now()), t0 };
+			const entry = {
+				via: "fetch",
+				method,
+				...normPath(url, win.location.origin),
+				headers: [...hdrs.keys()].sort(),
+				body: bodyShape(init.body),
+				start: Math.round(win.performance.now()),
+			};
 			log.push(entry);
 			try {
-				const res = await origFetch.apply(this, arguments);
+				const res = await origFetch.call(this, input, init, ...rest);
 				entry.status = res.status;
 				entry.end = Math.round(win.performance.now());
 				const ct = res.headers.get("content-type") || "";
 				entry.ct = ct.split(";")[0];
-				if (ct.includes("json")) res.clone().json().then((j) => (entry.res = shape(j))).catch(() => {});
+				if (ct.includes("json")) {
+					res
+						.clone()
+						.json()
+						.then((j) => {
+							entry.res = shape(j);
+						})
+						.catch(() => {});
+				}
 				return res;
 			} catch (e) {
 				entry.error = String(e?.name || e);
@@ -64,14 +92,21 @@
 		};
 
 		const XHR = win.XMLHttpRequest.prototype;
-		const open = XHR.open, send = XHR.send, setH = XHR.setRequestHeader;
-		XHR.open = function (method, url) {
-			this.__p = { via: "xhr", method: String(method).toUpperCase(), ...normPath(url, win.location.origin), headers: [] };
-			return open.apply(this, arguments);
+		const open = XHR.open,
+			send = XHR.send,
+			setH = XHR.setRequestHeader;
+		XHR.open = function (method, url, ...rest) {
+			this.__p = {
+				via: "xhr",
+				method: String(method).toUpperCase(),
+				...normPath(url, win.location.origin),
+				headers: [],
+			};
+			return open.call(this, method, url, ...rest);
 		};
-		XHR.setRequestHeader = function (name) {
+		XHR.setRequestHeader = function (name, value) {
 			this.__p?.headers.push(String(name).toLowerCase());
-			return setH.apply(this, arguments);
+			return setH.call(this, name, value);
 		};
 		XHR.send = function (body) {
 			const p = this.__p;
@@ -87,12 +122,16 @@
 					p.ct = ct.split(";")[0];
 					if (ct.includes("json")) {
 						try {
-							p.res = shape(typeof this.response === "string" ? JSON.parse(this.response) : this.response);
+							p.res = shape(
+								typeof this.response === "string"
+									? JSON.parse(this.response)
+									: this.response,
+							);
 						} catch {}
 					}
 				});
 			}
-			return send.apply(this, arguments);
+			return send.call(this, body);
 		};
 	}
 
@@ -108,21 +147,26 @@
 		const timer = setInterval(() => {
 			try {
 				const w = f.contentWindow;
-				if (w && w.location.href !== "about:blank" && !w.__parityPatched) installNetPatch(w);
+				if (w && w.location.href !== "about:blank" && !w.__parityPatched)
+					installNetPatch(w);
 			} catch {}
 		}, 0);
-		f.addEventListener("load", () => setTimeout(() => clearInterval(timer), 15000));
+		f.addEventListener("load", () =>
+			setTimeout(() => clearInterval(timer), 15000),
+		);
 		f.src = src;
 		return `frame ${width}x${height} -> ${src}`;
 	};
-	window.parityWin = () => document.getElementById("parity-frame")?.contentWindow || window;
+	window.parityWin = () =>
+		document.getElementById("parity-frame")?.contentWindow || window;
 	window.parityWait = (ms) => new Promise((r) => setTimeout(r, ms));
 	window.parityNet = (clear = false) => {
 		const w = window.parityWin();
-		const out = (w.__parityNet || []).map(({ t0, ...e }) => e);
+		const out = (w.__parityNet || []).slice();
 		if (clear) w.__parityNet = [];
 		return out;
 	};
 	window.parityPatchSelf = () => installNetPatch(window);
-	window.parityCloseFrame = () => document.getElementById("parity-frame")?.remove();
+	window.parityCloseFrame = () =>
+		document.getElementById("parity-frame")?.remove();
 })();

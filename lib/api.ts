@@ -408,7 +408,8 @@ export interface RecruitmentTest {
 	description: string;
 	/** Категорийн label (id биш), жишээ "Зөөлөн ур чадвар" */
 	category: string;
-	pageSize: number;
+	/** Staging дээр ✅ ажиглагдсан, swagger HiringTestPublicDTO-д байхгүй */
+	pageSize?: number;
 	minMinutes: number;
 	maxMinutes: number;
 	questionCount: number;
@@ -482,7 +483,8 @@ export interface RoleAssessmentTestDetail {
 	id: string;
 	name: string;
 	description: string;
-	pageSize: number;
+	/** Staging дээр ✅ ажиглагдсан, swagger HiringTestPublicDTO-д байхгүй */
+	pageSize?: number;
 	/** Серверээс ирэх HTML. Зөвхөн sandbox iframe-д харуулна. */
 	content: string;
 }
@@ -684,9 +686,8 @@ export interface CreateRecruitmentResponse {
 	id: string;
 }
 
-// bundle-derived, unverified: POST /customer/recruitments/new {str} — бодит
-// хүсэлтээр шалгаагүй (дуудахад серверт CREATED ноорог үүснэ).
-// Хариу нь raw id string гэж bundle-д харагдсан; {id} хэлбэрийг ч зохицуулна.
+// swagger: POST /customer/recruitments/new — body StrDTO {str*} → 200 string (id).
+// Бодит дуудлагаар шалгаагүй (серверт CREATED ноорог үүснэ); {id} хэлбэрийг ч зохицуулна.
 export async function createRecruitment(
 	payload: CreateRecruitmentPayload,
 ): Promise<ApiResponse<CreateRecruitmentResponse>> {
@@ -786,8 +787,8 @@ export function getTalentDetail(id: string) {
 	return apiGet<TalentDetail>(`/customer/hiring-invitations/talents/${id}`);
 }
 
+/** swagger: User / UserNameView — id нь string */
 export interface UserRef {
-	// bundle-derived, unverified: id-ийн төрөл (uuid string гэж үзэв)
 	id: string;
 	firstName: string;
 	lastName: string;
@@ -800,6 +801,8 @@ export interface UserRef {
 export interface TalentInvitationItem {
 	id: string;
 	createdAt: string;
+	/** swagger: InvitationDTO.completedAt — хоосон үед хариунд огт ирэхгүй (✅) */
+	completedAt?: string | null;
 	status: InvitationStatus;
 	rated: boolean;
 	recruitmentId: string;

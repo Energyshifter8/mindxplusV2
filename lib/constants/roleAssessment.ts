@@ -1,14 +1,27 @@
+import type { HiringTestColor, PublishStatus } from "@/lib/types/api";
+
 // Талентийн үнэлгээ (role assessment)-ийн enum ба Монгол label.
 // Эх сурвалж: docs/role-assessment-report.md §4 (staging ✅).
 
-export const RECRUITMENT_STATUSES = ["CREATED", "PUBLISHED", "CLOSED"] as const;
-export type RecruitmentStatus = (typeof RECRUITMENT_STATUSES)[number];
+// swagger: RecruitmentListView.status / RecruitmentDetail.status / MySurveyView.status
+export const RECRUITMENT_STATUSES = [
+	"CREATED",
+	"PUBLISHING",
+	"PUBLISHED",
+	"CLOSED",
+	"SUSPENDED",
+] as const;
+export type RecruitmentStatus = (typeof RECRUITMENT_STATUSES)[number] &
+	PublishStatus;
 
+// Label: staging UI (bundle 📦). PUBLISHING-ийг staging орчуулаагүй, түүхий текстээр харуулдаг.
 export const RECRUITMENT_STATUS_LABELS: Record<RecruitmentStatus, string> = {
 	CREATED: "Үүссэн",
+	PUBLISHING: "PUBLISHING",
 	// санал: өмнө нь "Нийтэлсэн" байсан; staging "Идэвхтэй" гэж харуулдаг
 	PUBLISHED: "Идэвхтэй",
 	CLOSED: "Хаагдсан",
+	SUSPENDED: "Саатсан",
 };
 
 export const INVITATION_STATUSES = [
@@ -28,8 +41,8 @@ export const INVITATION_STATUS_LABELS: Record<InvitationStatus, string> = {
 	EXPIRED: "Хугацаа дууссан",
 };
 
-// Тестийн өнгө: GREEN = Бие хүний онцлог, YELLOW = Зөөлөн ур чадвар (staging ✅)
-export type TestColor = "GREEN" | "YELLOW";
+// Тестийн өнгө — swagger: HiringTestPublicDTO.color (staging каталогт GREEN, YELLOW ✅)
+export type TestColor = HiringTestColor;
 
 export function isRecruitmentStatus(
 	value: unknown,

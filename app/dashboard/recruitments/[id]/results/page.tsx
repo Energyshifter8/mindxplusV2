@@ -457,7 +457,7 @@ function InvitationRow({
 	);
 }
 
-// bundle-derived, unverified: ratingPoints (#14) — байхгүй бол "—"
+// ratingPoints (#14): rated=true үед л ирнэ (✅), байхгүй бол "—"
 function RatingCell({ points }: { points: number | null | undefined }) {
 	if (typeof points !== "number" || points <= 0) {
 		return <span className="text-muted-foreground">—</span>;

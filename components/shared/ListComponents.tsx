@@ -144,6 +144,10 @@ const RECRUITMENT_BADGE_STYLES: Record<
 		dotClass: "bg-badge-amber",
 		borderClass: "border-badge-amber/30",
 	},
+	PUBLISHING: {
+		dotClass: "bg-[#4d4c4b]",
+		borderClass: "border-badge-gray/30",
+	},
 	PUBLISHED: {
 		dotClass: "bg-badge-green",
 		borderClass: "border-badge-green/30",
@@ -151,6 +155,10 @@ const RECRUITMENT_BADGE_STYLES: Record<
 	CLOSED: {
 		dotClass: "bg-badge-gray",
 		borderClass: "border-badge-gray/30",
+	},
+	SUSPENDED: {
+		dotClass: "bg-[#f32222]",
+		borderClass: "border-destructive/30",
 	},
 };
 

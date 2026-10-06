@@ -1,0 +1,6935 @@
+{
+	"openapi": "3.1.0",
+	"info": { "title": "OpenAPI definition", "version": "v0" },
+	"servers": [
+		{
+			"url": "http://192.168.2.15:30102",
+			"description": "Generated server url"
+		}
+	],
+	"paths": {
+		"/user/verify": {
+			"post": {
+				"tags": ["user-controller"],
+				"summary": "Бүртгэл баталгаажуулах",
+				"operationId": "verify",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/OtpDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/TokenDTO" } }
+						}
+					}
+				}
+			}
+		},
+		"/user/signup": {
+			"post": {
+				"tags": ["user-controller"],
+				"summary": "Хэрэглэгч имэйлээр бүртгүүлэх",
+				"operationId": "signup",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/UserDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/send-reset-link": {
+			"post": {
+				"tags": ["user-controller"],
+				"summary": "Нууц үг сэргээх - send email",
+				"operationId": "sendPasswordResetLink",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/Email" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/send-code": {
+			"post": {
+				"tags": ["user-controller"],
+				"summary": "Бүртгэл баталгаажуулах OTP дахих илгээх",
+				"operationId": "sendVerificationEmailAgain",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/Email" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/reset-password": {
+			"get": {
+				"tags": ["user-controller"],
+				"summary": "Нууц үг сэргээх - check token",
+				"operationId": "sendPasswordResetLink_1",
+				"parameters": [
+					{
+						"name": "token",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["user-controller"],
+				"summary": "Нууц үг reset хийх",
+				"operationId": "resetPassword",
+				"parameters": [
+					{
+						"name": "token",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/ResetPassword" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/login": {
+			"post": {
+				"tags": ["user-controller"],
+				"summary": "User login",
+				"operationId": "login",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/LogInDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/TokenDTO" } }
+						}
+					}
+				}
+			}
+		},
+		"/join/member-invitation/{invitationId}": {
+			"post": {
+				"tags": ["user-controller"],
+				"summary": "Join by member invitation",
+				"operationId": "joinMember",
+				"parameters": [
+					{
+						"name": "invitationId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/PasswordSetup" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/TokenDTO" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/templates/like": {
+			"post": {
+				"tags": ["my-template-controller"],
+				"summary": "Судалгааны загвар таалагдах/таалагдахгүй",
+				"operationId": "likeTemplate",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/customer/teams/{userId}/change-role": {
+			"post": {
+				"tags": ["my-team-controller"],
+				"summary": "Гишүүнийг role солих",
+				"operationId": "changeRole",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "string",
+								"enum": ["OWNER", "MANAGER", "VIEWER"]
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/teams/reinvite": {
+			"post": {
+				"tags": ["my-team-controller"],
+				"summary": "Гишүүнийг идэвхтэй болгох",
+				"operationId": "reInviteMember",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/MemberInvitation" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/teams/inactivate": {
+			"post": {
+				"tags": ["my-team-controller"],
+				"summary": "Гишүүнийг идэвхгүй болгох",
+				"operationId": "inactivateMember",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/teams/delete-invitation": {
+			"post": {
+				"tags": ["my-team-controller"],
+				"summary": "Гишүүний болох урилгыг устгах",
+				"operationId": "deleteMemberInvitation",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/teams/add": {
+			"post": {
+				"tags": ["my-team-controller"],
+				"summary": "Шинэ гишүүн гэж нэмэх",
+				"operationId": "inviteTeamMember",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/TeamMember" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/MemberInvitation" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/teams/activate": {
+			"post": {
+				"tags": ["my-team-controller"],
+				"summary": "Гишүүнийг идэвхтэй болгох",
+				"operationId": "activateMember",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/surveys/{surveyId}/update-page": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Эхлэл, төгсгөл хуудас засах",
+				"operationId": "updatePage",
+				"parameters": [
+					{
+						"name": "surveyId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/PageEditDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/surveys/{surveyId}/update-all-page": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Олон хуудас засах",
+				"operationId": "updateAllPages",
+				"parameters": [
+					{
+						"name": "surveyId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": { "$ref": "#/components/schemas/PageEditDTO" }
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/surveys/{surveyId}/publish": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Хэрэглэгч судалгааг нийтлэх",
+				"operationId": "publish",
+				"parameters": [
+					{
+						"name": "surveyId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/DateDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/SurveyShareDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys/{surveyId}/extend": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Нийтэлсэн шинжилгээний хугацааг сунгах",
+				"operationId": "extendSurvey",
+				"parameters": [
+					{
+						"name": "surveyId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/DateDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/surveys/{id}/set-passcode": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Судалгаанд passcode тохируулах",
+				"operationId": "setPassCode",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/PasscodeDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/MySurveyDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys/{id}/set-device-check": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Судалгаанд passcode тохируулах",
+				"operationId": "setDeviceCheck",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/MySurveyDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys/{id}/rename": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Хэрэглэгч судалгааны нэрийг засах",
+				"operationId": "rename",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys/{id}/remove-passcode": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Судалгааны passcode авах",
+				"operationId": "removePassCode",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/MySurveyDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys/trial": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Хэрэглэгч туршилтын судалгаа үүсгэх",
+				"operationId": "createTrialSurvey",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/customer/surveys/new": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Хэрэглэгч судалгааны загвараас шинэ судалгаа үүсгэх",
+				"operationId": "create",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/CreateSurveyDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/customer/surveys/delete": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Хэрэглэгч үүсгэсэн судалгааг устгах",
+				"operationId": "delete",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys/close": {
+			"post": {
+				"tags": ["my-survey-controller"],
+				"summary": "Хэрэглэгч судалгаа хаах",
+				"operationId": "close",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/{id}/data-exports": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"summary": "Судалгааны дата exports",
+				"operationId": "getExportHistory",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/DataExport" }
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["my-survey-analysis-controller"],
+				"summary": "Судалгааны шинэ дата таталт",
+				"operationId": "generateNewDataExport",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/DataExportDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/DataExport" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/insight/{surveyId}/text-questions/{questionId}": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"operationId": "getTextQuestionAnswers",
+				"parameters": [
+					{
+						"name": "surveyId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "questionId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 10 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PageResponseString" }
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["my-survey-analysis-controller"],
+				"summary": "Текст асуултын шинэ дата таталт",
+				"operationId": "generateNewTextDataExport",
+				"parameters": [
+					{
+						"name": "surveyId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "questionId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/DataExportDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/DataExportResponse" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/role-assessments/recommend": {
+			"post": {
+				"tags": ["my-hiring-test-controller"],
+				"summary": "RoleLevel-ээр сонгон шалгаруулалт санал болгох",
+				"operationId": "recommend",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "type": "array", "items": { "type": "string" } }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/HiringTestPublicDTO"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitments/{recruitmentId}/rename": {
+			"post": {
+				"tags": ["my-recruitments-controller"],
+				"summary": "Сонгон шалгаруулалтыг нэрийг засах",
+				"operationId": "rename_1",
+				"parameters": [
+					{
+						"name": "recruitmentId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/recruitments/new": {
+			"post": {
+				"tags": ["my-recruitments-controller"],
+				"summary": "Шинэ сонгон шалгаруулалт үүсгэх",
+				"operationId": "create_1",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/customer/recruitments/delete": {
+			"post": {
+				"tags": ["my-recruitments-controller"],
+				"summary": "Сонгон шалгаруулалт устгах",
+				"operationId": "delete_1",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/recruitments/close": {
+			"post": {
+				"tags": ["my-recruitments-controller"],
+				"summary": "Сонгон шалгаруулалт хаах",
+				"operationId": "close_1",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/recruitment-setup/{id}/update-information": {
+			"post": {
+				"tags": ["recruitment-set-up-controller"],
+				"summary": "Сонгон шалгаруулалтын мэдээлэл оруулах",
+				"operationId": "updateInformation",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/RecruitmentInfo" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitment-setup/{id}/set-tests": {
+			"post": {
+				"tags": ["recruitment-set-up-controller"],
+				"summary": "Сонгон шалгаруулалтын мэдээлэл оруулах",
+				"operationId": "setTests",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "type": "array", "items": { "type": "string" } }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitment-setup/{id}/set-questions": {
+			"post": {
+				"tags": ["recruitment-set-up-controller"],
+				"summary": "Сонгон шалгаруулалт дээр нэмэлт асуултууд тохируулах",
+				"operationId": "setCustomQuestions",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": { "type": "integer", "format": "int64" }
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitment-setup/publish": {
+			"post": {
+				"tags": ["recruitment-set-up-controller"],
+				"summary": "Сонгон шалгаруулалтыг баталгаажуулах",
+				"operationId": "publish_1",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/questions/{ownerType}/{ownerId}/question/{questionId}/delete-option": {
+			"post": {
+				"tags": ["customer-question-controller"],
+				"summary": "Судалгаанд нэмэлт асуултын хариулт утсгах",
+				"operationId": "deleteQuestionOption",
+				"parameters": [
+					{
+						"name": "ownerType",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "ownerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "questionId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/IdDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/questions/{ownerType}/{ownerId}/delete-question": {
+			"post": {
+				"tags": ["customer-question-controller"],
+				"summary": "Судалгаанд нэмэлт асуулт устгах",
+				"operationId": "deleteCustomQuestion",
+				"parameters": [
+					{
+						"name": "ownerType",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "ownerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/IdDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/questions/{ownerType}/{ownerId}/add-question": {
+			"post": {
+				"tags": ["customer-question-controller"],
+				"summary": "Асуулт нэмэх",
+				"operationId": "addCustomQuestion",
+				"parameters": [
+					{
+						"name": "ownerType",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "ownerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/CustomQuestion" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/QuestionDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/questions/{ownerType}/{ownerId}/add-multiple-question": {
+			"post": {
+				"tags": ["customer-question-controller"],
+				"summary": "Судалгаанд нэмэлт асуулт олноор нэмэх",
+				"operationId": "addCustomQuestionMultiple",
+				"parameters": [
+					{
+						"name": "ownerType",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "ownerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": { "$ref": "#/components/schemas/CustomQuestion" }
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/QuestionDTO" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/purchase/request": {
+			"post": {
+				"tags": ["my-purchase-controller"],
+				"summary": "Худалдан авах хүсэлт илгээх",
+				"operationId": "createRequest",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/PlanRequest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/profile/update-social-networks": {
+			"post": {
+				"tags": ["my-profile-controller"],
+				"summary": "Хэрэглэгч social networks шинэчлэх",
+				"operationId": "updateSocialNetworks",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/SocialLink" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/profile/update-password": {
+			"post": {
+				"tags": ["my-profile-controller"],
+				"summary": "Хэрэглэгчийн нууц үг солих",
+				"operationId": "updatePassword",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/NewPassword" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/profile/update-name": {
+			"post": {
+				"tags": ["my-profile-controller"],
+				"summary": "Хэрэглэгчийн овог, нэр засах",
+				"operationId": "updateName",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/FullName" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/profile/onboard": {
+			"post": {
+				"tags": ["my-profile-controller"],
+				"operationId": "onboard",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/OnBoardingAnswers" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/customer/profile/device": {
+			"post": {
+				"tags": ["my-profile-controller"],
+				"operationId": "device",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/{invitationId}/rate": {
+			"get": {
+				"tags": ["my-talent-controller"],
+				"summary": "Уригдсан талентад өөрийн өгсөн үнэлгээг авах",
+				"operationId": "getMyRating",
+				"parameters": [
+					{
+						"name": "invitationId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/InvitationRatingView"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["my-talent-controller"],
+				"summary": "Талентийн үр дүнг үнэлэх",
+				"operationId": "rate",
+				"parameters": [
+					{
+						"name": "invitationId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/Rating" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/{invitationId}/notes/add": {
+			"post": {
+				"tags": ["my-talent-controller"],
+				"summary": "Урилгад тэмдэглэл нэмэх",
+				"operationId": "addNote",
+				"parameters": [
+					{
+						"name": "invitationId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/InvitationNoteView" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/{invitationId}/extend": {
+			"post": {
+				"tags": ["my-talent-controller"],
+				"summary": "Урилгын хугацаа сунгах",
+				"operationId": "extend",
+				"parameters": [
+					{
+						"name": "invitationId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/DateDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/Talent" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/talents/bookmark": {
+			"post": {
+				"tags": ["my-talent-controller"],
+				"summary": "Талент bookmark/unbookmark",
+				"operationId": "toggleBookmark",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/IdDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/customer/hiring-invitations/search-by-email": {
+			"post": {
+				"tags": ["my-talent-controller"],
+				"summary": "Имэйлээр өмнө нь бүртгэгдсэн эсэхийг хайх",
+				"operationId": "searchByEmail",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/Email" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/RestResponseTalentEntity"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/invite": {
+			"post": {
+				"tags": ["my-talent-controller"],
+				"summary": "Талент урих",
+				"operationId": "invite",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/Talent" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/customer/designs/{ownerType}/{ownerId}/upload-logo": {
+			"post": {
+				"tags": ["design-controller"],
+				"summary": "Upload an logo",
+				"description": "Uploads an image file along with metadata",
+				"operationId": "changeLogo",
+				"parameters": [
+					{
+						"name": "ownerType",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "ownerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"logo": { "type": "string", "format": "binary" }
+								},
+								"required": ["logo"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Returns image url if file uploaded successfully",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/customer/designs/{ownerType}/{ownerId}/update": {
+			"post": {
+				"tags": ["design-controller"],
+				"summary": "Дизайн өөрчлөх",
+				"operationId": "updateDesign",
+				"parameters": [
+					{
+						"name": "ownerType",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "ownerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/UpdateDesign" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/DesignDTO" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/designs/{ownerType}/{ownerId}/remove-logo": {
+			"post": {
+				"tags": ["design-controller"],
+				"summary": "Remove logo",
+				"operationId": "removeLogo",
+				"parameters": [
+					{
+						"name": "ownerType",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "ownerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/IdDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/tests/{testId}/set-questions": {
+			"post": {
+				"tags": ["admin-test-controller"],
+				"summary": "Шинэ тестийн асуултуудыг бүртгэх",
+				"operationId": "setTestQuestions",
+				"parameters": [
+					{
+						"name": "testId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": { "$ref": "#/components/schemas/NewTestQuestion" }
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/admin/tests/{testId}/set-factors": {
+			"post": {
+				"tags": ["admin-test-controller"],
+				"summary": "Шинэ тестийн хүчин зүйлсийг бүртгэх",
+				"operationId": "setTestFactors",
+				"parameters": [
+					{
+						"name": "testId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": { "$ref": "#/components/schemas/Factor" }
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/admin/tests/send-to-collector": {
+			"post": {
+				"tags": ["admin-test-controller"],
+				"summary": "Collector service рүү тэст илгээх",
+				"operationId": "sendToCollector",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/admin/tests/send-to-analyst": {
+			"post": {
+				"tags": ["admin-test-controller"],
+				"summary": "Analyst service рүү тэст илгээх",
+				"operationId": "sendToAnalyst",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/admin/tests/create": {
+			"post": {
+				"tags": ["admin-test-controller"],
+				"summary": "Шинэ тест бүртгэх",
+				"operationId": "createTest",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/CreateNewTest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/TestEntity" } }
+						}
+					}
+				}
+			}
+		},
+		"/admin/purchases/create-invoice": {
+			"post": {
+				"tags": ["admin-purchase-controller"],
+				"summary": "Нэхэмжлэх үүсгэх",
+				"operationId": "createInvoice",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/NewPurchaseRequest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PurchaseDetail" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/purchases/approve": {
+			"post": {
+				"tags": ["admin-purchase-controller"],
+				"summary": "Нэхэмжлэхийг төлөгдсөнд тооцож батлах. Ингэснээр нэхэмжлэхийн дагуу хэрэглэгчийн аккаунтыг тохируулна.",
+				"operationId": "setToPaid",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/hiring/tests/{id}/update": {
+			"post": {
+				"tags": ["admin-hiring-test-controller"],
+				"summary": "Сонгон шалгаруулалтын тестийн мэдээллийг засах",
+				"operationId": "update",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/UpdateHiringTest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/HiringTestEntity" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/hiring-invitations/search-talent": {
+			"post": {
+				"tags": ["admin-talents-controller"],
+				"summary": "Хэрэглэгчээр урилга хайх",
+				"operationId": "searchTalent",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/Email" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/TalentAdminListView"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/customers/{customerId}/update-info": {
+			"post": {
+				"tags": ["admin-customer-controller"],
+				"summary": "Хэрэглэгчийн компанийн нэр, рд, холбоо барих мэдээллийг засах",
+				"operationId": "updateCustomerContactInfo",
+				"parameters": [
+					{
+						"name": "customerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/UpdateCompany" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/admin-users/update-password": {
+			"post": {
+				"tags": ["admin-controller"],
+				"summary": "Админ нууц үг солих",
+				"operationId": "updatePassword_1",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/NewPassword" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RestResponseVoid" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/admin-users/new": {
+			"post": {
+				"tags": ["admin-controller"],
+				"operationId": "newAdmin",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/UserDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/admin/admin-users/inactivate": {
+			"post": {
+				"tags": ["admin-controller"],
+				"operationId": "inactivate",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/StrDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/user/member-invitation/{token}": {
+			"get": {
+				"tags": ["user-controller"],
+				"summary": "Visit by member invitation",
+				"operationId": "visitByMemberInvitation",
+				"parameters": [
+					{
+						"name": "token",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/MemberInvitation" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/auth/refresh": {
+			"get": {
+				"tags": ["user-controller"],
+				"summary": "Jwt token refresh",
+				"operationId": "refreshToken",
+				"parameters": [
+					{
+						"name": "Authorization",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/TokenDTO" } }
+						}
+					}
+				}
+			}
+		},
+		"/health-checker": {
+			"get": {
+				"tags": ["health-checker-controller"],
+				"operationId": "healthChecker",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "boolean" } } }
+					}
+				}
+			}
+		},
+		"/customer/templates": {
+			"get": {
+				"tags": ["my-template-controller"],
+				"summary": "Судалгааны загваруудыг харах",
+				"operationId": "getTemplates",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/SurveyTemplateCategorized"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/templates/{id}": {
+			"get": {
+				"tags": ["my-template-controller"],
+				"summary": "Судалгааны загварын дэлгэрэнгүй авах",
+				"operationId": "getTemplateForDialogue",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/TemplateDetailView" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/templates/categories": {
+			"get": {
+				"tags": ["my-template-controller"],
+				"summary": "Судалгааны загварын категориудыг авах",
+				"operationId": "getCategories",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/CategoryWithCount" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/teams": {
+			"get": {
+				"tags": ["my-team-controller"],
+				"summary": "Багийн гишүүдийн мэдээлэл авах",
+				"operationId": "getMyTeam",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/MemberInvitation" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/teams/seat": {
+			"get": {
+				"tags": ["my-team-controller"],
+				"summary": "Багийн гишүүдийн мэдээлэл авах",
+				"operationId": "getSlot",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/Count" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys": {
+			"get": {
+				"tags": ["my-survey-controller"],
+				"summary": "Хэрэлэгчийн судалгааны жагсаалтыг буцаана",
+				"operationId": "getAll",
+				"parameters": [
+					{
+						"name": "status",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 25 }
+					},
+					{
+						"name": "name",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string", "maxLength": 100, "minLength": 0 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PageMySurveyView" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys/{id}": {
+			"get": {
+				"tags": ["my-survey-controller"],
+				"summary": "Хэрэглэгч судалгааны дэлгэрэнгүйг засахаар авах",
+				"operationId": "getForEditing",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/SurveyEditDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys/{id}/passcode": {
+			"get": {
+				"tags": ["my-survey-controller"],
+				"summary": "Судалгааны нууц код авах",
+				"operationId": "getPasscode",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/customer/surveys/{id}/edit-options": {
+			"get": {
+				"tags": ["my-survey-controller"],
+				"summary": "Судалгааг засварлах тохиргоог авах",
+				"operationId": "getEditOptions",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PlanFeature" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys/detail/{id}": {
+			"get": {
+				"tags": ["my-survey-controller"],
+				"summary": "Хэрэлэгчийн судалгааны мэдээлэл",
+				"operationId": "getSurveyById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/MySurveyDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/surveys-home/statistics": {
+			"get": {
+				"tags": ["my-survey-home-controller"],
+				"operationId": "getDashboardSurveyInfos",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/SurveyHomeStatistics"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/{id}/text-answers": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"summary": "Судалгааны дата exports",
+				"operationId": "getTextAnswerExports",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/DataExport" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/{id}/data-quality": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"summary": "Дата чанарын дэлгэрэнгүй харах",
+				"operationId": "getDataQualitySummary",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/DataQualitySummary" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/{id}/data-download": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"summary": "Судалгааны export хийсэн дата татах",
+				"operationId": "getDownloadDataExport",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "export",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "type": "string", "format": "byte" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/{id}/data-count": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"summary": "Шинэ дата файлын тоо авах",
+				"operationId": "getNewDataExportCount",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "type": "integer", "format": "int64" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/insight/{id}": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"operationId": "getInsight",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/SurveyInsightDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/insight/{id}/primary-question-summaries": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"operationId": "getQuestionSummaries",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 10 }
+					},
+					{
+						"name": "quality",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string", "default": "all" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageResponseQuestionSummaryDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/insight/{id}/custom-question-summaries": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"operationId": "getCustomQuestionSummaries",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 10 }
+					},
+					{
+						"name": "quality",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string", "default": "all" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageResponseQuestionSummaryDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/info/{id}": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"operationId": "getMySurveyInfo",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/MySurveyDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/survey-analysis/dashboard/{id}": {
+			"get": {
+				"tags": ["my-survey-analysis-controller"],
+				"summary": "Үр дүн дээр харуулах чартуудын options",
+				"operationId": "getTemplateCharts",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "quality",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string", "default": "all" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/DashboardChart" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/role-assessments/tests": {
+			"get": {
+				"tags": ["my-hiring-test-controller"],
+				"summary": "Сонгон шалгаруулалтын тестүүдийг авах",
+				"operationId": "getTests",
+				"parameters": [
+					{
+						"name": "category",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string", "default": "" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/HiringTestPublicDTO"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/role-assessments/tests/{id}": {
+			"get": {
+				"tags": ["my-hiring-test-controller"],
+				"summary": "Сонгон шалгаруулалтын тестийн дэлгэрэнгүй мэдээлэл авах",
+				"operationId": "getTestDetail",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/HiringTestPublicDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/role-assessments/questions": {
+			"get": {
+				"tags": ["my-hiring-test-controller"],
+				"summary": "Сонгон шалгаруулалтын нэмэлт асуултуудыг авах",
+				"operationId": "getCustomQuestions",
+				"parameters": [
+					{
+						"name": "category",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string", "default": "" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/HiringQuestionDTO" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/role-assessments/question-categories": {
+			"get": {
+				"tags": ["my-hiring-test-controller"],
+				"summary": "Сонгон шалгаруулалтын нэмэлт асуултуудын категори авах",
+				"operationId": "getQuestionCategories",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/CategoryWithCount" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/role-assessments/categories": {
+			"get": {
+				"tags": ["my-hiring-test-controller"],
+				"summary": "Сонгон шалгаруулалтын тестүүдийн категори авах",
+				"operationId": "getCategories_1",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/CategoryWithCount" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitments/{recruitmentId}": {
+			"get": {
+				"tags": ["my-recruitments-controller"],
+				"summary": "Хэрэглэгчийн үүсгэсэн сонгон шалгаруулалтыт авах",
+				"operationId": "getMyRecruitmentById",
+				"parameters": [
+					{
+						"name": "recruitmentId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RecruitmentDetail" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitments/status/{recruitmentId}": {
+			"get": {
+				"tags": ["my-recruitments-controller"],
+				"summary": "Сонгон шалгаруулалт нэр, статусыг id-аар авах",
+				"operationId": "getRecruitmentById",
+				"parameters": [
+					{
+						"name": "recruitmentId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/RecruitmentBriefView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitments/statistics": {
+			"get": {
+				"tags": ["my-recruitments-controller"],
+				"summary": "Homepage дээр харуулах талентийн модулийн статистик",
+				"operationId": "getRecruitmentById_1",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/HiringHomeStatistics"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitments/": {
+			"get": {
+				"tags": ["my-recruitments-controller"],
+				"summary": "Хэрэглэгчийн үүсгэсэн сонгон шалгаруулалтын жагсаалт авах",
+				"operationId": "getMyRecruitments",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 9 }
+					},
+					{
+						"name": "status",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "name",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string", "maxLength": 100, "minLength": 0 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageRecruitmentListView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitment-setup/{id}/tests": {
+			"get": {
+				"tags": ["recruitment-set-up-controller"],
+				"summary": "Сонгон шалгаруулалт дээр сонгон тестүүдийг авах",
+				"operationId": "getTests_1",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "type": "array", "items": { "type": "string" } }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitment-setup/{id}/questions": {
+			"get": {
+				"tags": ["recruitment-set-up-controller"],
+				"summary": "Сонгон шалгаруулалтын нэмэлт асуултуудыг авах",
+				"operationId": "getCustomQuestions_1",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "type": "integer", "format": "int64" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitment-setup/{id}/information": {
+			"get": {
+				"tags": ["recruitment-set-up-controller"],
+				"summary": "Сонгон шалгаруулалтын мэдээлэл авах",
+				"operationId": "getInformation",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RecruitmentInfo" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/recruitment-setup/settings": {
+			"get": {
+				"tags": ["recruitment-set-up-controller"],
+				"summary": "Сонгон шалгаруулалтын модулийн хязгааралалтын тохиргооо авах",
+				"operationId": "getSettings",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/RecruitmentSettings" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/purchase": {
+			"get": {
+				"tags": ["my-purchase-controller"],
+				"summary": "Хэрэглэгчийн худалдан авалтын жагсаалтыг буцаана",
+				"operationId": "getMyPurchases",
+				"parameters": [
+					{
+						"name": "status",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": ["PENDING", "PAID", "CANCELLED", "EXPIRED"]
+						}
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 10 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PagePurchaseView" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/purchase/{id}": {
+			"get": {
+				"tags": ["my-purchase-controller"],
+				"summary": "Нэхэмжлэхийн дэлгэрэнгүй харах",
+				"operationId": "getMyPurchasesById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/Purchase" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/purchase/pending": {
+			"get": {
+				"tags": ["my-purchase-controller"],
+				"summary": "Хүлээгдэж буй нэхэмжлэхийн жагсаалтыг авах",
+				"operationId": "getPendingInvoices",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/PurchaseView" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/profile": {
+			"get": {
+				"tags": ["my-profile-controller"],
+				"summary": "Хэрэглэгч өөрийн profile авах",
+				"operationId": "me",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/UserInfo" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/profile/social-networks": {
+			"get": {
+				"tags": ["my-profile-controller"],
+				"summary": "Хэрэглэгч social networks",
+				"operationId": "getSocialNetworks",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "object",
+									"additionalProperties": { "type": "string" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/plans": {
+			"get": {
+				"tags": ["customer-plan-controller"],
+				"operationId": "getAllActivePlans",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/PricePlan" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring/test-result/report/{invitationId}/{testAnswerId}": {
+			"get": {
+				"tags": ["test-result-controller"],
+				"summary": "Талентийн тестийн үр дүнгийн html-ээр харах",
+				"operationId": "getReport",
+				"parameters": [
+					{
+						"name": "invitationId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "testAnswerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "text/html": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/customer/hiring/test-result/report/{invitationId}/{testAnswerId}/download": {
+			"get": {
+				"tags": ["test-result-controller"],
+				"summary": "Талентийн тестийн үр дүнг татаж авах",
+				"operationId": "downloadReport",
+				"parameters": [
+					{
+						"name": "invitationId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "testAnswerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "type": "string", "format": "byte" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/{recruitmentId}/{invitationId}": {
+			"get": {
+				"tags": ["my-talent-controller"],
+				"summary": "Сонгон шалгаруулалтанд уригдсан талентын үр дүн",
+				"operationId": "getTalentResult",
+				"parameters": [
+					{
+						"name": "recruitmentId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					},
+					{
+						"name": "invitationId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/TalentResult" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/{invitationId}/notes": {
+			"get": {
+				"tags": ["my-talent-controller"],
+				"summary": "Урилгын бүх тэмдэглэлийг авах",
+				"operationId": "getNotes",
+				"parameters": [
+					{
+						"name": "invitationId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/InvitationNoteView" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/talents": {
+			"get": {
+				"tags": ["my-talent-controller"],
+				"summary": "Миний урьсан талентүүд",
+				"operationId": "getMyTalentList",
+				"parameters": [
+					{
+						"name": "q",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string", "maxLength": 100, "minLength": 0 }
+					},
+					{
+						"name": "marked",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "boolean" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 10 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PageTalentView" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/talents/{id}": {
+			"get": {
+				"tags": ["my-talent-controller"],
+				"summary": "Талентийн урилгын жагсаалтууд",
+				"operationId": "getTalentDetail",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/TalentView" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/talents/{id}/invitations": {
+			"get": {
+				"tags": ["my-talent-controller"],
+				"summary": "Талентийн урилгын жагсаалтууд",
+				"operationId": "getTalentInvitations",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 10 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PageInvitationDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/names/{recruitmentId}": {
+			"get": {
+				"tags": ["my-talent-controller"],
+				"summary": "Сонгон шалгаруулалтанд уригдсан талентүүдийн нэрсийг авах",
+				"operationId": "getTalentNames",
+				"parameters": [
+					{
+						"name": "recruitmentId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/Talent" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/list/{recruitmentId}": {
+			"get": {
+				"tags": ["my-talent-controller"],
+				"summary": "Сонгон шалгаруулалтанд уригдсан талентүүдийг хуудаслалттайгаар авах",
+				"operationId": "getTalentsByRecruitment",
+				"parameters": [
+					{
+						"name": "recruitmentId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 10 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageCustomerInvitationView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/hiring-invitations/latest-completed": {
+			"get": {
+				"tags": ["my-talent-controller"],
+				"summary": "Хамгийн сүүлд дууссан төлөвтэй урилгуудыг авах",
+				"operationId": "getLatestCompletedInvitations",
+				"parameters": [
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"format": "int32",
+							"default": 5,
+							"maximum": 10,
+							"minimum": 5
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/InvitationProjection"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/designs/{ownerType}/{ownerId}": {
+			"get": {
+				"tags": ["design-controller"],
+				"summary": "Get design",
+				"operationId": "getDesign",
+				"parameters": [
+					{
+						"name": "ownerType",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "ownerId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/DesignDTO" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/designs/themes": {
+			"get": {
+				"tags": ["design-controller"],
+				"summary": "ThemeTypes буцаана",
+				"operationId": "getThemes",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "string",
+										"enum": ["LIGHT", "YALE", "DARK", "MIRAGE", "PURPLE"]
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/auth/check-token": {
+			"get": {
+				"tags": ["user-controller"],
+				"operationId": "checkToken",
+				"parameters": [
+					{
+						"name": "Authorization",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "boolean" } } }
+					}
+				}
+			}
+		},
+		"/customer/account": {
+			"get": {
+				"tags": ["my-account-controller"],
+				"summary": "Хэрэглэгчийн багцын ерөнхий мэдээлэл авах",
+				"operationId": "getMyAccount",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/AccountDTO" } }
+						}
+					}
+				}
+			}
+		},
+		"/customer/account/features": {
+			"get": {
+				"tags": ["my-account-controller"],
+				"summary": "Хэрэглэгчийн багцын боломжуудын авах",
+				"operationId": "getMyAccountFeatures",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "object",
+									"additionalProperties": { "type": "string" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/account/detailed": {
+			"get": {
+				"tags": ["my-account-controller"],
+				"summary": "Хэрэглэгчийн багцын дэлгэрэнгүй мэдээлэл авах",
+				"operationId": "getMyAccountDetail",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/MyAccountDetail" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/customer/account/balance/{type}": {
+			"get": {
+				"tags": ["my-account-controller"],
+				"summary": "Хэрэглэгчийн аккаунтын үлдэгдэл авах",
+				"operationId": "getMyAccountBalance",
+				"parameters": [
+					{
+						"name": "type",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "type": "integer", "format": "int32" } }
+						}
+					}
+				}
+			}
+		},
+		"/admin/tests": {
+			"get": {
+				"tags": ["admin-test-controller"],
+				"summary": "Тестүүдийн жагсаалтыг авах",
+				"operationId": "getTests_2",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 25 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PageTestEntity" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/tests/{id}": {
+			"get": {
+				"tags": ["admin-test-controller"],
+				"summary": "Id-аар тестийн дэлгэрэнгүй мэдээлэл авах",
+				"operationId": "getTestById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/TestDetail" } }
+						}
+					}
+				}
+			}
+		},
+		"/admin/surveys": {
+			"get": {
+				"tags": ["admin-survey-controller"],
+				"summary": "Судалгааны жагсаалтыг буцаана",
+				"operationId": "getPaginatedList",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 25 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PageSurveyAdminView" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/surveys/{id}": {
+			"get": {
+				"tags": ["admin-survey-controller"],
+				"summary": "Судалгааны мэдээлэл",
+				"operationId": "getSurveyDetail",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/SurveyAdminDetail" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/surveys/search": {
+			"get": {
+				"tags": ["admin-survey-controller"],
+				"summary": "Судалгааг хэрэглэгчээр хайх",
+				"operationId": "searchByCustomer",
+				"parameters": [
+					{
+						"name": "customerId",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 25 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PageSurveyAdminView" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/survey-templates": {
+			"get": {
+				"tags": ["admin-survey-template-controller"],
+				"summary": "Судалгааны жагсаалтыг хуудаслалттай буцаана",
+				"operationId": "getAll_1",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 25 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageSurveyTemplateAdminListView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/survey-templates/{id}": {
+			"get": {
+				"tags": ["admin-survey-template-controller"],
+				"summary": "Судалгааны загварыг id-аар авах",
+				"operationId": "get",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/SurveyTemplateAdminDetail"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/recruitments": {
+			"get": {
+				"tags": ["admin-recruitment-controller"],
+				"summary": "Сонгон шалгаруулалтын жагсаалт",
+				"operationId": "getRecruitments",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 20 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageRecruitmentAdminListView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/recruitments/{id}": {
+			"get": {
+				"tags": ["admin-recruitment-controller"],
+				"summary": "Сонгон шалгаруулалтын дэлгэрэнгүй",
+				"operationId": "getRecruitmentDetail",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/RecruitmentAdminDetail"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/recruitments/search": {
+			"get": {
+				"tags": ["admin-recruitment-controller"],
+				"summary": "Сонгон шалгаруулалт хэрэглэгчээр хайх",
+				"operationId": "searchByCustomer_1",
+				"parameters": [
+					{
+						"name": "customerId",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 20 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageRecruitmentAdminListView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/purchases": {
+			"get": {
+				"tags": ["admin-purchase-controller"],
+				"summary": "Нэхэмжлэхийн жагсаалт",
+				"operationId": "getAllPurchases",
+				"parameters": [
+					{
+						"name": "invoiceNumber",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 20 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PagePurchaseView" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/purchases/{id}": {
+			"get": {
+				"tags": ["admin-purchase-controller"],
+				"summary": "Нэхэмжлэхийн дэлгэрэнгүй",
+				"operationId": "getPurchaseDetail",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PurchaseDetail" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/purchases/requests": {
+			"get": {
+				"tags": ["admin-purchase-controller"],
+				"summary": "Багц худалдан авах хүсэлтийн жагсаалт",
+				"operationId": "getPlanRequests",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 20 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PagePlanRequestAdminView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/purchases/requests/{id}": {
+			"get": {
+				"tags": ["admin-purchase-controller"],
+				"summary": "Багц худалдан авах хүсэлтийн дэлгэрэнгүй",
+				"operationId": "getPlanRequests_1",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PlanRequestDetail" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/purchases/requests/cancel": {
+			"get": {
+				"tags": ["admin-purchase-controller"],
+				"summary": "Багц худалдан авах хүсэлтийн төлвийг цуцалсан болгох",
+				"operationId": "cancelPlanRequest",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/IdDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/admin/purchases/requests/approve": {
+			"get": {
+				"tags": ["admin-purchase-controller"],
+				"summary": "Багц худалдан авах хүсэлтийн төлвийг шийдвэрлэсэн болгох",
+				"operationId": "approvePlanRequest",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/IdDTO" }
+						}
+					},
+					"required": true
+				},
+				"responses": { "200": { "description": "OK" } }
+			}
+		},
+		"/admin/plans": {
+			"get": {
+				"tags": ["admin-plan-controller"],
+				"summary": "Багцын үнийн саналын жагсаалт харах",
+				"operationId": "getPlans",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 10 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PagePricePlanEntity" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/plans/{id}": {
+			"get": {
+				"tags": ["admin-plan-controller"],
+				"summary": "Багцын мэдээлэл авах",
+				"operationId": "getPlanById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": { "schema": { "$ref": "#/components/schemas/PricePlan" } }
+						}
+					}
+				}
+			}
+		},
+		"/admin/plans/active-plans": {
+			"get": {
+				"tags": ["admin-plan-controller"],
+				"operationId": "getActivePlans",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"type": "array",
+									"items": { "$ref": "#/components/schemas/PricePlan" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/hiring/tests": {
+			"get": {
+				"tags": ["admin-hiring-test-controller"],
+				"summary": "Сонгон шалгаруулалтын тестийн жагсаалт",
+				"operationId": "getTests_3",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 20 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageHiringTestPublicDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/hiring/tests/{id}": {
+			"get": {
+				"tags": ["admin-hiring-test-controller"],
+				"summary": "Сонгон шалгаруулалтын тестийн дэлгэрэнгүй авах",
+				"operationId": "getTestDetail_1",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "format": "uuid" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/HiringTestPublicDTO" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/hiring/custom-questions": {
+			"get": {
+				"tags": ["admin-hiring-test-controller"],
+				"summary": "Сонгон шалгаруулалтын нэмэлт асуултуудын жагсаалт",
+				"operationId": "getHiringQuestions",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 10 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageHiringQuestionDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/hiring-invitations": {
+			"get": {
+				"tags": ["admin-talents-controller"],
+				"summary": "Урилгыг жагсаалтаар харах",
+				"operationId": "getAll_2",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 20 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageTalentAdminListView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/hiring-invitations/search": {
+			"get": {
+				"tags": ["admin-talents-controller"],
+				"summary": "Хэрэглэгчээр урилга хайх",
+				"operationId": "searchByCustomer_2",
+				"parameters": [
+					{
+						"name": "customerId",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "integer", "format": "int64" }
+					},
+					{
+						"name": "status",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string" }
+					},
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 20 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageTalentAdminListView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/feedbacks": {
+			"get": {
+				"tags": ["admin-feedback-controller"],
+				"summary": "Санал хүсэлтийн жагсаалт",
+				"operationId": "getSurveyByType",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 25 }
+					},
+					{
+						"name": "type",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageFeedbackListView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/customers": {
+			"get": {
+				"tags": ["admin-customer-controller"],
+				"summary": "Хэрэглэгчдийн  мэдээллийг хуудаслалттай авах",
+				"operationId": "getCustomers",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 25 }
+					},
+					{
+						"name": "email",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "string", "maxLength": 100, "minLength": 0 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"$ref": "#/components/schemas/PageCustomerAdminListView"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/customers/{userId}": {
+			"get": {
+				"tags": ["admin-customer-controller"],
+				"summary": "Хэрэглэгчийн id-аар мэдээлэл авах",
+				"operationId": "searchAccount",
+				"parameters": [
+					{
+						"name": "userId",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/CustomerAccountInfo" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/customers/search-customer": {
+			"get": {
+				"tags": ["admin-customer-controller"],
+				"summary": "Имэйлээр хэрэглэгчийн мэдээлэл хайх",
+				"operationId": "searchCustomer",
+				"parameters": [
+					{
+						"name": "email",
+						"in": "query",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/CustomerAccountInfo" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/admin-users/me": {
+			"get": {
+				"tags": ["admin-controller"],
+				"operationId": "getCurrentUser",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/UserProfile" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/admin-users/get-username/{uuid}": {
+			"get": {
+				"tags": ["admin-controller"],
+				"operationId": "getUsername",
+				"parameters": [
+					{
+						"name": "uuid",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": { "*/*": { "schema": { "type": "string" } } }
+					}
+				}
+			}
+		},
+		"/admin/admin-users/": {
+			"get": {
+				"tags": ["admin-controller"],
+				"operationId": "getAll_3",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 0 }
+					},
+					{
+						"name": "size",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "format": "int32", "default": 25 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": { "$ref": "#/components/schemas/PageUserProfile" }
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"OtpDTO": {
+				"type": "object",
+				"properties": {
+					"email": {
+						"type": "string",
+						"maxLength": 2147483647,
+						"minLength": 5
+					},
+					"code": {
+						"type": "string",
+						"minLength": 1,
+						"pattern": "^[0-9]{6,6}$"
+					}
+				},
+				"required": ["code", "email"]
+			},
+			"TokenDTO": {
+				"type": "object",
+				"properties": { "token": { "type": "string" } }
+			},
+			"UserDTO": {
+				"type": "object",
+				"properties": {
+					"email": { "type": "string", "maxLength": 50, "minLength": 5 },
+					"firstName": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 2,
+						"pattern": "^\\p{L}[\\p{L}'\\-\\s]*$"
+					},
+					"lastName": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 2,
+						"pattern": "^\\p{L}[\\p{L}'\\-\\s]*$"
+					},
+					"companyName": { "type": "string", "maxLength": 100, "minLength": 2 },
+					"password": { "type": "string", "maxLength": 20, "minLength": 8 },
+					"confirmPassword": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 8
+					},
+					"subscribe": { "type": "boolean" }
+				},
+				"required": [
+					"companyName",
+					"email",
+					"firstName",
+					"lastName",
+					"subscribe"
+				]
+			},
+			"RestResponseVoid": {
+				"type": "object",
+				"properties": {
+					"message": { "type": "string" },
+					"status": { "type": "integer", "format": "int32" },
+					"success": { "type": "boolean" },
+					"data": {}
+				}
+			},
+			"Email": {
+				"type": "object",
+				"properties": {
+					"value": { "type": "string", "maxLength": 2147483647, "minLength": 5 }
+				},
+				"required": ["value"]
+			},
+			"ResetPassword": {
+				"type": "object",
+				"properties": {
+					"password": { "type": "string", "maxLength": 20, "minLength": 8 },
+					"confirmPassword": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 8
+					}
+				}
+			},
+			"LogInDTO": {
+				"type": "object",
+				"properties": {
+					"email": {
+						"type": "string",
+						"maxLength": 2147483647,
+						"minLength": 5
+					},
+					"password": { "type": "string", "minLength": 1 }
+				},
+				"required": ["email", "password"]
+			},
+			"PasswordSetup": {
+				"type": "object",
+				"properties": {
+					"password": { "type": "string", "maxLength": 20, "minLength": 8 },
+					"confirmPassword": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 8
+					}
+				}
+			},
+			"StrDTO": {
+				"type": "object",
+				"properties": { "str": { "type": "string", "minLength": 1 } },
+				"required": ["str"]
+			},
+			"MemberInvitation": {
+				"type": "object",
+				"properties": {
+					"uuid": { "type": "string" },
+					"email": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" },
+					"role": { "type": "string", "enum": ["OWNER", "MANAGER", "VIEWER"] },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"inactivatedAt": { "type": "string", "format": "date-time" },
+					"status": {
+						"type": "string",
+						"enum": ["ACTIVE", "INACTIVE", "INVITED", "EXPIRED"]
+					}
+				}
+			},
+			"TeamMember": {
+				"type": "object",
+				"properties": {
+					"firstName": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 2,
+						"pattern": "^\\p{L}[\\p{L}'\\-\\s]*$"
+					},
+					"lastName": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 2,
+						"pattern": "^\\p{L}[\\p{L}'\\-\\s]*$"
+					},
+					"email": { "type": "string", "maxLength": 50, "minLength": 5 },
+					"role": { "type": "string", "enum": ["OWNER", "MANAGER", "VIEWER"] }
+				},
+				"required": ["lastName"]
+			},
+			"PageEditDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"pageType": {
+						"type": "string",
+						"enum": ["INFO", "SURVEY_START", "TIP", "SURVEY_END"]
+					},
+					"title": { "type": "string", "maxLength": 100, "minLength": 0 },
+					"content": { "type": "string", "maxLength": 300, "minLength": 0 },
+					"btnLabel": { "type": "string", "maxLength": 20, "minLength": 0 }
+				},
+				"required": ["id", "pageType", "title"]
+			},
+			"DateDTO": {
+				"type": "object",
+				"properties": { "value": { "type": "string", "format": "date" } }
+			},
+			"SurveyShareDTO": {
+				"type": "object",
+				"properties": {
+					"link": { "type": "string" },
+					"qr": { "type": "string" }
+				}
+			},
+			"PasscodeDTO": {
+				"type": "object",
+				"properties": {
+					"value": {
+						"type": "string",
+						"minLength": 1,
+						"pattern": "^[0-9]{6,6}$"
+					}
+				},
+				"required": ["value"]
+			},
+			"MySurveyDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"templateName": { "type": "string" },
+					"templateKey": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"expireAt": { "type": "string", "format": "date" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"updatedAt": { "type": "string", "format": "date-time" },
+					"publishedAt": { "type": "string", "format": "date-time" },
+					"closedAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "$ref": "#/components/schemas/UserNameView" },
+					"publishedBy": { "$ref": "#/components/schemas/UserNameView" },
+					"closedBy": { "$ref": "#/components/schemas/UserNameView" },
+					"passcodeProtected": { "type": "boolean" },
+					"deviceCheck": { "type": "boolean" },
+					"questionCount": { "type": "integer", "format": "int32" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"goalCount": { "type": "integer", "format": "int32" },
+					"receivedResponseCount": { "type": "integer", "format": "int32" },
+					"link": { "type": "string" },
+					"qr": { "type": "string" },
+					"templateId": { "type": "string" },
+					"isTrial": { "type": "boolean" },
+					"hasExtended": { "type": "boolean" },
+					"ready": { "type": "boolean" }
+				}
+			},
+			"UserNameView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" }
+				}
+			},
+			"CreateSurveyDTO": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string", "maxLength": 50, "minLength": 2 },
+					"templateId": { "type": "string", "minLength": 1 },
+					"goal": { "type": "integer", "format": "int32", "minimum": 1 },
+					"templateQuestions": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": [
+								"GENDER",
+								"AGE",
+								"WORK_YEAR",
+								"JOB_RANK",
+								"DEPARTMENT",
+								"OVERALL_SATISFACTION",
+								"FEEDBACK"
+							]
+						}
+					}
+				},
+				"required": ["goal", "name", "templateId"]
+			},
+			"DataExportDTO": {
+				"type": "object",
+				"properties": {
+					"token": { "type": "string", "minLength": 1 },
+					"format": { "type": "string", "minLength": 1 },
+					"dataFilter": { "type": "string", "enum": ["SUFFICIENT", "ALL"] }
+				},
+				"required": ["format", "token"]
+			},
+			"DataExport": {
+				"type": "object",
+				"properties": {
+					"createdAt": { "type": "string", "format": "date-time" },
+					"updatedAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "type": "string" },
+					"updatedBy": { "type": "string" },
+					"id": { "type": "integer", "format": "int64" },
+					"name": { "type": "string", "minLength": 1 },
+					"responseCnt": { "type": "integer", "format": "int64" },
+					"downloadedCount": { "type": "integer", "format": "int32" },
+					"format": { "type": "string", "enum": ["XLSX", "CSV"] },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "SUCCESS", "FAILED"]
+					},
+					"type": { "type": "string", "enum": ["TEXT_ANSWER", "REPORT"] },
+					"minQuality": {
+						"type": "string",
+						"enum": [
+							"ANY_QUALITY",
+							"POOR_QUALITY",
+							"SUFFICIENT_QUALITY",
+							"ENOUGH_QUALITY"
+						]
+					},
+					"deviceToken": { "type": "string" }
+				},
+				"required": ["format", "name", "responseCnt", "status", "type"]
+			},
+			"DataExportResponse": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"responseCount": { "type": "integer", "format": "int64" },
+					"s3Key": { "type": "string" },
+					"deviceToken": { "type": "string" }
+				}
+			},
+			"HiringTestPublicDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"description": { "type": "string" },
+					"testId": { "type": "string" },
+					"pageSize": { "type": "integer", "format": "int32" },
+					"content": { "type": "string" },
+					"category": { "type": "string" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"questionCount": { "type": "integer", "format": "int32" },
+					"color": {
+						"type": "string",
+						"enum": [
+							"CLAY",
+							"TEAL",
+							"MIDNIGHT",
+							"SLATE",
+							"VELVET",
+							"WHITE",
+							"GREEN",
+							"YELLOW"
+						]
+					},
+					"roleLevels": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["ENTRY", "SENIOR", "MANAGER"]
+						}
+					}
+				}
+			},
+			"RecruitmentInfo": {
+				"type": "object",
+				"properties": {
+					"jobTitle": { "type": "string", "maxLength": 100, "minLength": 0 },
+					"jobDescription": { "type": "string", "minLength": 1 },
+					"companyName": { "type": "string", "maxLength": 100, "minLength": 0 },
+					"companyDescription": { "type": "string" }
+				},
+				"required": ["companyName", "jobDescription", "jobTitle"]
+			},
+			"IdDTO": {
+				"type": "object",
+				"properties": { "id": { "type": "integer", "format": "int64" } },
+				"required": ["id"]
+			},
+			"CustomQuestion": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"questionType": {
+						"type": "string",
+						"enum": [
+							"MULTI_CHOICE",
+							"SINGLE_CHOICE",
+							"DROPDOWN",
+							"STAR_RATING",
+							"NUMBER_RATING",
+							"YES_NO",
+							"MATRIX",
+							"NUMBER_INPUT",
+							"TEXT",
+							"TEXT_INPUT",
+							"LONG_TEXT"
+						]
+					},
+					"template": {
+						"type": "string",
+						"enum": [
+							"GENDER",
+							"AGE",
+							"WORK_YEAR",
+							"JOB_RANK",
+							"DEPARTMENT",
+							"OVERALL_SATISFACTION",
+							"FEEDBACK"
+						]
+					},
+					"section": {
+						"type": "string",
+						"enum": [
+							"CUSTOM_QUESTION_FIRST",
+							"PRIMARY_QUESTION",
+							"CUSTOM_QUESTION_LAST"
+						]
+					},
+					"content": { "type": "string", "maxLength": 150, "minLength": 0 },
+					"description": { "type": "string", "maxLength": 500, "minLength": 0 },
+					"order": { "type": "integer", "format": "int32" },
+					"minAnswerCount": { "type": "integer", "format": "int32" },
+					"maxAnswerCount": { "type": "integer", "format": "int32" },
+					"isRequired": { "type": "boolean" },
+					"options": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/QuestionOptionDTO" }
+					},
+					"optionCount": { "type": "integer", "format": "int32" }
+				},
+				"required": ["content", "isRequired", "questionType"]
+			},
+			"QuestionOptionDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"order": { "type": "integer", "format": "int32" },
+					"content": { "type": "string" },
+					"point": { "type": "integer", "format": "int32" },
+					"tag": {
+						"type": "string",
+						"enum": ["I", "E", "S", "N", "T", "F", "J", "P"]
+					},
+					"nextQuestionId": { "type": "integer", "format": "int64" }
+				}
+			},
+			"MatrixRowDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"order": { "type": "integer", "format": "int32" },
+					"content": { "type": "string" },
+					"rowOrder": { "type": "integer", "format": "int32" }
+				}
+			},
+			"QuestionDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"content": { "type": "string" },
+					"description": { "type": "string" },
+					"minAnswerCount": { "type": "integer", "format": "int32" },
+					"maxAnswerCount": { "type": "integer", "format": "int32" },
+					"questionType": {
+						"type": "string",
+						"enum": [
+							"MULTI_CHOICE",
+							"SINGLE_CHOICE",
+							"DROPDOWN",
+							"STAR_RATING",
+							"NUMBER_RATING",
+							"YES_NO",
+							"MATRIX",
+							"NUMBER_INPUT",
+							"TEXT",
+							"TEXT_INPUT",
+							"LONG_TEXT"
+						]
+					},
+					"section": {
+						"type": "string",
+						"enum": [
+							"CUSTOM_QUESTION_FIRST",
+							"PRIMARY_QUESTION",
+							"CUSTOM_QUESTION_LAST"
+						]
+					},
+					"options": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/QuestionOptionDTO" }
+					},
+					"matrixRows": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/MatrixRowDTO" }
+					},
+					"questionOrder": { "type": "integer", "format": "int32" },
+					"isRequired": { "type": "boolean" },
+					"toBeAssessed": { "type": "boolean" },
+					"questionOrderWithSectionValue": {
+						"type": "integer",
+						"format": "int32"
+					}
+				}
+			},
+			"PlanRequest": {
+				"type": "object",
+				"properties": {
+					"planType": {
+						"type": "string",
+						"enum": ["FREE", "BASIC", "STANDARD", "PREMIUM", "CUSTOM"]
+					},
+					"month": { "type": "string", "enum": ["QUARTER", "YEAR"] },
+					"phone": { "type": "string", "minLength": 1 },
+					"info": { "type": "string", "maxLength": 255, "minLength": 0 }
+				},
+				"required": ["month", "phone", "planType"]
+			},
+			"SocialLink": {
+				"type": "object",
+				"properties": {
+					"socialNetwork": {
+						"type": "string",
+						"enum": ["FACEBOOK", "INSTAGRAM", "LINKEDIN"]
+					},
+					"link": { "type": "string", "maxLength": 100, "minLength": 0 }
+				},
+				"required": ["socialNetwork"]
+			},
+			"NewPassword": {
+				"type": "object",
+				"properties": {
+					"oldPassword": { "type": "string", "maxLength": 20, "minLength": 8 },
+					"password": { "type": "string", "maxLength": 20, "minLength": 8 },
+					"confirmPassword": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 8
+					}
+				}
+			},
+			"FullName": {
+				"type": "object",
+				"properties": {
+					"lastName": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 2,
+						"pattern": "^\\p{L}[\\p{L}'\\-\\s]*$"
+					},
+					"firstName": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 2,
+						"pattern": "^\\p{L}[\\p{L}'\\-\\s]*$"
+					}
+				},
+				"required": ["firstName", "lastName"]
+			},
+			"OnBoardingAnswers": {
+				"type": "object",
+				"properties": {
+					"companyType": {
+						"type": "string",
+						"enum": ["STARTUP", "SCALING", "ENTERPRISE", "GOVERNMENT", "NGO"]
+					},
+					"conductSurvey": {
+						"type": "string",
+						"enum": [
+							"NONE",
+							"IRREGULAR",
+							"ONCE_YEAR",
+							"TWICE_YEAR",
+							"QUARTERLY"
+						]
+					},
+					"operation": {
+						"type": "string",
+						"enum": [
+							"FINANCE",
+							"MINING",
+							"TRADE",
+							"CONSTRUCTION",
+							"TECHNOLOGY",
+							"EDUCATION",
+							"MEDICAL",
+							"OTHER"
+						]
+					},
+					"employeeCount": {
+						"type": "string",
+						"enum": [
+							"COUNT_1_20",
+							"COUNT_21_50",
+							"COUNT_51_100",
+							"COUNT_101_200",
+							"COUNT_201_500"
+						]
+					},
+					"interests": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": [
+								"TRAINING",
+								"TRAINING_FOR_MANAGERS",
+								"WELLBEING_TRAINING",
+								"HR_CONSULTING",
+								"MENTAL_HEALTH_STANDARD",
+								"PRIVATE_SESSION",
+								"GROUP_SESSION"
+							]
+						},
+						"minItems": 1
+					},
+					"issues": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": [
+								"INCREASED_TURNOVER",
+								"BURNOUT_COMPLAINTS",
+								"ABSENTEEISM",
+								"PERFORMANCE_DECLINED",
+								"LEADERSHIP_CONCERN",
+								"LEGAL_COMPLIANCE_REQUIREMENTS",
+								"EMPLOYEE_SURVEY_RESULTS",
+								"PREVENTATIVE_INITIATIVE",
+								"OTHER"
+							]
+						},
+						"minItems": 1
+					}
+				},
+				"required": [
+					"companyType",
+					"conductSurvey",
+					"employeeCount",
+					"interests",
+					"issues",
+					"operation"
+				]
+			},
+			"Rating": {
+				"type": "object",
+				"properties": {
+					"points": {
+						"type": "integer",
+						"format": "int32",
+						"maximum": 5,
+						"minimum": 0
+					}
+				},
+				"required": ["points"]
+			},
+			"InvitationNoteView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"note": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "$ref": "#/components/schemas/User" }
+				}
+			},
+			"User": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" }
+				}
+			},
+			"Talent": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"recruitmentId": { "type": "string", "minLength": 1 },
+					"email": { "type": "string", "maxLength": 50, "minLength": 5 },
+					"lastName": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 2,
+						"pattern": "^\\p{L}[\\p{L}'\\-\\s]*$"
+					},
+					"firstName": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 2,
+						"pattern": "^\\p{L}[\\p{L}'\\-\\s]*$"
+					},
+					"phoneNumber": { "type": "string" },
+					"dueDate": { "type": "string", "format": "date" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "EXPIRED", "STARTED", "COMPLETED"]
+					},
+					"fullName": { "type": "string" },
+					"fullNameObject": { "$ref": "#/components/schemas/FullName" }
+				},
+				"required": ["email", "firstName", "lastName", "recruitmentId"]
+			},
+			"InvitationEntity": {
+				"type": "object",
+				"properties": {
+					"createdAt": { "type": "string", "format": "date-time" },
+					"updatedAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "type": "string" },
+					"updatedBy": { "type": "string" },
+					"id": { "type": "string" },
+					"talentId": { "type": "integer", "format": "int64" },
+					"recruitmentId": { "type": "string", "minLength": 1 },
+					"customerId": { "type": "integer", "format": "int64" },
+					"dueDate": { "type": "string", "format": "date" },
+					"completedAt": { "type": "string", "format": "date-time" },
+					"token": { "type": "string", "minLength": 1 },
+					"avgRatingPoints": { "type": "number", "format": "double" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "EXPIRED", "STARTED", "COMPLETED"]
+					},
+					"expired": { "type": "boolean" }
+				},
+				"required": [
+					"customerId",
+					"recruitmentId",
+					"status",
+					"talentId",
+					"token"
+				]
+			},
+			"RestResponseTalentEntity": {
+				"type": "object",
+				"properties": {
+					"message": { "type": "string" },
+					"status": { "type": "integer", "format": "int32" },
+					"success": { "type": "boolean" },
+					"data": { "$ref": "#/components/schemas/TalentEntity" }
+				}
+			},
+			"TalentEntity": {
+				"type": "object",
+				"properties": {
+					"createdAt": { "type": "string", "format": "date-time" },
+					"updatedAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "type": "string" },
+					"updatedBy": { "type": "string" },
+					"id": { "type": "integer", "format": "int64" },
+					"customerId": { "type": "integer", "format": "int64" },
+					"email": { "type": "string", "minLength": 1 },
+					"firstName": { "type": "string", "minLength": 1 },
+					"lastName": { "type": "string", "minLength": 1 },
+					"phoneNumber": { "type": "string" },
+					"avgRatePoints": { "type": "number", "format": "double" },
+					"invitations": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/InvitationEntity" }
+					}
+				},
+				"required": ["customerId", "email", "firstName", "lastName"]
+			},
+			"UpdateDesign": {
+				"type": "object",
+				"properties": {
+					"themeType": {
+						"type": "string",
+						"enum": ["LIGHT", "YALE", "DARK", "MIRAGE", "PURPLE"]
+					},
+					"logoPosition": {
+						"type": "string",
+						"enum": ["TOP_LEFT", "TOP_MIDDLE", "TOP_RIGHT"]
+					},
+					"showAppLogo": { "type": "boolean" }
+				},
+				"required": ["logoPosition", "showAppLogo", "themeType"]
+			},
+			"DesignDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"designOwnerId": { "type": "string" },
+					"designOwnerType": {
+						"type": "string",
+						"enum": ["SURVEY", "SURVEY_TEMPLATE", "HIRING_TEST", "RECRUITMENT"]
+					},
+					"themeType": {
+						"type": "string",
+						"enum": ["LIGHT", "YALE", "DARK", "MIRAGE", "PURPLE"]
+					},
+					"imagePosition": {
+						"type": "string",
+						"enum": ["TOP_LEFT", "TOP_MIDDLE", "TOP_RIGHT"]
+					},
+					"showAppLogo": { "type": "boolean" },
+					"hasLogo": { "type": "boolean" },
+					"logoUrl": { "type": "string" }
+				}
+			},
+			"NewTestQuestion": {
+				"type": "object",
+				"properties": {
+					"question": { "type": "string", "minLength": 1 },
+					"factoryKey": { "type": "string", "minLength": 1 },
+					"questionType": {
+						"type": "string",
+						"enum": [
+							"MULTI_CHOICE",
+							"SINGLE_CHOICE",
+							"DROPDOWN",
+							"STAR_RATING",
+							"NUMBER_RATING",
+							"YES_NO",
+							"MATRIX",
+							"NUMBER_INPUT",
+							"TEXT",
+							"TEXT_INPUT",
+							"LONG_TEXT"
+						]
+					},
+					"questionOrder": { "type": "integer", "format": "int32" },
+					"tobeAssessed": { "type": "boolean" },
+					"minAnswerCount": { "type": "integer", "format": "int32" },
+					"maxAnswerCount": { "type": "integer", "format": "int32" },
+					"description": { "type": "string" },
+					"options": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/Option" }
+					},
+					"required": { "type": "boolean" },
+					"isRequired": { "type": "boolean" }
+				},
+				"required": [
+					"factoryKey",
+					"maxAnswerCount",
+					"minAnswerCount",
+					"question",
+					"questionOrder",
+					"questionType"
+				]
+			},
+			"Option": {
+				"type": "object",
+				"properties": {
+					"option": { "type": "string", "minLength": 1 },
+					"points": { "type": "integer", "format": "int32" },
+					"optionOrder": { "type": "integer", "format": "int32" },
+					"mbtiTag": {
+						"type": "string",
+						"enum": ["I", "E", "S", "N", "T", "F", "J", "P"]
+					}
+				},
+				"required": ["option", "optionOrder", "points"]
+			},
+			"Factor": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"name": { "type": "string", "minLength": 1 },
+					"nameForDashboard": { "type": "string" },
+					"description": { "type": "string" },
+					"minPoints": { "type": "number", "format": "double" },
+					"maxPoints": { "type": "number", "format": "double" },
+					"reportKey": { "type": "string", "minLength": 1 },
+					"dashboardOrder": { "type": "integer", "format": "int32" },
+					"intervals": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/Interval" }
+					}
+				},
+				"required": ["name", "reportKey"]
+			},
+			"Interval": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"name": { "type": "string" },
+					"nameForReport": { "type": "string" },
+					"nameForDashboard": { "type": "string" },
+					"minScore": { "type": "number", "format": "double" },
+					"maxScore": { "type": "number", "format": "double" },
+					"reportKey": { "type": "string" },
+					"description": { "type": "string" }
+				}
+			},
+			"CreateNewTest": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string", "maxLength": 100, "minLength": 0 },
+					"reportKey": { "type": "string", "maxLength": 100, "minLength": 0 },
+					"assessorType": {
+						"type": "string",
+						"enum": [
+							"NO_ASSESSMENT",
+							"TOTAL_SCORE",
+							"SUB_SCALE_WITH_HIGHEST",
+							"SUB_SCALE_WITH_HIGHEST_AVERAGE",
+							"SUB_SCALE_WITH_OVERALL",
+							"SUB_SCALE_WITH_INTERVAL",
+							"SUB_SCALE_WITH_AVG_INTERVAL",
+							"MBTI"
+						]
+					},
+					"author": { "type": "string" },
+					"minPoints": { "type": "number", "format": "double" },
+					"maxPoints": { "type": "number", "format": "double" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"conditional": { "type": "boolean" }
+				},
+				"required": ["assessorType", "name", "reportKey"]
+			},
+			"TestEntity": {
+				"type": "object",
+				"properties": {
+					"createdAt": { "type": "string", "format": "date-time" },
+					"updatedAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "type": "string" },
+					"updatedBy": { "type": "string" },
+					"id": { "type": "string" },
+					"assessorType": {
+						"type": "string",
+						"enum": [
+							"NO_ASSESSMENT",
+							"TOTAL_SCORE",
+							"SUB_SCALE_WITH_HIGHEST",
+							"SUB_SCALE_WITH_HIGHEST_AVERAGE",
+							"SUB_SCALE_WITH_OVERALL",
+							"SUB_SCALE_WITH_INTERVAL",
+							"SUB_SCALE_WITH_AVG_INTERVAL",
+							"MBTI"
+						]
+					},
+					"name": { "type": "string", "minLength": 1 },
+					"minPoints": { "type": "number", "format": "double" },
+					"maxPoints": { "type": "number", "format": "double" },
+					"author": { "type": "string", "minLength": 1 },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"questionCount": { "type": "integer", "format": "int32" },
+					"sentToCollector": { "type": "boolean" },
+					"sentToAnalyst": { "type": "boolean" },
+					"questionOwnerType": {
+						"type": "string",
+						"enum": ["TEST", "SURVEY", "RECRUITMENT"]
+					},
+					"questionOwnerId": { "type": "string" }
+				},
+				"required": ["assessorType", "author", "name"]
+			},
+			"NewPurchaseRequest": {
+				"type": "object",
+				"properties": {
+					"customerId": { "type": "integer", "format": "int64" },
+					"pricePlanId": { "type": "integer", "format": "int64" },
+					"discountPercent": {
+						"type": "string",
+						"enum": ["ZERO", "TEN", "TWENTY", "HUNDRED"]
+					},
+					"sendEmail": { "type": "boolean" }
+				},
+				"required": [
+					"customerId",
+					"discountPercent",
+					"pricePlanId",
+					"sendEmail"
+				]
+			},
+			"Company": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"name": { "type": "string", "maxLength": 100, "minLength": 5 },
+					"regnum": { "type": "string", "maxLength": 7, "minLength": 6 }
+				},
+				"required": ["name"]
+			},
+			"PurchaseDetail": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"purchaseType": { "type": "string", "enum": ["PlAN", "CUSTOM_PLAN"] },
+					"invoiceNumber": { "type": "string" },
+					"discountPercent": { "type": "integer", "format": "int32" },
+					"amount": { "type": "number" },
+					"description": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "PAID", "CANCELLED", "EXPIRED"]
+					},
+					"createdBy": { "type": "string" },
+					"approvedBy": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"paidAt": { "type": "string", "format": "date-time" },
+					"expireAt": { "type": "string", "format": "date" },
+					"company": { "$ref": "#/components/schemas/Company" },
+					"unlimited": { "type": "boolean" }
+				}
+			},
+			"UpdateHiringTest": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string", "maxLength": 100, "minLength": 0 },
+					"description": { "type": "string", "maxLength": 150, "minLength": 0 },
+					"content": { "type": "string", "minLength": 1 }
+				},
+				"required": ["content", "description", "name"]
+			},
+			"HiringTestEntity": {
+				"type": "object",
+				"properties": {
+					"createdAt": { "type": "string", "format": "date-time" },
+					"updatedAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "type": "string" },
+					"updatedBy": { "type": "string" },
+					"id": { "type": "string" },
+					"name": { "type": "string", "minLength": 1 },
+					"description": { "type": "string", "minLength": 1 },
+					"content": { "type": "string", "minLength": 1 },
+					"testId": { "type": "string" },
+					"questionPageSize": {
+						"type": "string",
+						"enum": ["NOT_SPECIFIED", "ALL", "ONE", "FIVE", "TEN"]
+					},
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					}
+				},
+				"required": ["content", "description", "name", "testId"]
+			},
+			"TalentAdminListView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "EXPIRED", "STARTED", "COMPLETED"]
+					},
+					"companyName": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"recruitmentId": { "type": "string" },
+					"recruitmentName": { "type": "string" }
+				}
+			},
+			"UpdateCompany": {
+				"type": "object",
+				"properties": {
+					"companyName": { "type": "string", "maxLength": 100, "minLength": 5 },
+					"regnum": { "type": "string", "minLength": 1 },
+					"address": { "type": "string", "maxLength": 100, "minLength": 5 },
+					"primaryPhone": { "type": "string", "maxLength": 8, "minLength": 8 },
+					"secondaryPhone": { "type": "string", "maxLength": 8, "minLength": 8 }
+				},
+				"required": ["companyName", "primaryPhone", "regnum"]
+			},
+			"SurveyTemplateCategorized": {
+				"type": "object",
+				"properties": {
+					"categoryId": { "type": "string" },
+					"categoryName": { "type": "string" },
+					"categoryDescription": { "type": "string" },
+					"templates": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SurveyTemplateListView" }
+					}
+				}
+			},
+			"SurveyTemplateListView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"description": { "type": "string" },
+					"imageUrl": { "type": "string" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"questionCount": { "type": "integer", "format": "int32" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"hasTrial": { "type": "boolean" },
+					"categoryId": { "type": "string" }
+				}
+			},
+			"TemplateDetailView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"questionCount": { "type": "integer", "format": "int32" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"likes": { "type": "integer", "format": "int64" },
+					"image": { "type": "string" },
+					"author": { "type": "string" },
+					"description": { "type": "string" },
+					"frequency": { "type": "string" },
+					"whenSuitable": { "type": "string" },
+					"importance": { "type": "string" },
+					"hasTrial": { "type": "boolean" },
+					"categories": {
+						"type": "array",
+						"items": { "type": "string" },
+						"uniqueItems": true
+					},
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					}
+				}
+			},
+			"CategoryWithCount": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"count": { "type": "integer", "format": "int64" }
+				}
+			},
+			"Count": {
+				"type": "object",
+				"properties": {
+					"total": { "type": "integer", "format": "int64" },
+					"completed": { "type": "integer", "format": "int64" }
+				}
+			},
+			"MySurveyView": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"id": { "type": "string" },
+					"deviceCheck": { "type": "boolean" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"customerId": { "type": "integer", "format": "int64" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"publishedAt": { "type": "string", "format": "date-time" },
+					"qr": { "type": "string" },
+					"link": { "type": "string" },
+					"expireDate": { "type": "string", "format": "date" },
+					"passcodeProtected": { "type": "boolean" },
+					"trial": { "type": "boolean" },
+					"templateId": { "type": "string" },
+					"goal": { "type": "integer", "format": "int32" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"questionCount": { "type": "integer", "format": "int32" },
+					"receivedResponseCount": { "type": "integer", "format": "int32" }
+				}
+			},
+			"PageMySurveyView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/MySurveyView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"PageableObject": {
+				"type": "object",
+				"properties": {
+					"offset": { "type": "integer", "format": "int64" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"paged": { "type": "boolean" },
+					"pageNumber": { "type": "integer", "format": "int32" },
+					"pageSize": { "type": "integer", "format": "int32" },
+					"unpaged": { "type": "boolean" }
+				}
+			},
+			"SortObject": {
+				"type": "object",
+				"properties": {
+					"empty": { "type": "boolean" },
+					"sorted": { "type": "boolean" },
+					"unsorted": { "type": "boolean" }
+				}
+			},
+			"PageDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"qnSection": { "type": "string", "enum": ["START", "TEST", "END"] },
+					"pageType": {
+						"type": "string",
+						"enum": ["INFO", "SURVEY_START", "TIP", "SURVEY_END"]
+					},
+					"title": { "type": "string", "maxLength": 250, "minLength": 1 },
+					"content": { "type": "string" },
+					"btnLabel": { "type": "string", "maxLength": 20, "minLength": 1 },
+					"pageOrder": { "type": "integer", "format": "int32" },
+					"data": {
+						"type": "object",
+						"additionalProperties": { "type": "string" }
+					}
+				},
+				"required": ["btnLabel", "pageOrder", "pageType", "qnSection"]
+			},
+			"SurveyEditDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"hasAssessment": { "type": "boolean" },
+					"creatorName": { "type": "string" },
+					"expireAt": { "type": "string", "format": "date" },
+					"deviceCheck": { "type": "boolean" },
+					"passCodeProtected": { "type": "boolean" },
+					"pages": {
+						"type": "object",
+						"additionalProperties": {
+							"type": "array",
+							"items": { "$ref": "#/components/schemas/PageDTO" }
+						}
+					},
+					"customQuestions": {
+						"type": "object",
+						"additionalProperties": {
+							"type": "array",
+							"items": { "$ref": "#/components/schemas/QuestionDTO" }
+						}
+					},
+					"design": { "$ref": "#/components/schemas/DesignDTO" },
+					"templateQuestions": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/QuestionDTO" }
+					}
+				}
+			},
+			"PlanFeature": {
+				"type": "object",
+				"properties": {
+					"features": {
+						"type": "object",
+						"additionalProperties": { "type": "string" }
+					}
+				}
+			},
+			"SurveyHomeStatistics": {
+				"type": "object",
+				"properties": {
+					"totalPublishedSurveyCount": { "type": "integer", "format": "int64" },
+					"totalRespondentCount": { "type": "integer", "format": "int64" },
+					"surveyBalance": { "type": "integer", "format": "int32" }
+				}
+			},
+			"DataQualitySummary": {
+				"type": "object",
+				"properties": {
+					"quality": {
+						"type": "string",
+						"enum": [
+							"ANY_QUALITY",
+							"POOR_QUALITY",
+							"SUFFICIENT_QUALITY",
+							"ENOUGH_QUALITY"
+						]
+					},
+					"count": { "type": "integer", "format": "int64" }
+				}
+			},
+			"PageResponseString": {
+				"type": "object",
+				"properties": {
+					"content": { "type": "array", "items": { "type": "string" } },
+					"pageNumber": { "type": "integer", "format": "int32" },
+					"pageSize": { "type": "integer", "format": "int32" },
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" }
+				}
+			},
+			"SurveyInsightDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"visitedCnt": { "type": "integer", "format": "int64" },
+					"completedCnt": { "type": "integer", "format": "int64" },
+					"emailSentCnt": { "type": "integer", "format": "int64" },
+					"averageMinutes": { "type": "number", "format": "double" },
+					"avgDataQuality": { "type": "number", "format": "double" }
+				}
+			},
+			"OptionSummaryDTO": {
+				"type": "object",
+				"properties": {
+					"optionId": { "type": "integer", "format": "int64" },
+					"rowId": { "type": "integer", "format": "int64" },
+					"optionContent": { "type": "string" },
+					"rowContent": { "type": "string" },
+					"count": { "type": "integer", "format": "int32" }
+				}
+			},
+			"PageResponseQuestionSummaryDTO": {
+				"type": "object",
+				"properties": {
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/QuestionSummaryDTO" }
+					},
+					"pageNumber": { "type": "integer", "format": "int32" },
+					"pageSize": { "type": "integer", "format": "int32" },
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" }
+				}
+			},
+			"QuestionSummaryDTO": {
+				"type": "object",
+				"properties": {
+					"questionId": { "type": "integer", "format": "int64" },
+					"type": {
+						"type": "string",
+						"enum": [
+							"MULTI_CHOICE",
+							"SINGLE_CHOICE",
+							"DROPDOWN",
+							"STAR_RATING",
+							"NUMBER_RATING",
+							"YES_NO",
+							"MATRIX",
+							"NUMBER_INPUT",
+							"TEXT",
+							"TEXT_INPUT",
+							"LONG_TEXT"
+						]
+					},
+					"content": { "type": "string" },
+					"count": { "type": "integer", "format": "int32" },
+					"avgScore": { "type": "number", "format": "double" },
+					"required": { "type": "boolean" },
+					"options": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/OptionSummaryDTO" }
+					}
+				}
+			},
+			"DashboardChart": {
+				"type": "object",
+				"properties": {
+					"chartOption": { "type": "string" },
+					"height": { "type": "integer", "format": "int32" },
+					"title": { "type": "string" },
+					"description": { "type": "string" },
+					"tableView": { "$ref": "#/components/schemas/TableView" }
+				}
+			},
+			"TableView": {
+				"type": "object",
+				"properties": {
+					"headers": { "type": "array", "items": { "type": "string" } },
+					"data": {
+						"type": "array",
+						"items": { "type": "array", "items": { "type": "string" } }
+					}
+				}
+			},
+			"HiringQuestionDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"content": { "type": "string" },
+					"description": { "type": "string" },
+					"category": { "type": "string" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" }
+				}
+			},
+			"RecruitmentDetail": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"publishedAt": { "type": "string", "format": "date-time" },
+					"closedAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "$ref": "#/components/schemas/UserNameView" },
+					"publishedBy": { "$ref": "#/components/schemas/UserNameView" },
+					"closedBy": { "$ref": "#/components/schemas/UserNameView" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"count": { "$ref": "#/components/schemas/Count" },
+					"tests": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/HiringTestPublicDTO" }
+					},
+					"customQuestions": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/HiringQuestionDTO" }
+					}
+				}
+			},
+			"RecruitmentBriefView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"publishedAt": { "type": "string", "format": "date-time" },
+					"closedAt": { "type": "string", "format": "date-time" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					}
+				}
+			},
+			"HiringHomeStatistics": {
+				"type": "object",
+				"properties": {
+					"totalInvitationCount": { "type": "integer", "format": "int64" },
+					"totalCompletedCount": { "type": "integer", "format": "int64" },
+					"invitationBalance": { "type": "integer", "format": "int32" }
+				}
+			},
+			"PageRecruitmentListView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/RecruitmentListView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"RecruitmentListView": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"id": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"createdAt": { "type": "string", "format": "date-time" },
+					"publishedAt": { "type": "string", "format": "date-time" },
+					"closedAt": { "type": "string", "format": "date-time" },
+					"completedInvitationCount": { "type": "integer", "format": "int32" },
+					"totalInvitationCount": { "type": "integer", "format": "int32" }
+				}
+			},
+			"RecruitmentSettings": {
+				"type": "object",
+				"properties": {
+					"maxTestCount": { "type": "integer", "format": "int32" },
+					"maxQuestionCount": { "type": "integer", "format": "int32" }
+				}
+			},
+			"PagePurchaseView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/PurchaseView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"PurchaseView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"invoiceNumber": { "type": "string" },
+					"purchaseType": { "type": "string", "enum": ["PlAN", "CUSTOM_PLAN"] },
+					"description": { "type": "string" },
+					"amount": { "type": "number" },
+					"discountPercent": { "type": "integer", "format": "int32" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "PAID", "CANCELLED", "EXPIRED"]
+					},
+					"createdAt": { "type": "string", "format": "date-time" },
+					"paidAt": { "type": "string", "format": "date-time" },
+					"expireAt": { "type": "string", "format": "date" }
+				}
+			},
+			"Purchase": {
+				"type": "object",
+				"properties": {
+					"createdAt": { "type": "string", "format": "date-time" },
+					"updatedAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "type": "string" },
+					"updatedBy": { "type": "string" },
+					"id": { "type": "string" },
+					"purchaseType": { "type": "string", "enum": ["PlAN", "CUSTOM_PLAN"] },
+					"referenceId": { "type": "string" },
+					"numbering": { "type": "integer", "format": "int64" },
+					"invoiceNumber": { "type": "string" },
+					"customerId": { "type": "integer", "format": "int64" },
+					"amount": { "type": "number" },
+					"description": { "type": "string" },
+					"unlimited": { "type": "boolean" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "PAID", "CANCELLED", "EXPIRED"]
+					},
+					"paidAt": { "type": "string", "format": "date-time" },
+					"expireAt": { "type": "string", "format": "date" },
+					"approvedBy": { "type": "string" },
+					"discountPercent": {
+						"type": "string",
+						"enum": ["ZERO", "TEN", "TWENTY", "HUNDRED"]
+					}
+				}
+			},
+			"UserInfo": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"email": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" },
+					"onboarded": { "type": "boolean" },
+					"role": { "type": "string", "enum": ["OWNER", "MANAGER", "VIEWER"] },
+					"active": { "type": "boolean" },
+					"company": { "$ref": "#/components/schemas/Company" }
+				}
+			},
+			"PricePlan": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"name": { "type": "string" },
+					"planType": {
+						"type": "string",
+						"enum": ["FREE", "BASIC", "STANDARD", "PREMIUM", "CUSTOM"]
+					},
+					"month": { "type": "string", "enum": ["QUARTER", "YEAR"] },
+					"price": { "type": "number" },
+					"surveyCount": { "type": "integer", "format": "int32" },
+					"invitationCount": { "type": "integer", "format": "int32" },
+					"employeeLimit": {
+						"type": "string",
+						"enum": ["ZERO", "TEN", "HUNDRED", "THREE_HUNDRED", "UNLIMITED"]
+					},
+					"features": {
+						"type": "object",
+						"additionalProperties": { "type": "string" }
+					},
+					"active": { "type": "boolean" }
+				}
+			},
+			"BehaviorEventSummary": {
+				"type": "object",
+				"properties": {
+					"eventType": {
+						"type": "string",
+						"enum": [
+							"WINDOW_FOCUS_LOST",
+							"PAGE_VISIBILITY_HIDDEN",
+							"COPY",
+							"CUT",
+							"PASTE",
+							"FULLSCREEN_EXIT"
+						]
+					},
+					"count": { "type": "integer", "format": "int32" },
+					"seconds": { "type": "integer", "format": "int32" }
+				}
+			},
+			"PersonalReport": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"assessorType": {
+						"type": "string",
+						"enum": [
+							"NO_ASSESSMENT",
+							"TOTAL_SCORE",
+							"SUB_SCALE_WITH_HIGHEST",
+							"SUB_SCALE_WITH_HIGHEST_AVERAGE",
+							"SUB_SCALE_WITH_OVERALL",
+							"SUB_SCALE_WITH_INTERVAL",
+							"SUB_SCALE_WITH_AVG_INTERVAL",
+							"MBTI"
+						]
+					},
+					"templateKey": { "type": "string" },
+					"subContents": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SubContent" }
+					},
+					"resultKey": { "type": "string" }
+				}
+			},
+			"QuestionAnswerDTO": {
+				"type": "object",
+				"properties": {
+					"responseId": { "type": "string" },
+					"testAnswerId": { "type": "string" },
+					"questionId": { "type": "integer", "format": "int64" },
+					"points": { "type": "integer", "format": "int32" },
+					"content": { "type": "string" },
+					"spendingTime": { "$ref": "#/components/schemas/SpendingTime" },
+					"questionText": { "type": "string" }
+				}
+			},
+			"RecruitmentResult": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"completedAt": { "type": "string", "format": "date-time" },
+					"spendingTime": { "$ref": "#/components/schemas/SpendingTime" },
+					"testResults": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/TestResult" }
+					},
+					"customQuestionAnswers": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/QuestionAnswerDTO" }
+					},
+					"eventSummary": {
+						"type": "object",
+						"additionalProperties": {
+							"$ref": "#/components/schemas/BehaviorEventSummary"
+						}
+					}
+				}
+			},
+			"SpendingTime": {
+				"type": "object",
+				"properties": {
+					"minutes": { "type": "integer", "format": "int32" },
+					"seconds": { "type": "integer", "format": "int32" }
+				}
+			},
+			"SubContent": {
+				"type": "object",
+				"properties": {
+					"factorKey": { "type": "string" },
+					"intervalKey": { "type": "string" },
+					"factorName": { "type": "string" },
+					"intervalName": { "type": "string" },
+					"points": { "type": "number", "format": "double" }
+				}
+			},
+			"TalentResult": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"lastName": { "type": "string" },
+					"firstName": { "type": "string" },
+					"email": { "type": "string" },
+					"prevId": { "type": "string" },
+					"nextId": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "EXPIRED", "STARTED", "COMPLETED"]
+					},
+					"createdAt": { "type": "string", "format": "date-time" },
+					"invitedBy": { "$ref": "#/components/schemas/UserNameView" },
+					"assessment": { "$ref": "#/components/schemas/RecruitmentResult" }
+				}
+			},
+			"TestResult": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"answerId": { "type": "string" },
+					"spendingTime": { "$ref": "#/components/schemas/SpendingTime" },
+					"dataQuality": {
+						"type": "string",
+						"enum": [
+							"ANY_QUALITY",
+							"POOR_QUALITY",
+							"SUFFICIENT_QUALITY",
+							"ENOUGH_QUALITY"
+						]
+					},
+					"personalReport": { "$ref": "#/components/schemas/PersonalReport" }
+				}
+			},
+			"InvitationRatingView": {
+				"type": "object",
+				"properties": {
+					"rated": { "type": "boolean" },
+					"myPoints": { "type": "integer", "format": "int32" },
+					"avgPoints": { "type": "number", "format": "double" },
+					"count": { "type": "integer", "format": "int64" }
+				}
+			},
+			"PageTalentView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/TalentView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"RecruitmentView": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"id": { "type": "string" },
+					"talentId": { "type": "integer", "format": "int64" }
+				}
+			},
+			"TalentView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"email": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" },
+					"phoneNumber": { "type": "string" },
+					"avgStarPoint": { "type": "number", "format": "double" },
+					"marked": { "type": "boolean" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"recruitments": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/RecruitmentView" }
+					}
+				}
+			},
+			"InvitationDTO": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"completedAt": { "type": "string", "format": "date-time" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "EXPIRED", "STARTED", "COMPLETED"]
+					},
+					"rated": { "type": "boolean" },
+					"ratingPoints": { "type": "number", "format": "double" },
+					"recruitmentId": { "type": "string" },
+					"recruitmentName": { "type": "string" },
+					"invitedBy": { "$ref": "#/components/schemas/UserNameView" },
+					"tests": { "type": "array", "items": { "type": "string" } }
+				}
+			},
+			"PageInvitationDTO": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/InvitationDTO" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"CustomerInvitationView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"recruitmentId": { "type": "string" },
+					"email": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" },
+					"phoneNumber": { "type": "string" },
+					"dueDate": { "type": "string", "format": "date" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "EXPIRED", "STARTED", "COMPLETED"]
+					},
+					"createdAt": { "type": "string", "format": "date-time" },
+					"rated": { "type": "boolean" },
+					"ratingPoints": { "type": "integer", "format": "int32" },
+					"completedAt": { "type": "string", "format": "date-time" },
+					"recruitmentName": { "type": "string" },
+					"invitedBy": { "$ref": "#/components/schemas/User" }
+				}
+			},
+			"PageCustomerInvitationView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/CustomerInvitationView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"InvitationProjection": {
+				"type": "object",
+				"properties": {
+					"createdBy": { "type": "string" },
+					"completedAt": { "type": "string", "format": "date-time" },
+					"rated": { "type": "boolean" },
+					"ratingPoints": { "type": "integer", "format": "int32" },
+					"recruitmentName": { "type": "string" },
+					"id": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "EXPIRED", "STARTED", "COMPLETED"]
+					},
+					"dueDate": { "type": "string", "format": "date" },
+					"email": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"recruitmentId": { "type": "string" },
+					"phoneNumber": { "type": "string" }
+				}
+			},
+			"AccountDTO": {
+				"type": "object",
+				"properties": {
+					"planType": {
+						"type": "string",
+						"enum": ["FREE", "BASIC", "STANDARD", "PREMIUM", "CUSTOM"]
+					},
+					"employeeLimit": { "type": "integer", "format": "int32" },
+					"planName": { "type": "string" },
+					"months": { "type": "string", "enum": ["QUARTER", "YEAR"] },
+					"paidAmount": { "type": "number", "format": "double" },
+					"startDate": { "type": "string", "format": "date" },
+					"dueDate": { "type": "string", "format": "date" },
+					"dataAccess": { "type": "boolean" },
+					"hasTrialSurvey": { "type": "boolean" },
+					"expired": { "type": "boolean" }
+				}
+			},
+			"MyAccountDetail": {
+				"type": "object",
+				"properties": {
+					"accountDTO": { "$ref": "#/components/schemas/AccountDTO" },
+					"planFeature": { "$ref": "#/components/schemas/PlanFeature" },
+					"balances": {
+						"type": "object",
+						"additionalProperties": { "type": "integer", "format": "int32" }
+					}
+				}
+			},
+			"PageTestEntity": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/TestEntity" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"TestDetail": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"assessorType": {
+						"type": "string",
+						"enum": [
+							"NO_ASSESSMENT",
+							"TOTAL_SCORE",
+							"SUB_SCALE_WITH_HIGHEST",
+							"SUB_SCALE_WITH_HIGHEST_AVERAGE",
+							"SUB_SCALE_WITH_OVERALL",
+							"SUB_SCALE_WITH_INTERVAL",
+							"SUB_SCALE_WITH_AVG_INTERVAL",
+							"MBTI"
+						]
+					},
+					"reportKey": { "type": "string" },
+					"name": { "type": "string" },
+					"minPoints": { "type": "number", "format": "double" },
+					"maxPoints": { "type": "number", "format": "double" },
+					"author": { "type": "string" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"sentToCollector": { "type": "boolean" },
+					"sentToAnalyst": { "type": "boolean" },
+					"questions": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/QuestionDTO" }
+					},
+					"factors": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/Factor" }
+					}
+				}
+			},
+			"PageSurveyAdminView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/SurveyAdminView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"SurveyAdminView": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"id": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"createdAt": { "type": "string", "format": "date-time" },
+					"templateId": { "type": "string" },
+					"goal": { "type": "integer", "format": "int32" },
+					"receivedResponseCount": { "type": "integer", "format": "int32" },
+					"templateName": { "type": "string" },
+					"trial": { "type": "boolean" }
+				}
+			},
+			"SurveyAdminDetail": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"templateId": { "type": "string" },
+					"templateName": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"expireAt": { "type": "string", "format": "date" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"publishedAt": { "type": "string", "format": "date-time" },
+					"closedAt": { "type": "string", "format": "date-time" },
+					"questionCount": { "type": "integer", "format": "int32" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"goal": { "type": "integer", "format": "int32" },
+					"receivedResponseCount": { "type": "integer", "format": "int32" },
+					"isTrial": { "type": "boolean" },
+					"customer": { "$ref": "#/components/schemas/UserInfo" }
+				}
+			},
+			"PageSurveyTemplateAdminListView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/SurveyTemplateAdminListView"
+						}
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"SurveyTemplateAdminListView": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"id": { "type": "string" },
+					"description": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"createdAt": { "type": "string", "format": "date-time" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"questionCount": { "type": "integer", "format": "int32" },
+					"assessorType": {
+						"type": "string",
+						"enum": [
+							"NO_ASSESSMENT",
+							"TOTAL_SCORE",
+							"SUB_SCALE_WITH_HIGHEST",
+							"SUB_SCALE_WITH_HIGHEST_AVERAGE",
+							"SUB_SCALE_WITH_OVERALL",
+							"SUB_SCALE_WITH_INTERVAL",
+							"SUB_SCALE_WITH_AVG_INTERVAL",
+							"MBTI"
+						]
+					},
+					"categoryName": { "type": "string" }
+				}
+			},
+			"SurveyTemplateAdminDetail": {
+				"type": "object",
+				"properties": {
+					"surveyTemplate": {
+						"$ref": "#/components/schemas/SurveyTemplateInfo"
+					},
+					"questions": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/QuestionDTO" }
+					}
+				}
+			},
+			"SurveyTemplateInfo": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"description": { "type": "string" },
+					"testId": { "type": "string" },
+					"minMinutes": { "type": "integer", "format": "int32" },
+					"maxMinutes": { "type": "integer", "format": "int32" },
+					"questionCount": { "type": "integer", "format": "int32" },
+					"author": { "type": "string" },
+					"assessorType": {
+						"type": "string",
+						"enum": [
+							"NO_ASSESSMENT",
+							"TOTAL_SCORE",
+							"SUB_SCALE_WITH_HIGHEST",
+							"SUB_SCALE_WITH_HIGHEST_AVERAGE",
+							"SUB_SCALE_WITH_OVERALL",
+							"SUB_SCALE_WITH_INTERVAL",
+							"SUB_SCALE_WITH_AVG_INTERVAL",
+							"MBTI"
+						]
+					},
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					}
+				}
+			},
+			"PageRecruitmentAdminListView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/RecruitmentAdminListView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"RecruitmentAdminListView": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string" },
+					"id": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"customerId": { "type": "integer", "format": "int64" },
+					"companyName": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"customerName": { "type": "string" }
+				}
+			},
+			"RecruitmentAdminDetail": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"name": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"publishedAt": { "type": "string", "format": "date-time" },
+					"closedAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "$ref": "#/components/schemas/UserNameView" },
+					"publishedBy": { "$ref": "#/components/schemas/UserNameView" },
+					"closedBy": { "$ref": "#/components/schemas/UserNameView" },
+					"status": {
+						"type": "string",
+						"enum": [
+							"CREATED",
+							"PUBLISHING",
+							"PUBLISHED",
+							"CLOSED",
+							"SUSPENDED"
+						]
+					},
+					"count": { "$ref": "#/components/schemas/Count" },
+					"tests": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/HiringTestPublicDTO" }
+					},
+					"customQuestions": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/HiringQuestionDTO" }
+					},
+					"customer": { "$ref": "#/components/schemas/UserInfo" }
+				}
+			},
+			"PagePlanRequestAdminView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/PlanRequestAdminView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"PlanRequestAdminView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"info": { "type": "string" },
+					"phone": { "type": "string" },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "APPROVED", "CANCELLED"]
+					},
+					"customerId": { "type": "integer", "format": "int64" },
+					"planType": {
+						"type": "string",
+						"enum": ["FREE", "BASIC", "STANDARD", "PREMIUM", "CUSTOM"]
+					},
+					"companyName": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"planMonth": { "type": "string", "enum": ["QUARTER", "YEAR"] }
+				}
+			},
+			"PlanRequestDetail": {
+				"type": "object",
+				"properties": {
+					"planType": {
+						"type": "string",
+						"enum": ["FREE", "BASIC", "STANDARD", "PREMIUM", "CUSTOM"]
+					},
+					"month": { "type": "string", "enum": ["QUARTER", "YEAR"] },
+					"phone": { "type": "string", "minLength": 1 },
+					"info": { "type": "string", "maxLength": 255, "minLength": 0 },
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "APPROVED", "CANCELLED"]
+					},
+					"updatedBy": { "type": "string" },
+					"userInfo": { "$ref": "#/components/schemas/UserInfo" }
+				},
+				"required": ["month", "phone", "planType"]
+			},
+			"PagePricePlanEntity": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/PricePlanEntity" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"PricePlanEntity": {
+				"type": "object",
+				"properties": {
+					"createdAt": { "type": "string", "format": "date-time" },
+					"updatedAt": { "type": "string", "format": "date-time" },
+					"createdBy": { "type": "string" },
+					"updatedBy": { "type": "string" },
+					"id": { "type": "integer", "format": "int64" },
+					"planType": {
+						"type": "string",
+						"enum": ["FREE", "BASIC", "STANDARD", "PREMIUM", "CUSTOM"]
+					},
+					"name": { "type": "string" },
+					"price": { "type": "number" },
+					"savedAmount": { "type": "number" },
+					"discount": { "type": "integer", "format": "int32" },
+					"surveyCount": { "type": "integer", "format": "int32" },
+					"hiringInvitationCount": { "type": "integer", "format": "int32" },
+					"months": { "type": "string", "enum": ["QUARTER", "YEAR"] },
+					"seat": { "type": "integer", "format": "int32" },
+					"active": { "type": "boolean" }
+				},
+				"required": ["planType"]
+			},
+			"PageHiringTestPublicDTO": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/HiringTestPublicDTO" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"PageHiringQuestionDTO": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/HiringQuestionDTO" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"PageTalentAdminListView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/TalentAdminListView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"FeedbackListView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"templateName": { "type": "string" },
+					"rate": { "type": "integer", "format": "int32" },
+					"comment": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" }
+				}
+			},
+			"PageFeedbackListView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/FeedbackListView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"CustomerAdminListView": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"planType": {
+						"type": "string",
+						"enum": ["FREE", "BASIC", "STANDARD", "PREMIUM", "CUSTOM"]
+					},
+					"companyName": { "type": "string" },
+					"email": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"planMonth": { "type": "string", "enum": ["QUARTER", "YEAR"] }
+				}
+			},
+			"PageCustomerAdminListView": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/CustomerAdminListView" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			},
+			"ContactInfo": {
+				"type": "object",
+				"properties": {
+					"primaryPhone": { "type": "string" },
+					"secondaryPhone": { "type": "string" },
+					"address": { "type": "string" },
+					"socialFb": { "type": "string" },
+					"socialLinkedin": { "type": "string" },
+					"socialInstagram": { "type": "string" }
+				}
+			},
+			"CustomerAccountInfo": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "integer", "format": "int64" },
+					"userId": { "type": "string" },
+					"email": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" },
+					"emailVerified": { "type": "boolean" },
+					"company": { "$ref": "#/components/schemas/Company" },
+					"contactInfo": { "$ref": "#/components/schemas/ContactInfo" },
+					"onBoarded": { "type": "boolean" },
+					"account": { "$ref": "#/components/schemas/AccountDTO" }
+				}
+			},
+			"UserProfile": {
+				"type": "object",
+				"properties": {
+					"uuid": { "type": "string" },
+					"email": { "type": "string" },
+					"firstName": { "type": "string" },
+					"lastName": { "type": "string" },
+					"role": { "type": "string", "enum": ["OWNER", "MANAGER", "VIEWER"] },
+					"createdAt": { "type": "string", "format": "date-time" },
+					"inactivatedAt": { "type": "string", "format": "date-time" }
+				}
+			},
+			"PageUserProfile": {
+				"type": "object",
+				"properties": {
+					"totalElements": { "type": "integer", "format": "int64" },
+					"totalPages": { "type": "integer", "format": "int32" },
+					"size": { "type": "integer", "format": "int32" },
+					"content": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/UserProfile" }
+					},
+					"number": { "type": "integer", "format": "int32" },
+					"sort": { "$ref": "#/components/schemas/SortObject" },
+					"numberOfElements": { "type": "integer", "format": "int32" },
+					"pageable": { "$ref": "#/components/schemas/PageableObject" },
+					"first": { "type": "boolean" },
+					"last": { "type": "boolean" },
+					"empty": { "type": "boolean" }
+				}
+			}
+		}
+	}
+}

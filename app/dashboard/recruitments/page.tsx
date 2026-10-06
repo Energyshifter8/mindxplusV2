@@ -45,7 +45,7 @@ const RecruitmentDetailDrawer = lazy(
 const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
 
 const SEARCH_DEBOUNCE_MS = 350;
-// bundle-derived, unverified: staging-ийн хайлтын input maxLength=100
+// swagger: GET /customer/recruitments/ ?name maxLength=100
 const SEARCH_MAX_LENGTH = 100;
 // bundle-derived, unverified: staging үлдэгдэл ≥ 10000 бол "Хязгааргүй" гэж харуулдаг
 const UNLIMITED_BALANCE_THRESHOLD = 10_000;

@@ -264,8 +264,8 @@ export default function TalentDetailPage() {
 												className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
 												style={{ fontFamily: "'JetBrains Mono', monospace" }}
 											>
-												{/* #23 хариунд completedAt байхгүй (docs/role-assessment-unverified.md) */}
-												—
+												{/* swagger: InvitationDTO.completedAt (хоосон бол ирэхгүй) */}
+												{formatDate(row.completedAt ?? null)}
 											</td>
 											<td className="py-3 px-3">
 												{isResultAvailable(row.status) ? (
