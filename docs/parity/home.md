@@ -171,3 +171,49 @@ Staging-ийн route-д шилжүүлж, хуучин path-ыг `next.config.ts
 4. **"Working on staging" banner:** staging апп орчноос хамаарч харуулдаг 📦. Локал staging backend ашигладаг тул харуулах уу?
 5. **Theme:** staging зөвхөн гэрэл (light). Shell-ийг light болгоход бусад (одоохондоо хөрвүүлээгүй) хуудас dark хэвээр үлдэж зөрнө — дараалсан хуудсаар шилжүүлнэ.
 6. **`lang="en"`:** staging `en` (Монгол контенттой). Яг дагах уу?
+
+## 13. Хэсэг C — засварын явц (2026-10-06)
+
+Commit-ууд (`main`, локал): `3573cd87` swagger · `9f922372` auth · `d56d7610` shell · `ed87a606` /home.
+
+### Endpoint матриц (локал, засварын дараа — resource timing ✅)
+
+| # | Endpoint | Staging | Локал (одоо) | Дүгнэлт |
+|---|---|---|---|---|
+| E1 | `GET /customer/profile` | ✅ | ✅ | Ижил |
+| E2 | `GET /customer/surveys?status=&page=0&size=6&name=` | ✅ | ✅ (параметрийн дараалал ч ижил) | Ижил |
+| E3 | `GET /customer/surveys-home/statistics` | ✅ | ✅ | Ижил |
+| E4 | `GET /customer/recruitments/?page=0&size=6` | ✅ | ✅ | Ижил |
+| E5 | `GET /customer/recruitments/statistics` | ✅ | ✅ | Ижил |
+| E6 | `GET /customer/hiring-invitations/latest-completed` | ✅ | ✅ (параметргүй) | Ижил |
+| E7 | `POST /user/refresh` ачаалахад | Үгүй | Үгүй (7с ажигласан) | Ижил |
+| — | Дараалал | 6 зэрэг | 6 зэрэг | Ижил (нэг tick-д эхэлдэг тул хооронд дараалал нь сүлжээнээс хамаарна) |
+| — | Polling / focus refetch / retry | Үгүй / үгүй / false | Үгүй / үгүй / false | Ижил |
+| — | `GET /customer/account` | localStorage-д `accountInfo` байхгүй үед л | Ижил логик | Ижил |
+
+### Төлөвүүд (локал, localhost дээр дуурайсан ✅)
+
+| Төлөв | Staging (📦) | Локал |
+|---|---|---|
+| Ачаалах | antd Skeleton (stat 2 мөр, хүснэгт 4/3/3 мөр) | 5 skeleton ✅ |
+| Хоосон | 3 текст | ✅ ижил текст |
+| Алдаа | Тусгай UI байхгүй → хоосон текст, статистик 0 | ✅ ижил |
+
+### Зөвшөөрөгдсөн (шалтгаантай) зөрүү
+
+| Зөрүү | Шалтгаан |
+|---|---|
+| Proxy (`/api` угтвар, `Accept-Language`-ийг proxy тавина) | Архитектур — өөрчлөхгүй |
+| Token refresh localhost дээр ажиллана (staging `localhost/127.0.0.1/::1/*.local` дээр унтраадаг) | **Deliberate deviation** — эс бөгөөс локал dev session дуусна |
+| `<html lang="en">` | **Known** — staging-тэй ижил (контент Монгол) |
+| Sidebar хураах товч `<button aria-label>` (staging `<div>`), logo линк `aria-label` | a11y / lint (biome); харагдах байдал ижил |
+| Хэрэглэгчийн цэсний trigger `<button>` (staging antd `div`) | a11y |
+| Хилийн өргөн 0.88px / 0.98px | Хоёр tab-ын DPR өөр (1.13 / 1.02) — 1px-ийн device-pixel snapping |
+| Dev StrictMode | Mount-ын ижил хос давхардлыг зөрүүд тооцохгүй |
+
+### Үлдсэн (staging-д нэвтэрсэн session хэрэгтэй)
+
+- `extract.js` diff (shell + /home, 1440/390): shadcn table-ийн `muted-foreground`, `border`, header hover өнгө (одоо `#64748b`, `#e4e8ef`, `#f1f5f9/50` гэж таамагласан), хэрэглэгчийн цэсний мөрийн padding/hover, antd skeleton-ийн margin, survey хүснэгтийн "Нэр" баганын өргөн.
+- Hover/focus/disabled төлвийн харьцуулалт, маскалсан хажуу хажуугийн screenshot.
+- Хийгээгүй: `joinTourPending` modal (багийн урилгаар нэгдсэний дараах tour), `/profile` бодит хуудас (placeholder).
+- Route шилжүүлэлт (§11) — хамгийн сүүлд.
