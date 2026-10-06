@@ -36,11 +36,11 @@
 | Header / алдаа / хуудаслалт / enum | — | ♻️ | ✅ | S1–S4 |
 | Auth refresh | `/user/refresh` | ✅ | ✅ | |
 | Жагсаалтын статистик | #2 | ✅ | ✅ | |
-| Жагсаалт + tab | #1 | ♻️ | 🟡 | ФАЗ 1-д enum засагдсан, ФАЗ 2-т дуусна |
-| Хуудаслалт | #1 | ❌ | ❌ | ФАЗ 2 |
-| Хайлт | #1 `name` | 🟡 | 🟡 | ФАЗ 2 (debounce) |
-| Detail drawer | #3 | ❌ | ❌ | ФАЗ 2 |
-| Үүсгэх modal | #25 | ♻️ | 🟡 | ФАЗ 1-д API засагдсан, ФАЗ 2-т redirect |
+| Жагсаалт + tab | #1 | ♻️ | ✅ | ФАЗ 2: Бүгд/Үүссэн/Идэвхтэй (`status=CREATED/PUBLISHED`), ачаалах/хоосон/алдаа (дахин оролдох) ялгаатай |
+| Хуудаслалт | #1 | ❌ | ✅ | ФАЗ 2: URL `?page=N&size=M` (1-ээс), `lib/pagination.ts`, page > totalPages → сүүлийн хуудас |
+| Хайлт | #1 `name` | 🟡 | ✅ | ФАЗ 2: 350мс debounce, URL `?name=` |
+| Detail drawer | #3 | ❌ | ✅ | ФАЗ 2: `components/recruitments/RecruitmentDetailDrawer.tsx` |
+| Үүсгэх modal | #25 | ♻️ | ✅ | ФАЗ 2: амжилттай бол `/edit` placeholder руу. Бодит дуудлагаар шалгаагүй (U1) |
 | Dashboard (урьсан талентууд) | #3, #14, #10 | ❌ | ❌ | ФАЗ 3 |
 | Үр дүн / тайлан | #15–20 | ❌ | ❌ | ФАЗ 4 |
 | Урих / Дахин урих | #36–38 | ❌ | ❌ | ФАЗ 5 |
@@ -49,3 +49,18 @@
 | Урьсан талентууд | #21 | ♻️ | ✅ | ФАЗ 1-д `q` засагдсан (`marked` шүүлтүүр, bookmark ФАЗ 7) |
 | Талентын дэлгэрэнгүй | #22–23 | ♻️ | 🟡 | ФАЗ 1-д төрөл, STARTED badge, "Үр дүн" линк (recruitment dashboard руу) засагдсан. "Бөглөсөн" багана U6 |
 | Нүүр хуудасны сүүлд дууссан урилгууд | #24 | ✅ | ✅ | Status map `DRAFT` → `CREATED` |
+
+## Route-ын харгалзаа (staging ↔ төсөл)
+
+Төслийн route-ийн нэрийг өөрчлөөгүй.
+
+| Staging | Төсөл | Төлөв / тайлбар |
+|---|---|---|
+| `/role-assessment?page={1..}&size={n}` | `/dashboard/recruitments?page=&size=&status=&name=` | ✅ ФАЗ 2. Staging tab/хайлтыг state-д хадгалдаг; төсөлд URL-д (reload-д хадгалагдана) |
+| `/role-assessment/{id}` (wizard) | `/dashboard/recruitments/{id}/edit` | Placeholder, ФАЗ 6 |
+| `/role-assessment/{id}/preview` | — | ФАЗ 6 |
+| `/role-assessment/{id}/dashboard` | `/dashboard/recruitments/{id}/results` | ФАЗ 3 (өмнөх placeholder-ийн оронд) |
+| `/role-assessment/{id}/dashboard/{invitationId}` | `/dashboard/recruitments/{id}/results/{invitationId}` (санал) | ФАЗ 4 |
+| `/invited-talents` | `/dashboard/talents` | ✅ |
+| `/invited-talents/{talentId}` | `/dashboard/talents/{id}` | 🟡 |
+| `/membership` (`plan_expired` modal) | — | Хуудас байхгүй |

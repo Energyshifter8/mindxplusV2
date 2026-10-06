@@ -1,8 +1,12 @@
 "use client";
 
 import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useCreateRecruitment } from "@/lib/hooks/useCreateRecruitment";
+
+// bundle-derived, unverified: staging-ийн input maxLength=100
+const MAX_NAME_LENGTH = 100;
 
 interface CreateRecruitmentModalProps {
 	onClose: () => void;
@@ -11,6 +15,7 @@ interface CreateRecruitmentModalProps {
 export default function CreateRecruitmentModal({
 	onClose,
 }: CreateRecruitmentModalProps) {
+	const router = useRouter();
 	const [name, setName] = useState("");
 	const inputRef = useRef<HTMLInputElement>(null);
 	const createRecruitmentMutation = useCreateRecruitment();
@@ -34,7 +39,15 @@ export default function CreateRecruitmentModal({
 		if (!isFormValid) return;
 		createRecruitmentMutation.mutate(
 			{ name: name.trim() },
-			{ onSuccess: () => onClose() },
+			{
+				onSuccess: (response) => {
+					// Алдаа гарвал modal нээлттэй үлдэж дахин оролдох боломжтой
+					if (!response.success || !response.data) return;
+					onClose();
+					// Wizard ФАЗ 6-д; одоогоор /edit placeholder
+					router.push(`/dashboard/recruitments/${response.data.id}/edit`);
+				},
+			},
 		);
 	}
 
@@ -84,6 +97,7 @@ export default function CreateRecruitmentModal({
 					ref={inputRef}
 					type="text"
 					value={name}
+					maxLength={MAX_NAME_LENGTH}
 					onChange={(e) => setName(e.target.value)}
 					onKeyDown={(e) => {
 						if (e.key === "Enter" && isFormValid) handleCreate();

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, FileText } from "lucide-react";
+import { Check, FileText, RotateCw, TriangleAlert } from "lucide-react";
 import { memo } from "react";
 import {
 	INVITATION_STATUS_LABELS,
@@ -229,6 +229,43 @@ export const InvitationStatusBadge = memo(function InvitationStatusBadge({
 		</span>
 	);
 });
+
+export function ErrorState({
+	text,
+	onRetry,
+	isRetrying,
+}: {
+	text: string;
+	onRetry?: () => void;
+	isRetrying?: boolean;
+}) {
+	return (
+		<div
+			role="alert"
+			className="flex flex-col items-center justify-center py-20 text-muted-foreground"
+		>
+			<TriangleAlert size={32} className="mb-3 text-destructive opacity-80" />
+			<span
+				className="max-w-md px-4 text-center text-[11px] uppercase tracking-widest"
+				style={{ fontFamily: "'JetBrains Mono', monospace" }}
+			>
+				{text}
+			</span>
+			{onRetry && (
+				<button
+					type="button"
+					onClick={onRetry}
+					disabled={isRetrying}
+					className="mt-5 inline-flex items-center gap-1.5 border-2 border-border px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
+					style={{ fontFamily: "'JetBrains Mono', monospace" }}
+				>
+					<RotateCw size={12} className={isRetrying ? "animate-spin" : ""} />
+					Дахин оролдох
+				</button>
+			)}
+		</div>
+	);
+}
 
 export const EmptyState = memo(function EmptyState({ text }: { text: string }) {
 	return (

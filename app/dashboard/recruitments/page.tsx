@@ -1,148 +1,185 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import {
 	BarChart3,
-	Copy,
+	Info,
 	LayoutGrid,
 	List,
 	Pencil,
 	Plus,
 	Search,
-	Share2,
-	Trash2,
 	Users,
 	Zap,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { KebabMenu, type KebabMenuItem } from "@/components/shared/KebabMenu";
 import {
 	EmptyState,
+	ErrorState,
 	GridTexture,
 	MiniStatCard,
 	RecruitmentStatusBadge,
 	TableSkeleton,
 } from "@/components/shared/ListComponents";
+import { Paginator } from "@/components/shared/Paginator";
+import type { RecruitmentListItem, RecruitmentListParams } from "@/lib/api";
+import { getErrorMessage } from "@/lib/api-errors";
+import type { RecruitmentStatus } from "@/lib/constants/roleAssessment";
+import { formatDate, formatDateTime } from "@/lib/format";
+import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
+import { usePageParams } from "@/lib/hooks/usePageParams";
 import {
-	getRecruitmentList,
-	getRecruitmentStats,
-	type RecruitmentListItem,
-	type RecruitmentStats,
-} from "@/lib/api";
+	useRecruitmentList,
+	useRecruitmentStats,
+} from "@/lib/hooks/useRecruitmentQueries";
+import { toApiPage } from "@/lib/pagination";
 
 const CreateRecruitmentModal = lazy(
 	() => import("@/components/recruitments/CreateRecruitmentModal"),
 );
+const RecruitmentDetailDrawer = lazy(
+	() => import("@/components/recruitments/RecruitmentDetailDrawer"),
+);
+
+const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
+
+const SEARCH_DEBOUNCE_MS = 350;
+// bundle-derived, unverified: staging-ийн хайлтын input maxLength=100
+const SEARCH_MAX_LENGTH = 100;
+// bundle-derived, unverified: staging үлдэгдэл ≥ 10000 бол "Хязгааргүй" гэж харуулдаг
+const UNLIMITED_BALANCE_THRESHOLD = 10_000;
 
 function formatBalance(value: number | undefined | null): string {
 	if (value === undefined || value === null) return "—";
-	if (!Number.isFinite(value) || value >= 100_000) return "Хязгааргүй";
+	if (!Number.isFinite(value) || value >= UNLIMITED_BALANCE_THRESHOLD)
+		return "Хязгааргүй";
 	return String(value);
 }
 
-function formatDate(dateStr: string): string {
-	if (!dateStr) return "—";
-	const d = new Date(dateStr);
-	if (Number.isNaN(d.getTime())) return "—";
-	return d.toLocaleDateString("mn-MN", {
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-	});
-}
-
-function getRecruitmentKebabItems(
-	row: RecruitmentListItem,
-	router: ReturnType<typeof useRouter>,
-): KebabMenuItem[] {
-	const items: KebabMenuItem[] = [];
-
-	if (row.status === "CREATED") {
-		items.push({
-			label: "Засах",
-			icon: <Pencil size={11} />,
-			onClick: () => router.push(`/dashboard/recruitments/${row.id}/edit`),
-		});
-		items.push({
-			label: "Хуулах",
-			icon: <Copy size={11} />,
-			onClick: () => {},
-		});
-		items.push({
-			label: "Устгах",
-			icon: <Trash2 size={11} />,
-			onClick: () => {
-				if (window.confirm("Энэ үнэлгээг устгах уу?")) {
-					// TODO: implement delete mutation
-				}
-			},
-			variant: "destructive",
-		});
-	} else if (row.status === "PUBLISHED") {
-		items.push({
-			label: "Түгээх",
-			icon: <Share2 size={11} />,
-			onClick: () => {},
-		});
-	} else {
-		// CLOSED
-		items.push({
-			label: "Үр дүн",
-			icon: <BarChart3 size={11} />,
-			onClick: () => router.push(`/dashboard/recruitments/${row.id}/results`),
-		});
-	}
-
-	return items;
-}
-
-type FilterTab = "ALL" | "CREATED" | "PUBLISHED" | "CLOSED";
+// Staging-ийн адил: "Хаагдсан" tab байхгүй, CLOSED нь "Бүгд" дотор харагдана
+type FilterTab = "ALL" | Extract<RecruitmentStatus, "CREATED" | "PUBLISHED">;
 
 const FILTER_TABS: { key: FilterTab; label: string }[] = [
 	{ key: "ALL", label: "Бүгд" },
 	{ key: "CREATED", label: "Үүссэн" },
 	{ key: "PUBLISHED", label: "Идэвхтэй" },
-	{ key: "CLOSED", label: "Хаагдсан" },
 ];
 
+function parseTab(value: string | null): FilterTab {
+	return value === "CREATED" || value === "PUBLISHED" ? value : "ALL";
+}
+
+function editPath(id: string) {
+	return `/dashboard/recruitments/${id}/edit`;
+}
+
+/** Нэг үнэлгээний dashboard (staging: /role-assessment/{id}/dashboard) */
+function dashboardPath(id: string) {
+	return `/dashboard/recruitments/${id}/results`;
+}
+
+/** Staging: CREATED → wizard, бусад → dashboard */
+function rowPath(row: RecruitmentListItem) {
+	return row.status === "CREATED" ? editPath(row.id) : dashboardPath(row.id);
+}
+
+function getRecruitmentKebabItems(
+	row: RecruitmentListItem,
+	router: ReturnType<typeof useRouter>,
+	onShowDetail: (id: string) => void,
+): KebabMenuItem[] {
+	const detailItem: KebabMenuItem = {
+		label: "Дэлгэрэнгүй",
+		icon: <Info size={11} />,
+		onClick: () => onShowDetail(row.id),
+	};
+
+	// Устгах / нэр солих (ФАЗ 7), урих (ФАЗ 5), хаах (ФАЗ 7) хараахан байхгүй
+	if (row.status === "CREATED") {
+		return [
+			detailItem,
+			{
+				label: "Засах",
+				icon: <Pencil size={11} />,
+				onClick: () => router.push(editPath(row.id)),
+			},
+		];
+	}
+	return [
+		{
+			label: "Үр дүн",
+			icon: <BarChart3 size={11} />,
+			onClick: () => router.push(dashboardPath(row.id)),
+		},
+		detailItem,
+	];
+}
+
 export default function RecruitmentsPage() {
+	return (
+		<Suspense
+			fallback={
+				<div className="p-6 lg:p-10">
+					<TableSkeleton columnCount={8} />
+				</div>
+			}
+		>
+			<RecruitmentsPageContent />
+		</Suspense>
+	);
+}
+
+function RecruitmentsPageContent() {
 	const router = useRouter();
-	const [activeTab, setActiveTab] = useState<FilterTab>("ALL");
-	const [searchQuery, setSearchQuery] = useState("");
+	const { page, size, searchParams, setPage, setSize, updateParams } =
+		usePageParams();
+	const activeTab = parseTab(searchParams.get("status"));
+	const appliedSearch = (searchParams.get("name") ?? "").trim();
+
+	const [searchInput, setSearchInput] = useState(appliedSearch);
+	const debouncedSearch = useDebouncedValue(
+		searchInput.trim(),
+		SEARCH_DEBOUNCE_MS,
+	);
 	const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 	const [showCreateModal, setShowCreateModal] = useState(false);
+	const [detailId, setDetailId] = useState<string | null>(null);
 
-	const {
-		data: statsRes,
-		isLoading: statsLoading,
-		isError: statsError,
-	} = useQuery({
-		queryKey: ["recruitmentStats"],
-		queryFn: () => getRecruitmentStats<RecruitmentStats>(),
-		refetchInterval: 30000,
-		refetchIntervalInBackground: false,
-	});
+	// Debounce дууссаны дараа URL-ийг шинэчилнэ; хайлт өөрчлөгдвөл 1-р хуудас
+	const lastAppliedSearch = useRef(debouncedSearch);
+	useEffect(() => {
+		if (lastAppliedSearch.current === debouncedSearch) return;
+		lastAppliedSearch.current = debouncedSearch;
+		updateParams({ name: debouncedSearch || null, page: 1 });
+	}, [debouncedSearch, updateParams]);
 
-	const {
-		data: listRes,
-		isLoading: listLoading,
-		isError: listError,
-	} = useQuery({
-		queryKey: ["recruitmentList", activeTab, searchQuery],
-		queryFn: () =>
-			getRecruitmentList({
-				page: 0,
-				size: 100,
-				...(activeTab !== "ALL" ? { status: activeTab } : {}),
-				...(searchQuery ? { name: searchQuery } : {}),
-			}),
-		refetchInterval: 30000,
-		refetchIntervalInBackground: false,
-	});
+	const listParams: RecruitmentListParams = {
+		...toApiPage({ page, size }),
+		...(activeTab !== "ALL" ? { status: activeTab } : {}),
+		...(appliedSearch ? { name: appliedSearch } : {}),
+	};
 
-	const stats = statsRes?.data;
-	const rows: RecruitmentListItem[] = listRes?.data?.content ?? [];
+	const statsQuery = useRecruitmentStats();
+	const listQuery = useRecruitmentList(listParams);
+
+	const pageData = listQuery.data;
+	const rows: RecruitmentListItem[] = pageData?.content ?? [];
+	const rowOffset = pageData ? pageData.number * pageData.size : 0;
+	const hasFilter = activeTab !== "ALL" || appliedSearch !== "";
+
+	// page > totalPages (жишээ нь сүүлийн хуудас хоосорсон) бол сүүлийн хуудас руу
+	useEffect(() => {
+		if (!pageData || listQuery.isPlaceholderData) return;
+		const lastPage = Math.max(1, pageData.totalPages);
+		if (page > lastPage) setPage(lastPage);
+	}, [pageData, listQuery.isPlaceholderData, page, setPage]);
+
+	function handleTabChange(tab: FilterTab) {
+		updateParams({ status: tab === "ALL" ? null : tab, page: 1 });
+	}
+
+	const stats = statsQuery.data;
 
 	return (
 		<div className="min-h-full w-full">
@@ -152,7 +189,7 @@ export default function RecruitmentsPage() {
 					<div>
 						<div
 							className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2"
-							style={{ fontFamily: "'JetBrains Mono', monospace" }}
+							style={MONO}
 						>
 							<button
 								type="button"
@@ -175,7 +212,7 @@ export default function RecruitmentsPage() {
 						type="button"
 						onClick={() => setShowCreateModal(true)}
 						className="flex items-center gap-2 px-5 py-2.5 text-[10px] uppercase tracking-widest font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-150 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-						style={{ fontFamily: "'JetBrains Mono', monospace" }}
+						style={MONO}
 					>
 						<Plus size={14} />
 						Талентийн үнэлгээ үүсгэх
@@ -188,22 +225,22 @@ export default function RecruitmentsPage() {
 						label="Нийт урьсан талент"
 						value={String(stats?.totalInvitationCount ?? "")}
 						icon={<Users size={14} />}
-						isLoading={statsLoading}
-						isError={statsError}
+						isLoading={statsQuery.isLoading}
+						isError={statsQuery.isError}
 					/>
 					<MiniStatCard
 						label="Нийт үнэлгээнд оролцсон талент"
 						value={String(stats?.totalCompletedCount ?? "")}
 						icon={<Zap size={14} />}
-						isLoading={statsLoading}
-						isError={statsError}
+						isLoading={statsQuery.isLoading}
+						isError={statsQuery.isError}
 					/>
 					<MiniStatCard
 						label="Үлдсэн урилгын эрх"
 						value={formatBalance(stats?.invitationBalance)}
 						icon={<Users size={14} />}
-						isLoading={statsLoading}
-						isError={statsError}
+						isLoading={statsQuery.isLoading}
+						isError={statsQuery.isError}
 					/>
 				</div>
 
@@ -214,13 +251,14 @@ export default function RecruitmentsPage() {
 							<button
 								type="button"
 								key={tab.key}
-								onClick={() => setActiveTab(tab.key)}
+								aria-pressed={activeTab === tab.key}
+								onClick={() => handleTabChange(tab.key)}
 								className={`px-4 py-1.5 text-[10px] uppercase tracking-widest font-bold transition-all duration-150 ${
 									activeTab === tab.key
 										? "bg-primary text-primary-foreground"
 										: "text-muted-foreground hover:text-foreground hover:bg-muted"
 								}`}
-								style={{ fontFamily: "'JetBrains Mono', monospace" }}
+								style={MONO}
 							>
 								{tab.label}
 							</button>
@@ -235,16 +273,20 @@ export default function RecruitmentsPage() {
 							/>
 							<input
 								type="text"
+								aria-label="Нэрээр хайх"
 								placeholder="Нэрээр хайх..."
-								value={searchQuery}
-								onChange={(e) => setSearchQuery(e.target.value)}
+								value={searchInput}
+								maxLength={SEARCH_MAX_LENGTH}
+								onChange={(e) => setSearchInput(e.target.value)}
 								className="pl-9 pr-4 py-2 text-[11px] uppercase tracking-wider border-2 border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-colors"
-								style={{ fontFamily: "'JetBrains Mono', monospace" }}
+								style={MONO}
 							/>
 						</div>
 						<div className="flex border-2 border-border">
 							<button
 								type="button"
+								aria-label="Хүснэгтээр харах"
+								aria-pressed={viewMode === "table"}
 								onClick={() => setViewMode("table")}
 								className={`p-2 transition-colors ${
 									viewMode === "table"
@@ -256,6 +298,8 @@ export default function RecruitmentsPage() {
 							</button>
 							<button
 								type="button"
+								aria-label="Картаар харах"
+								aria-pressed={viewMode === "grid"}
 								onClick={() => setViewMode("grid")}
 								className={`p-2 transition-colors ${
 									viewMode === "grid"
@@ -271,245 +315,54 @@ export default function RecruitmentsPage() {
 
 				{/* Table / Grid */}
 				<div className="border-2 border-border bg-card overflow-hidden">
-					{listLoading ? (
+					{listQuery.isLoading ? (
 						<TableSkeleton columnCount={8} />
-					) : listError ? (
-						<EmptyState text="Мэдээлэл ачаалахад алдаа гарлаа" />
+					) : listQuery.isError ? (
+						<ErrorState
+							text={getErrorMessage(
+								listQuery.error,
+								"Талентийн үнэлгээний жагсаалт авахад алдаа гарлаа",
+							)}
+							onRetry={() => listQuery.refetch()}
+							isRetrying={listQuery.isFetching}
+						/>
 					) : rows.length === 0 ? (
-						<EmptyState text="Талентийн үнэлгээ байхгүй байна" />
-					) : viewMode === "table" ? (
-						<div className="overflow-x-auto">
-							<table className="w-full text-left" style={{ minWidth: "100%" }}>
-								<thead>
-									<tr className="border-b-2 border-border">
-										{[
-											{ key: "no", label: "№", width: "40px" },
-											{ key: "name", label: "Нэр" },
-											{ key: "status", label: "Төлөв", width: "100px" },
-											{ key: "invited", label: "Урьсан", width: "70px" },
-											{ key: "completed", label: "Дууссан", width: "80px" },
-											{ key: "created", label: "Үүсгэсэн", width: "110px" },
-											{ key: "closed", label: "Хаагдах", width: "110px" },
-											{ key: "actions", label: "", width: "120px" },
-										].map((col) => (
-											<th
-												key={col.key}
-												className="py-2.5 px-3 text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground whitespace-nowrap"
-												style={{
-													fontFamily: "'JetBrains Mono', monospace",
-													width: col.width,
-												}}
-											>
-												{col.label}
-											</th>
-										))}
-									</tr>
-								</thead>
-								<tbody>
-									{rows.map((row, i) => (
-										<tr
-											key={row.id}
-											className="border-b border-border/50 hover:border-l-2 hover:border-l-primary transition-colors duration-100 group"
-										>
-											<td
-												className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
-												style={{ fontFamily: "'JetBrains Mono', monospace" }}
-											>
-												{i + 1}
-											</td>
-											<td
-												className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap max-w-[200px] truncate"
-												style={{ fontFamily: "'JetBrains Mono', monospace" }}
-											>
-												{row.name}
-											</td>
-											<td className="py-3 px-3">
-												<RecruitmentStatusBadge status={row.status} />
-											</td>
-											<td
-												className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
-												style={{ fontFamily: "'JetBrains Mono', monospace" }}
-											>
-												{row.totalInvitationCount}
-											</td>
-											<td
-												className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
-												style={{ fontFamily: "'JetBrains Mono', monospace" }}
-											>
-												{row.completedInvitationCount}
-											</td>
-											<td
-												className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
-												style={{ fontFamily: "'JetBrains Mono', monospace" }}
-											>
-												{formatDate(row.createdAt)}
-											</td>
-											<td
-												className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
-												style={{ fontFamily: "'JetBrains Mono', monospace" }}
-											>
-												{row.closedAt ? formatDate(row.closedAt) : "—"}
-											</td>
-											<td className="py-3 px-3">
-												<div className="flex items-center gap-1.5">
-													{row.status === "CREATED" && (
-														<button
-															type="button"
-															onClick={() =>
-																router.push(
-																	`/dashboard/recruitments/${row.id}/edit`,
-																)
-															}
-															className="p-1.5 text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
-															title="Засах"
-														>
-															<Pencil size={13} />
-														</button>
-													)}
-													{row.status === "PUBLISHED" && (
-														<button
-															type="button"
-															onClick={() => {}}
-															className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors"
-															style={{
-																fontFamily: "'JetBrains Mono', monospace",
-															}}
-														>
-															<Share2 size={12} />
-															Түгээх
-														</button>
-													)}
-													{row.status === "CLOSED" && (
-														<button
-															type="button"
-															onClick={() =>
-																router.push(
-																	`/dashboard/recruitments/${row.id}/results`,
-																)
-															}
-															className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors"
-															style={{
-																fontFamily: "'JetBrains Mono', monospace",
-															}}
-														>
-															<BarChart3 size={12} />
-															Үр дүн
-														</button>
-													)}
-													<KebabMenu
-														items={getRecruitmentKebabItems(row, router)}
-													/>
-												</div>
-											</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
+						<EmptyState
+							text={
+								hasFilter
+									? "Тохирох талентийн үнэлгээ олдсонгүй"
+									: "Талентийн үнэлгээ байхгүй байна"
+							}
+						/>
 					) : (
-						/* Grid view */
-						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-5">
-							{rows.map((row) => (
-								<div
-									key={row.id}
-									className="border-2 border-border bg-background p-5 hover:border-primary transition-colors duration-150 group relative overflow-hidden"
-								>
-									<GridTexture />
-									<div className="relative z-10">
-										<div className="flex items-start justify-between mb-3">
-											<h3
-												className="text-sm font-bold text-foreground uppercase leading-tight truncate max-w-[180px]"
-												style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
-											>
-												{row.name}
-											</h3>
-											<RecruitmentStatusBadge status={row.status} />
-										</div>
-										<div
-											className="space-y-2 mb-4"
-											style={{ fontFamily: "'JetBrains Mono', monospace" }}
-										>
-											<div className="flex items-center justify-between text-[10px]">
-												<span className="uppercase tracking-widest text-muted-foreground">
-													Урьсан
-												</span>
-												<span className="text-foreground/80">
-													{row.totalInvitationCount}
-												</span>
-											</div>
-											<div className="flex items-center justify-between text-[10px]">
-												<span className="uppercase tracking-widest text-muted-foreground">
-													Дууссан
-												</span>
-												<span className="text-foreground/80">
-													{row.completedInvitationCount}
-												</span>
-											</div>
-											<div className="flex items-center justify-between text-[10px]">
-												<span className="uppercase tracking-widest text-muted-foreground">
-													Үүсгэсэн
-												</span>
-												<span className="text-foreground/80">
-													{formatDate(row.createdAt)}
-												</span>
-											</div>
-										</div>
-										<div className="flex items-center gap-2 pt-3 border-t border-border/50">
-											{row.status === "CREATED" && (
-												<button
-													type="button"
-													onClick={() =>
-														router.push(
-															`/dashboard/recruitments/${row.id}/edit`,
-														)
-													}
-													className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] uppercase tracking-widest font-bold border border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-													style={{
-														fontFamily: "'JetBrains Mono', monospace",
-													}}
-												>
-													<Pencil size={11} />
-													Засах
-												</button>
-											)}
-											{row.status === "PUBLISHED" && (
-												<button
-													type="button"
-													onClick={() => {}}
-													className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] uppercase tracking-widest font-bold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-													style={{
-														fontFamily: "'JetBrains Mono', monospace",
-													}}
-												>
-													<Share2 size={11} />
-													Түгээх
-												</button>
-											)}
-											{row.status === "CLOSED" && (
-												<button
-													type="button"
-													onClick={() =>
-														router.push(
-															`/dashboard/recruitments/${row.id}/results`,
-														)
-													}
-													className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] uppercase tracking-widest font-bold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-													style={{
-														fontFamily: "'JetBrains Mono', monospace",
-													}}
-												>
-													<BarChart3 size={11} />
-													Үр дүн
-												</button>
-											)}
-											<KebabMenu
-												items={getRecruitmentKebabItems(row, router)}
-											/>
-										</div>
-									</div>
-								</div>
-							))}
-						</div>
+						<>
+							<div
+								className={`transition-opacity ${listQuery.isPlaceholderData ? "opacity-60" : ""}`}
+							>
+								{viewMode === "table" ? (
+									<RecruitmentTable
+										rows={rows}
+										rowOffset={rowOffset}
+										router={router}
+										onShowDetail={setDetailId}
+									/>
+								) : (
+									<RecruitmentGrid
+										rows={rows}
+										router={router}
+										onShowDetail={setDetailId}
+									/>
+								)}
+							</div>
+							<Paginator
+								page={page}
+								totalPages={pageData?.totalPages ?? 0}
+								totalElements={pageData?.totalElements ?? 0}
+								size={size}
+								onPageChange={setPage}
+								onSizeChange={setSize}
+							/>
+						</>
 					)}
 				</div>
 			</div>
@@ -519,6 +372,239 @@ export default function RecruitmentsPage() {
 					<CreateRecruitmentModal onClose={() => setShowCreateModal(false)} />
 				</Suspense>
 			)}
+
+			{detailId && (
+				<Suspense fallback={null}>
+					<RecruitmentDetailDrawer
+						recruitmentId={detailId}
+						onClose={() => setDetailId(null)}
+					/>
+				</Suspense>
+			)}
+		</div>
+	);
+}
+
+interface RowsProps {
+	rows: RecruitmentListItem[];
+	router: ReturnType<typeof useRouter>;
+	onShowDetail: (id: string) => void;
+}
+
+function RowActionButton({
+	row,
+	router,
+	compact,
+}: {
+	row: RecruitmentListItem;
+	router: ReturnType<typeof useRouter>;
+	compact?: boolean;
+}) {
+	if (row.status === "CREATED") {
+		return compact ? (
+			<button
+				type="button"
+				onClick={() => router.push(editPath(row.id))}
+				className="p-1.5 text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+				title="Засах"
+				aria-label="Засах"
+			>
+				<Pencil size={13} />
+			</button>
+		) : (
+			<button
+				type="button"
+				onClick={() => router.push(editPath(row.id))}
+				className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] uppercase tracking-widest font-bold border border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+				style={MONO}
+			>
+				<Pencil size={11} />
+				Засах
+			</button>
+		);
+	}
+
+	return compact ? (
+		<button
+			type="button"
+			onClick={() => router.push(dashboardPath(row.id))}
+			className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors"
+			style={MONO}
+		>
+			<BarChart3 size={12} />
+			Үр дүн
+		</button>
+	) : (
+		<button
+			type="button"
+			onClick={() => router.push(dashboardPath(row.id))}
+			className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[9px] uppercase tracking-widest font-bold border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+			style={MONO}
+		>
+			<BarChart3 size={11} />
+			Үр дүн
+		</button>
+	);
+}
+
+const TABLE_COLUMNS = [
+	{ key: "no", label: "№", width: "40px" },
+	{ key: "name", label: "Нэр" },
+	{ key: "status", label: "Төлөв", width: "100px" },
+	{ key: "invited", label: "Урьсан", width: "70px" },
+	{ key: "completed", label: "Дууссан", width: "80px" },
+	{ key: "created", label: "Үүсгэсэн", width: "140px" },
+	{ key: "closed", label: "Хаагдсан", width: "110px" },
+	{ key: "actions", label: "", width: "120px" },
+];
+
+function RecruitmentTable({
+	rows,
+	rowOffset,
+	router,
+	onShowDetail,
+}: RowsProps & { rowOffset: number }) {
+	return (
+		<div className="overflow-x-auto">
+			<table className="w-full text-left" style={{ minWidth: "100%" }}>
+				<thead>
+					<tr className="border-b-2 border-border">
+						{TABLE_COLUMNS.map((col) => (
+							<th
+								key={col.key}
+								className="py-2.5 px-3 text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground whitespace-nowrap"
+								style={{ ...MONO, width: col.width }}
+							>
+								{col.label}
+							</th>
+						))}
+					</tr>
+				</thead>
+				<tbody>
+					{rows.map((row, i) => (
+						<tr
+							key={row.id}
+							className="border-b border-border/50 hover:border-l-2 hover:border-l-primary transition-colors duration-100 group"
+						>
+							<td
+								className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
+								style={MONO}
+							>
+								{rowOffset + i + 1}
+							</td>
+							<td
+								className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap max-w-[200px] truncate"
+								style={MONO}
+							>
+								<button
+									type="button"
+									onClick={() => router.push(rowPath(row))}
+									title={row.name}
+									className="max-w-full truncate text-left hover:text-primary transition-colors"
+								>
+									{row.name}
+								</button>
+							</td>
+							<td className="py-3 px-3">
+								<RecruitmentStatusBadge status={row.status} />
+							</td>
+							<td
+								className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
+								style={MONO}
+							>
+								{row.totalInvitationCount}
+							</td>
+							<td
+								className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
+								style={MONO}
+							>
+								{row.completedInvitationCount}
+							</td>
+							<td
+								className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
+								style={MONO}
+							>
+								{formatDateTime(row.createdAt)}
+							</td>
+							<td
+								className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
+								style={MONO}
+							>
+								{formatDate(row.closedAt)}
+							</td>
+							<td className="py-3 px-3">
+								<div className="flex items-center gap-1.5">
+									<RowActionButton row={row} router={router} compact />
+									<KebabMenu
+										items={getRecruitmentKebabItems(row, router, onShowDetail)}
+									/>
+								</div>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	);
+}
+
+function RecruitmentGrid({ rows, router, onShowDetail }: RowsProps) {
+	return (
+		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-5">
+			{rows.map((row) => (
+				<div
+					key={row.id}
+					className="border-2 border-border bg-background p-5 hover:border-primary transition-colors duration-150 group relative overflow-hidden"
+				>
+					<GridTexture />
+					<div className="relative z-10">
+						<div className="flex items-start justify-between mb-3">
+							<button
+								type="button"
+								onClick={() => router.push(rowPath(row))}
+								title={row.name}
+								className="text-sm font-bold text-foreground uppercase leading-tight truncate max-w-[180px] text-left hover:text-primary transition-colors"
+								style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
+							>
+								{row.name}
+							</button>
+							<RecruitmentStatusBadge status={row.status} />
+						</div>
+						<div className="space-y-2 mb-4" style={MONO}>
+							<div className="flex items-center justify-between text-[10px]">
+								<span className="uppercase tracking-widest text-muted-foreground">
+									Урьсан
+								</span>
+								<span className="text-foreground/80">
+									{row.totalInvitationCount}
+								</span>
+							</div>
+							<div className="flex items-center justify-between text-[10px]">
+								<span className="uppercase tracking-widest text-muted-foreground">
+									Дууссан
+								</span>
+								<span className="text-foreground/80">
+									{row.completedInvitationCount}
+								</span>
+							</div>
+							<div className="flex items-center justify-between text-[10px]">
+								<span className="uppercase tracking-widest text-muted-foreground">
+									Үүсгэсэн
+								</span>
+								<span className="text-foreground/80">
+									{formatDate(row.createdAt)}
+								</span>
+							</div>
+						</div>
+						<div className="flex items-center gap-2 pt-3 border-t border-border/50">
+							<RowActionButton row={row} router={router} />
+							<KebabMenu
+								items={getRecruitmentKebabItems(row, router, onShowDetail)}
+							/>
+						</div>
+					</div>
+				</div>
+			))}
 		</div>
 	);
 }

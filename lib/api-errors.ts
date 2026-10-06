@@ -106,6 +106,9 @@ const ERROR_MESSAGES: Record<string, string> = {
 	system_error: "Системийн алдаа гарлаа. Түр хүлээгээд дахин оролдоно уу",
 	// bundle-derived, unverified: plan_expired code бодит хүсэлтээр ажиглагдаагүй
 	plan_expired: "Таны багцын хугацаа дууссан байна",
+	// client-side: хариу хүлээгдсэн хэлбэрт таарсангүй
+	unexpected_response:
+		"Сервер хүлээгдээгүй хариу буцаалаа. Жагсаалтаа шинэчилж шалгана уу",
 };
 
 const NETWORK_ERROR_MESSAGE =

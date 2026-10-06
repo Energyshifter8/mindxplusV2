@@ -28,6 +28,9 @@ export const INVITATION_STATUS_LABELS: Record<InvitationStatus, string> = {
 	EXPIRED: "Хугацаа дууссан",
 };
 
+// Тестийн өнгө: GREEN = Бие хүний онцлог, YELLOW = Зөөлөн ур чадвар (staging ✅)
+export type TestColor = "GREEN" | "YELLOW";
+
 export function isRecruitmentStatus(
 	value: unknown,
 ): value is RecruitmentStatus {

@@ -15,3 +15,9 @@
 | U6 | 1 | `app/dashboard/talents/[id]/page.tsx` | #23 хариунд `completedAt` байхгүй ✅. Staging-ийн "Бөглөсөн" багана юунаас утга авдаг нь тодорхойгүй. Одоогоор "—" харуулна | ❓ | Staging bundle / Swagger |
 | U7 | 1 | `app/api/[...path]/route.ts` | `Accept-Language: mn-MN` үед `detail` Монголоор ирдэг нь тайланд ✅. Proxy-ийн өөрчлөлтийг нэвтэрсэн browser дээр шалгаагүй | ✅/шалгаагүй | Browser: байхгүй ID-тай хуудас нээж алдааны detail харах |
 | U8 | 1 | `lib/constants/roleAssessment.ts` | **Label санал:** Invitation `PENDING "Уригдсан"`, `STARTED "Эхэлсэн"`, `COMPLETED "Дууссан"`, `EXPIRED "Хугацаа дууссан"`; Recruitment `PUBLISHED "Идэвхтэй"` (өмнө "Нийтэлсэн") | staging UI (тайлан §2c) | Таны баталгаажуулалт |
+| U9 | 2 | `app/dashboard/recruitments/page.tsx` `UNLIMITED_BALANCE_THRESHOLD` | Үлдэгдэл ≥ 10000 бол "Хязгааргүй" (өмнө 100000 байсан). API "хязгааргүй"-г яаж илэрхийлдэг нь тодорхойгүй (том тоо / -1 / null) | 📦 тайлан §2a, §6.2 | Swagger / backend |
+| U10 | 2 | Жагсаалтын хайлт, үүсгэх modal `maxLength=100` | Серверийн талын урт хязгаар | 📦 | Swagger (a) |
+| U11 | 2 | `lib/pagination.ts` `PAGE_SIZE_OPTIONS = [10, 20, 50]` | Staging зөвхөн 10-ыг харуулсан; API-ийн `size`-ийн дээд хязгаар | ❓ | Swagger |
+| U12 | 2 | Жагсаалтын эрэмбэ | Sort параметргүй үед `createdAt` буурахаар ирдэг гэж ажигласан; `name` хайлт contains / case-insensitive эсэх | ❓ тайлан §2a, §6.2 | Swagger |
+| U13 | 2 | `lib/api.ts` `RecruitmentDetail` | `publishedAt/publishedBy/closedAt/closedBy` байхгүй үед null уу, огт ирэхгүй юу (хоёуланг зохицуулсан) | ✅/❓ | GET #3-ийг CREATED/PUBLISHED/CLOSED тус бүрээр |
+| U14 | 2 | `RecruitmentDetailDrawer` "Явц" | CREATED үед "--/--", бусад үед `count.completed/count.total` (staging-ийн жагсаалтын дүрмээр) | 📦 | Staging-тэй харьцуулах |

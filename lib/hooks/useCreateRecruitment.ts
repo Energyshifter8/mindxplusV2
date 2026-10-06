@@ -8,9 +8,18 @@ import {
 	type CreateRecruitmentResponse,
 	createRecruitment,
 } from "@/lib/api";
+import { getErrorMessage } from "@/lib/api-errors";
+import { recruitmentKeys } from "@/lib/hooks/useRecruitmentQueries";
 
 export function useCreateRecruitment() {
 	const queryClient = useQueryClient();
+
+	function invalidateLists() {
+		queryClient.invalidateQueries({ queryKey: recruitmentKeys.all });
+		// Нүүр хуудасны (components/Dashboard.tsx) түлхүүрүүд
+		queryClient.invalidateQueries({ queryKey: ["recruitmentList"] });
+		queryClient.invalidateQueries({ queryKey: ["recruitmentStats"] });
+	}
 
 	return useMutation({
 		mutationFn: (payload: CreateRecruitmentPayload) => {
@@ -21,20 +30,19 @@ export function useCreateRecruitment() {
 		},
 		onSuccess: (response: ApiResponse<CreateRecruitmentResponse>) => {
 			toast.dismiss("create-recruitment");
+			// Хариу уншигдаагүй ч ноорог үүссэн байж болох тул ямар ч үед шинэчилнэ
+			invalidateLists();
 
 			if (!response.success || !response.data) {
-				const msg = response.error || "Үнэлгээ үүсгэхэд алдаа гарлаа";
-				toast.error(msg);
+				toast.error(getErrorMessage(response, "Үнэлгээ үүсгэхэд алдаа гарлаа"));
 				return;
 			}
 
 			toast.success("Үнэлгээ амжилттай үүсгэгдлээ");
-			queryClient.invalidateQueries({ queryKey: ["recruitmentList"] });
-			queryClient.invalidateQueries({ queryKey: ["recruitmentStats"] });
 		},
 		onError: (error: Error) => {
 			toast.dismiss("create-recruitment");
-			toast.error(error.message || "Үнэлгээ үүсгэхэд алдаа гарлаа");
+			toast.error(getErrorMessage(error, "Үнэлгээ үүсгэхэд алдаа гарлаа"));
 		},
 	});
 }

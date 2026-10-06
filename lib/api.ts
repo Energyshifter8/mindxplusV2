@@ -9,6 +9,7 @@ import {
 import type {
 	InvitationStatus,
 	RecruitmentStatus,
+	TestColor,
 } from "@/lib/constants/roleAssessment";
 import type { ApiPageParams } from "@/lib/pagination";
 
@@ -382,6 +383,63 @@ export function getRecruitmentList(params: RecruitmentListParams) {
 	return apiGet<SpringPage<RecruitmentListItem>>(recruitmentListPath(params));
 }
 
+// --- Role assessment: React Query-д зориулсан, throw хийдэг (ApiError) ---
+
+export function fetchRecruitmentStats() {
+	return apiGetOrThrow<RecruitmentStats>("/customer/recruitments/statistics");
+}
+
+export function fetchRecruitmentList(params: RecruitmentListParams) {
+	return apiGetOrThrow<SpringPage<RecruitmentListItem>>(
+		recruitmentListPath(params),
+	);
+}
+
+/** Сонгосон тест (catalog). `id` нь catalog id, `testId` нь дотоод тест (тайлан §4 ✅). */
+export interface RecruitmentTest {
+	id: string;
+	testId: string;
+	name: string;
+	description: string;
+	/** Категорийн label (id биш), жишээ "Зөөлөн ур чадвар" */
+	category: string;
+	pageSize: number;
+	minMinutes: number;
+	maxMinutes: number;
+	questionCount: number;
+	color: TestColor;
+}
+
+export interface RecruitmentCustomQuestion {
+	id: number;
+	content: string;
+	description: string;
+	minMinutes: number;
+	maxMinutes: number;
+}
+
+/** GET /customer/recruitments/{id} (#3) — тайлан §3.2 ✅ */
+export interface RecruitmentDetail {
+	id: string;
+	name: string;
+	status: RecruitmentStatus;
+	createdAt: string;
+	publishedAt?: string | null;
+	closedAt?: string | null;
+	createdBy: UserRef;
+	publishedBy?: UserRef | null;
+	closedBy?: UserRef | null;
+	count: { total: number; completed: number };
+	tests: RecruitmentTest[];
+	customQuestions: RecruitmentCustomQuestion[];
+}
+
+export function fetchRecruitmentDetail(id: string) {
+	return apiGetOrThrow<RecruitmentDetail>(
+		`/customer/recruitments/${encodeURIComponent(id)}`,
+	);
+}
+
 export interface CreateRecruitmentPayload {
 	name: string;
 }
@@ -411,7 +469,12 @@ export async function createRecruitment(
 				? (res.data as { id: string }).id
 				: undefined;
 	if (!id) {
-		return { success: false, error: "Unexpected create response" };
+		// Сервер амжилттай гэсэн ч id уншигдсангүй — ноорог үүссэн байж болно
+		return {
+			success: false,
+			error: "Unexpected create response",
+			code: "unexpected_response",
+		};
 	}
 	return { success: true, data: { id } };
 }
