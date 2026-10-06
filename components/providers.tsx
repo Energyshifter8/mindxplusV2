@@ -34,10 +34,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 	useEffect(() => startTokenRefreshScheduler(), []);
 
 	return (
-		// Staging зөвхөн light. Хөрвүүлээгүй хуудсууд өөрсдийн `.dark` scope-д (AppShell, login).
 		<ThemeProvider
 			attribute="class"
-			forcedTheme="light"
+			defaultTheme="dark"
 			enableSystem={false}
 			disableTransitionOnChange
 		>

@@ -13,7 +13,6 @@ import type {
 	TestColor,
 } from "@/lib/constants/roleAssessment";
 import type { ApiPageParams } from "@/lib/pagination";
-import type { AccountDTO, UserInfo } from "@/lib/types/api";
 
 // --- Axios instance ---
 
@@ -177,18 +176,6 @@ export interface SpringPage<T> {
 	last: boolean;
 	empty: boolean;
 	numberOfElements: number;
-}
-
-// --- Profile / account (shell) — swagger ✅ (lib/types/api.ts) ---
-
-/** GET /customer/profile — staging: queryKey ["profile"], staleTime 5 мин */
-export function fetchProfile() {
-	return apiGetOrThrow<UserInfo>("/customer/profile");
-}
-
-/** GET /customer/account — staging: localStorage "accountInfo" байхгүй үед л */
-export function fetchAccount() {
-	return apiGetOrThrow<AccountDTO>("/customer/account");
 }
 
 // --- Types ---
