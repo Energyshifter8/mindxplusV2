@@ -14,6 +14,7 @@ import {
 	PaginationPrevious,
 } from "@/components/ui/pagination";
 import { getHiringInvitations, type HiringInvitationItem } from "@/lib/api";
+import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 
 const PAGE_SIZE = 9;
 
@@ -58,18 +59,20 @@ export default function TalentsPage() {
 	const router = useRouter();
 	const [searchQuery, setSearchQuery] = useState("");
 	const [currentPage, setCurrentPage] = useState(0);
+	// Товч бүрт хүсэлт явуулахгүй (жагсаалтын хайлттай ижил 350мс)
+	const debouncedSearch = useDebouncedValue(searchQuery.trim(), 350);
 
 	const {
 		data: listRes,
 		isLoading: listLoading,
 		isError: listError,
 	} = useQuery({
-		queryKey: ["hiringInvitations", searchQuery, currentPage],
+		queryKey: ["hiringInvitations", debouncedSearch, currentPage],
 		queryFn: () =>
 			getHiringInvitations({
 				page: currentPage,
 				size: PAGE_SIZE,
-				...(searchQuery ? { q: searchQuery } : {}),
+				...(debouncedSearch ? { q: debouncedSearch } : {}),
 			}),
 		refetchInterval: 30000,
 		refetchIntervalInBackground: false,

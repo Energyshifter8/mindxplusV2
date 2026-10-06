@@ -11,8 +11,14 @@ export interface ProblemDetail {
 	detail?: string;
 	instance?: string;
 	code?: string;
-	// bundle-derived, unverified: validation алдааны errors[] бүтэц ({field, value}?)
-	errors?: unknown[];
+	/** Validation алдаанд (code=VALIDATION_EXCEPTION) ирнэ — staging ✅ */
+	errors?: ProblemFieldError[];
+}
+
+/** `value` нь талбарын Монгол алдааны мессеж (Accept-Language: mn-MN үед). */
+export interface ProblemFieldError {
+	field: string;
+	value: string;
 }
 
 /**
@@ -64,7 +70,15 @@ export function toProblemDetail(data: unknown): ProblemDetail | undefined {
 		detail: str(d.detail),
 		instance: str(d.instance),
 		code: str(d.code),
-		errors: Array.isArray(d.errors) ? d.errors : undefined,
+		errors: Array.isArray(d.errors)
+			? d.errors.filter(
+					(e): e is ProblemFieldError =>
+						typeof e === "object" &&
+						e !== null &&
+						typeof (e as ProblemFieldError).field === "string" &&
+						typeof (e as ProblemFieldError).value === "string",
+				)
+			: undefined,
 	};
 }
 
@@ -104,6 +118,7 @@ export function toApiError(error: unknown): ApiError {
 const ERROR_MESSAGES: Record<string, string> = {
 	not_found: "Мэдээлэл олдсонгүй",
 	system_error: "Системийн алдаа гарлаа. Түр хүлээгээд дахин оролдоно уу",
+	validation_exception: "Оруулсан мэдээлэл буруу байна",
 	// bundle-derived, unverified: plan_expired code бодит хүсэлтээр ажиглагдаагүй
 	plan_expired: "Таны багцын хугацаа дууссан байна",
 	// client-side: хариу хүлээгдсэн хэлбэрт таарсангүй
@@ -136,6 +151,19 @@ export function getErrorMessage(source: unknown, fallback?: string): string {
 export function isRetryableError(error: unknown): boolean {
 	if (!(error instanceof ApiError) || error.status === undefined) return true;
 	return error.status >= 500;
+}
+
+/** Validation алдааны талбар бүрийн мессеж: { limit: "10-аас бага ..." } */
+export function getFieldErrors(error: unknown): Record<string, string> {
+	const problem =
+		error instanceof ApiError
+			? error.problem
+			: typeof error === "object" && error !== null
+				? (error as { problem?: ProblemDetail }).problem
+				: undefined;
+	return Object.fromEntries(
+		(problem?.errors ?? []).map((e) => [e.field, e.value]),
+	);
 }
 
 export function isApiErrorCode(error: unknown, code: string): boolean {

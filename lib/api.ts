@@ -440,21 +440,25 @@ export function fetchRecruitmentDetail(id: string) {
 	);
 }
 
-/** GET /customer/hiring-invitations/list/{recruitmentId} (#14) — тайлан §3.2 ✅ */
+/**
+ * GET /customer/hiring-invitations/list/{recruitmentId} (#14) — staging ✅.
+ * Хоосон `phoneNumber`, `completedAt`, `ratingPoints` нь null биш, огт ирдэггүй.
+ * Анхаар: энэ GET хугацаа нь өнгөрсөн PENDING урилгыг серверт EXPIRED болгодог.
+ */
 export interface RecruitmentInvitation {
 	id: string;
 	recruitmentId: string;
 	email: string;
 	firstName: string;
 	lastName: string;
-	phoneNumber: string | null;
+	phoneNumber?: string | null;
 	/** YYYY-MM-DD */
 	dueDate: string;
 	status: InvitationStatus;
 	createdAt: string;
 	completedAt?: string | null;
 	rated: boolean;
-	// bundle-derived, unverified: ratingPoints талбар #14-ийн хариунд байгаа эсэх
+	/** rated=true үед л ирнэ (staging ✅) */
 	ratingPoints?: number | null;
 	invitedBy: UserRef;
 }

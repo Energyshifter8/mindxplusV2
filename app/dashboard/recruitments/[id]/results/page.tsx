@@ -107,7 +107,9 @@ function RecruitmentDashboardContent() {
 						Талентийн үнэлгээ
 					</button>
 					<span className="mx-2">/</span>
-					<span className="text-foreground">{detail?.name ?? "…"}</span>
+					<span className="text-foreground">
+						{detail?.name ?? (detailQuery.isLoading ? "…" : "—")}
+					</span>
 				</div>
 
 				{detailQuery.isLoading ? (

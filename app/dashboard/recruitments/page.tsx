@@ -428,7 +428,7 @@ function RowActionButton({
 		<button
 			type="button"
 			onClick={() => router.push(dashboardPath(row.id))}
-			className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors"
+			className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors whitespace-nowrap"
 			style={MONO}
 		>
 			<BarChart3 size={12} />
@@ -455,7 +455,7 @@ const TABLE_COLUMNS = [
 	{ key: "completed", label: "Дууссан", width: "80px" },
 	{ key: "created", label: "Үүсгэсэн", width: "140px" },
 	{ key: "closed", label: "Хаагдсан", width: "110px" },
-	{ key: "actions", label: "", width: "120px" },
+	{ key: "actions", label: "", width: "130px" },
 ];
 
 function RecruitmentTable({

@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import { useMemo } from "react";
 import { Drawer } from "@/components/shared/Drawer";
 import { ErrorState } from "@/components/shared/ListComponents";
@@ -17,10 +16,13 @@ interface TestDetailDrawerProps {
 /**
  * Серверийн HTML-ийг (`content`) sandbox="" iframe-д харуулна: script ажиллахгүй,
  * апп-ын origin (localStorage token) руу хандах эрхгүй.
+ * Контент `color: rgb(0, 0, 0)` гэж хатуу бичсэн (staging ✅, 84 газар) тул
+ * theme-ээс үл хамааран цагаан "цаас" дээр харуулна, үгүй бол dark theme-д уншигдахгүй.
  */
-function buildSrcDoc(html: string, textColor: string): string {
+function buildSrcDoc(html: string): string {
 	return `<!doctype html><html><head><meta charset="utf-8"><style>
-body{margin:0;padding:20px;font:14px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;color:${textColor};background:transparent;word-wrap:break-word}
+:root{color-scheme:light}
+body{margin:0;padding:20px;font:14px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;color:#0a0a0a;background:#ffffff;word-wrap:break-word}
 img{max-width:100%;height:auto}
 </style></head><body>${html}</body></html>`;
 }
@@ -32,17 +34,10 @@ export default function TestDetailDrawer({
 }: TestDetailDrawerProps) {
 	const { data, isLoading, isError, error, refetch, isFetching } =
 		useRoleAssessmentTest(catalogTestId);
-	const { resolvedTheme } = useTheme();
 
 	const srcDoc = useMemo(
-		() =>
-			data
-				? buildSrcDoc(
-						data.content ?? "",
-						resolvedTheme === "light" ? "#0a0a0a" : "#f0f0f0",
-					)
-				: "",
-		[data, resolvedTheme],
+		() => (data ? buildSrcDoc(data.content ?? "") : ""),
+		[data],
 	);
 
 	return (
@@ -70,7 +65,7 @@ export default function TestDetailDrawer({
 					title={data.name}
 					sandbox=""
 					srcDoc={srcDoc}
-					className="min-h-0 w-full flex-1 border-0"
+					className="min-h-0 w-full flex-1 border-0 bg-white"
 				/>
 			)}
 		</Drawer>
