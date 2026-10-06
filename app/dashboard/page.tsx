@@ -1,9 +1,5 @@
-import type { Metadata } from "next";
-import { HomePage } from "@/components/home/HomePage";
-
-// Staging: document.title "Нүүр хуудас"
-export const metadata: Metadata = { title: "Нүүр хуудас" };
+import Dashboard from "@/components/Dashboard";
 
 export default function DashboardPage() {
-	return <HomePage />;
+	return <Dashboard />;
 }

@@ -12,22 +12,6 @@ export const ROUTES = {
 	profile: "/dashboard/profile",
 } as const;
 
-/** Дэд хуудасны замууд (staging-ийн бүтцээр: /survey/{id}, /survey/{id}/insight, …). */
-export const routeTo = {
-	/** staging: /survey/{id} (CREATED — засах) */
-	surveyEdit: (id: string) => `/dashboard/surveys/${id}/edit`,
-	/** staging: /survey/{id}/insight */
-	surveyInsight: (id: string) => `/dashboard/surveys/${id}/results`,
-	/** staging: /role-assessment/{id} (wizard) */
-	roleAssessmentWizard: (id: string) => `/dashboard/recruitments/${id}/edit`,
-	/** staging: /role-assessment/{id}/dashboard */
-	roleAssessmentDashboard: (id: string) =>
-		`/dashboard/recruitments/${id}/results`,
-	/** staging: /role-assessment/{id}/dashboard/{invitationId} */
-	roleAssessmentResult: (id: string, invitationId: string) =>
-		`/dashboard/recruitments/${id}/results/${invitationId}`,
-};
-
 export type NavKey =
 	| "home"
 	| "templates"
@@ -62,7 +46,7 @@ export function navKeyForPath(pathname: string): NavKey | undefined {
  * Staging-ийн хэв маягаар (light, Manrope) хөрвүүлсэн хуудсууд. Бусад нь `.dark`
  * scope-д хуучин хэв маягаараа харагдана.
  */
-const PARITY_ROUTES = new Set<string>([ROUTES.home, "/home"]);
+const PARITY_ROUTES = new Set<string>([]);
 
 export function isParityRoute(pathname: string): boolean {
 	return PARITY_ROUTES.has(pathname);

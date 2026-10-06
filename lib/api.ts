@@ -13,16 +13,7 @@ import type {
 	TestColor,
 } from "@/lib/constants/roleAssessment";
 import type { ApiPageParams } from "@/lib/pagination";
-import type {
-	AccountDTO,
-	HiringHomeStatistics,
-	InvitationProjection,
-	MySurveyView,
-	Page,
-	RecruitmentListView,
-	SurveyHomeStatistics,
-	UserInfo,
-} from "@/lib/types/api";
+import type { AccountDTO, UserInfo } from "@/lib/types/api";
 
 // --- Axios instance ---
 
@@ -200,43 +191,6 @@ export function fetchAccount() {
 	return apiGetOrThrow<AccountDTO>("/customer/account");
 }
 
-// --- /home (staging-ийн яг ижил query, 📦 bundle + ✅ network) ---
-
-/** staging: `/customer/surveys?status=${status}&page=${page}&size=${size}&name=${name}` (хоосон утгыг ч илгээнэ) */
-export function fetchHomeSurveys() {
-	const status = "";
-	const name = "";
-	return apiGetOrThrow<Page<MySurveyView>>(
-		`/customer/surveys?status=${status}&page=0&size=6&name=${name}`,
-	);
-}
-
-export function fetchSurveyHomeStatistics() {
-	return apiGetOrThrow<SurveyHomeStatistics>(
-		"/customer/surveys-home/statistics",
-	);
-}
-
-/** staging: URLSearchParams — page, size; status/name зөвхөн утгатай үед */
-export function fetchHomeRecruitments() {
-	return apiGetOrThrow<Page<RecruitmentListView>>(
-		"/customer/recruitments/?page=0&size=6",
-	);
-}
-
-export function fetchHiringHomeStatistics() {
-	return apiGetOrThrow<HiringHomeStatistics>(
-		"/customer/recruitments/statistics",
-	);
-}
-
-/** staging: параметргүй (swagger анхдагч limit=5) */
-export function fetchLatestCompleted() {
-	return apiGetOrThrow<InvitationProjection[]>(
-		"/customer/hiring-invitations/latest-completed",
-	);
-}
-
 // --- Types ---
 
 export interface ModuleStats {
@@ -249,6 +203,10 @@ export interface RecruitmentStats {
 	totalInvitationCount: number;
 	totalCompletedCount: number;
 	invitationBalance: number;
+}
+
+export function getRecruitmentStats<T>() {
+	return apiGet<T>("/customer/recruitments/statistics");
 }
 
 export function getSurveyStats<T>() {
@@ -279,6 +237,20 @@ export interface TemplateDetail {
 
 export function getTemplateDetail(id: string) {
 	return apiGet<TemplateDetail>(`/customer/templates/${id}`);
+}
+
+export interface SurveyItem {
+	id: string;
+	title: string;
+	description?: string;
+	status: "PUBLISHED" | "CREATED" | "CLOSED";
+	createdAt: string;
+	updatedAt: string;
+	respondentCount?: number;
+}
+
+export function getSurveysList<T>() {
+	return apiGet<T>("/customer/surveys");
 }
 
 export interface SurveyListItem {
@@ -333,6 +305,10 @@ export interface RecruitmentListParams extends ApiPageParams {
 function recruitmentListPath(params: RecruitmentListParams): string {
 	// Төгсгөлийн "/" заавал: "/customer/recruitments" нь 404 буцаадаг (staging ✅)
 	return `/customer/recruitments/${buildQuery({ ...params })}`;
+}
+
+export function getRecruitmentList(params: RecruitmentListParams) {
+	return apiGet<SpringPage<RecruitmentListItem>>(recruitmentListPath(params));
 }
 
 // --- Role assessment: React Query-д зориулсан, throw хийдэг (ApiError) ---
@@ -661,6 +637,30 @@ export async function createRecruitment(
 		};
 	}
 	return { success: true, data: { id } };
+}
+
+/** GET /customer/hiring-invitations/latest-completed (#24) — staging ✅ ажигласан. */
+export interface CompletedInvitation {
+	id: string;
+	recruitmentId: string;
+	recruitmentName: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+	phoneNumber: string | null;
+	status: InvitationStatus;
+	dueDate: string;
+	createdAt: string;
+	completedAt: string | null;
+	createdBy: string;
+	rated: boolean;
+	ratingPoints: number | null;
+}
+
+export function getLatestCompletedInvitations(limit = 5) {
+	return apiGet<CompletedInvitation[]>(
+		`/customer/hiring-invitations/latest-completed?limit=${limit}`,
+	);
 }
 
 export interface TalentRecruitment {
