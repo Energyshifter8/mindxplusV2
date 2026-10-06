@@ -27,6 +27,7 @@ import type {
 	RecruitmentTest,
 } from "@/lib/api";
 import { getErrorMessage, isRetryableError } from "@/lib/api-errors";
+import { isResultAvailable } from "@/lib/constants/roleAssessment";
 import {
 	formatDate,
 	formatDateTime,
@@ -55,7 +56,7 @@ const TH_CLASS =
 	"py-2.5 px-3 text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground whitespace-nowrap";
 const TD_CLASS = "py-3 px-3 text-xs text-foreground/80";
 
-// Урих / дахин урих (ФАЗ 5), талентын үр дүн (ФАЗ 4) хараахан байхгүй
+// Урих / дахин урих (ФАЗ 5) хараахан байхгүй
 const COMING_SOON_TITLE = "Удахгүй нэмэгдэнэ";
 
 /** Нэг талентийн үнэлгээний dashboard (staging: /role-assessment/{id}/dashboard). Зөвхөн унших. */
@@ -387,7 +388,9 @@ function InvitationRow({
 	row: RecruitmentInvitation;
 	index: number;
 }) {
+	const router = useRouter();
 	const fullName = [row.lastName, row.firstName].filter(Boolean).join(" ");
+	const resultHref = `/dashboard/recruitments/${row.recruitmentId}/results/${row.id}`;
 
 	return (
 		<tr className="border-b border-border/50 hover:border-l-2 hover:border-l-primary transition-colors duration-100">
@@ -395,9 +398,15 @@ function InvitationRow({
 				{index}
 			</td>
 			<td className={`${TD_CLASS} max-w-[240px]`} style={MONO}>
-				<div className="truncate text-foreground" title={fullName}>
+				{/* Staging: нэр дээр дарахад (статусаас үл хамааран) үр дүн рүү */}
+				<button
+					type="button"
+					onClick={() => router.push(resultHref)}
+					className="block max-w-full truncate text-left text-foreground hover:text-primary transition-colors"
+					title={fullName}
+				>
 					{fullName || "—"}
-				</div>
+				</button>
 				<div
 					className="truncate text-[10px] text-muted-foreground"
 					title={row.email}
@@ -421,15 +430,28 @@ function InvitationRow({
 				{row.status === "COMPLETED" ? formatDate(row.completedAt) : "—"}
 			</td>
 			<td className="py-3 px-3">
-				<button
-					type="button"
-					disabled
-					title={COMING_SOON_TITLE}
-					className="px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary disabled:cursor-not-allowed disabled:opacity-40 whitespace-nowrap"
-					style={MONO}
-				>
-					{row.status === "EXPIRED" ? "Дахин урих" : "Үр дүн"}
-				</button>
+				{row.status === "EXPIRED" ? (
+					<button
+						type="button"
+						disabled
+						title={COMING_SOON_TITLE}
+						className="px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary disabled:cursor-not-allowed disabled:opacity-40 whitespace-nowrap"
+						style={MONO}
+					>
+						Дахин урих
+					</button>
+				) : (
+					// Staging: зөвхөн COMPLETED / STARTED үед идэвхтэй (bundle ✅)
+					<button
+						type="button"
+						disabled={!isResultAvailable(row.status)}
+						onClick={() => router.push(resultHref)}
+						className="px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent whitespace-nowrap"
+						style={MONO}
+					>
+						Үр дүн
+					</button>
+				)}
 			</td>
 		</tr>
 	);

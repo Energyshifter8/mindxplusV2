@@ -26,7 +26,7 @@
 | S5 | `createRecruitment` path/body буруу | ✅ засагдсан (U1 батлагдаагүй) | 1 |
 | S6 | Талентын хайлт `name` → `q` | ✅ засагдсан | 1 |
 | S7 | `TalentInvitationItem` төрөл буруу, ашиглагдаагүй `getUserStats` | ✅ засагдсан | 1 |
-| S8 | Proxy multipart / `Content-Disposition` | ⏸ ФАЗ 4 / ФАЗ 6 хүртэл хөндөхгүй | 4, 6 |
+| S8 | Proxy multipart / `Content-Disposition` | 🟡 `Content-Disposition` ✅ (ФАЗ 4, #20 татах). Multipart ⏸ ФАЗ 6 (лого upload) | 4, 6 |
 
 ## Feature аудит
 
@@ -41,13 +41,13 @@
 | Хайлт | #1 `name` | 🟡 | ✅ | ФАЗ 2: 350мс debounce, URL `?name=` |
 | Detail drawer | #3 | ❌ | ✅ | ФАЗ 2: `components/recruitments/RecruitmentDetailDrawer.tsx` |
 | Үүсгэх modal | #25 | ♻️ | ✅ | ФАЗ 2: амжилттай бол `/edit` placeholder руу. Бодит дуудлагаар шалгаагүй (U1) |
-| Dashboard (урьсан талентууд) | #3, #14, #10 | ❌ | ✅ | ФАЗ 3: `/dashboard/recruitments/{id}/results`. Урьсан талентууд (хуудаслалттай), сонгосон тестүүд (+тестийн drawer, sandbox iframe), нэмэлт асуултууд. Зөвхөн унших: "Талент урих", "Дахин урих", "Үр дүн" товч disabled (ФАЗ 4/5). Алдаатай үед үйлдлийн товч харагдахгүй |
-| Үр дүн / тайлан | #15–20 | ❌ | ❌ | ФАЗ 4 |
+| Dashboard (урьсан талентууд) | #3, #14, #10 | ❌ | ✅ | ФАЗ 3: `/dashboard/recruitments/{id}/results`. Урьсан талентууд (хуудаслалттай), сонгосон тестүүд (+тестийн drawer, sandbox iframe), нэмэлт асуултууд. ФАЗ 4: нэр → үр дүн (бүх мөр), "Үр дүн" COMPLETED/STARTED үед идэвхтэй (staging ✅). "Талент урих", "Дахин урих" disabled (ФАЗ 5). Алдаатай үед үйлдлийн товч харагдахгүй |
+| Үр дүн / тайлан | #15–20 | ❌ | ✅ | ФАЗ 4: `/dashboard/recruitments/{id}/results/{invitationId}`. Толгой (имэйл хуулах, талент сэлгэх, өмнөх/дараах), тестүүд (анхаарал төвлөрөл, хүчин зүйл/оноо), HTML тайлан (sandbox iframe), PDF татах, нэмэлт асуулт, төлөв, явцын хяналт, од (унших), тэмдэглэл (унших). Од өгөх / тэмдэглэл нэмэх disabled (ФАЗ 7) |
 | Урих / Дахин урих | #36–38 | ❌ | ❌ | ФАЗ 5 |
 | Wizard, preview | #4–13, #29–35 | ❌ | ❌ | ФАЗ 6 |
 | Хаах / устгах / нэр солих / од / тэмдэглэл / bookmark | #26–28, #39–41 | ❌ | ❌ | ФАЗ 7 |
 | Урьсан талентууд | #21 | ♻️ | ✅ | ФАЗ 1-д `q` засагдсан (`marked` шүүлтүүр, bookmark ФАЗ 7) |
-| Талентын дэлгэрэнгүй | #22–23 | ♻️ | 🟡 | ФАЗ 1-д төрөл, STARTED badge, "Үр дүн" линк (recruitment dashboard руу) засагдсан. "Бөглөсөн" багана U6 |
+| Талентын дэлгэрэнгүй | #22–23 | ♻️ | 🟡 | ФАЗ 1-д төрөл, STARTED badge. ФАЗ 4: "Үр дүн" (COMPLETED/STARTED) → тухайн урилгын үр дүн. "Бөглөсөн" багана U6 |
 | Нүүр хуудасны сүүлд дууссан урилгууд | #24 | ✅ | ✅ | Status map `DRAFT` → `CREATED` |
 
 ## Route-ын харгалзаа (staging ↔ төсөл)
@@ -60,7 +60,7 @@
 | `/role-assessment/{id}` (wizard) | `/dashboard/recruitments/{id}/edit` | Placeholder, ФАЗ 6 |
 | `/role-assessment/{id}/preview` | — | ФАЗ 6 |
 | `/role-assessment/{id}/dashboard` | `/dashboard/recruitments/{id}/results?page=&size=` | ✅ ФАЗ 3 (өмнөх placeholder-ийн оронд) |
-| `/role-assessment/{id}/dashboard/{invitationId}` | `/dashboard/recruitments/{id}/results/{invitationId}` (санал) | ФАЗ 4 |
+| `/role-assessment/{id}/dashboard/{invitationId}` | `/dashboard/recruitments/{id}/results/{invitationId}` | ✅ ФАЗ 4 |
 | `/invited-talents` | `/dashboard/talents` | ✅ |
 | `/invited-talents/{talentId}` | `/dashboard/talents/{id}` | 🟡 |
 | `/membership` (`plan_expired` modal) | — | Хуудас байхгүй |
@@ -71,3 +71,5 @@
 - Dashboard-д staging-д байхгүй 3 статистик карт (Нийт урьсан / Дуусгасан / Дуусгах хувь) үлдсэн. Өмнөх placeholder-ийн картууд байсан ба одоо #3-ийн `count`-аас бодит утга авна.
 - 4xx алдааг React Query дахин оролддоггүй (`components/providers.tsx`), алдааны төлөвт "Дахин оролдох" товч зөвхөн 5xx/сүлжээний алдаанд гарна.
 - Нүүр хуудасны status map-д `PUBLISHED` = "Идэвхтэй" (survey хүснэгтэд ч хамаарна, `SurveyStatusBadge`-тэй ижил).
+- ФАЗ 4: Тестийн тайлбар/зөвлөмж/ярилцлагын асуултын текстүүд staging-д frontend bundle-д хатуу кодлогдсон (тайлан §2e, ~363 мөр). Тэдгээрийг хуулаагүй; оронд нь серверийн HTML тайлан (#19)-г харуулж, тест бүрт хүчин зүйл / үр дүн (`intervalName`) / оноог хүснэгтээр гаргасан (тайлан §5.2-ын санал). Gauge зураагүй: оноо сөрөг байж болох ба хуваарь API-аас ирдэггүй.
+- ФАЗ 4: "Анхааруулга" / "Санамж унших" modal хийгээгүй (бүтээгдэхүүний текст шаардлагатай).

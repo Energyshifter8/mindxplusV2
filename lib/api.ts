@@ -1,9 +1,10 @@
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import {
 	extractErrorText,
 	normalizeErrorCode,
 	type ProblemDetail,
 	toApiError,
+	toApiErrorFromBlob,
 	toProblemDetail,
 } from "@/lib/api-errors";
 import type {
@@ -185,9 +186,13 @@ export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 // React Query hook-уудад зориулсан хувилбар: алдаа гарвал ApiError throw хийнэ
 // (isError ажиллана). apiGet/apiPost-ийн {success,data,error} зан төлөв өөрчлөгдөөгүй.
 
-export async function apiGetOrThrow<T>(endpoint: string): Promise<T> {
+export async function apiGetOrThrow<T>(
+	endpoint: string,
+	config?: Omit<AxiosRequestConfig, "headers">,
+): Promise<T> {
 	try {
 		const response = await api.get<T>(endpoint, {
+			...config,
 			headers: authHeaders(currentToken()),
 		});
 		return response.data;
@@ -486,6 +491,189 @@ export function fetchRoleAssessmentTest(catalogTestId: string) {
 	return apiGetOrThrow<RoleAssessmentTestDetail>(
 		`/customer/role-assessments/tests/${encodeURIComponent(catalogTestId)}`,
 	);
+}
+
+// --- Талентын үр дүн (ФАЗ 4) — бүтэц staging дээр GET-ээр ✅ ---
+
+export interface SpendingTime {
+	minutes: number;
+	seconds: number;
+}
+
+export interface PersonalReportSubContent {
+	factorKey: string;
+	factorName: string;
+	/** SUB_SCALE_WITH_HIGHEST үед null ирдэг */
+	intervalKey: string | null;
+	intervalName: string | null;
+	/** Сөрөг утга байж болно (жишээ -18) */
+	points: number;
+}
+
+export interface PersonalReport {
+	id: string;
+	/** TOTAL_SCORE | SUB_SCALE_WITH_INTERVAL | SUB_SCALE_WITH_HIGHEST (ажигласан) */
+	assessorType: string;
+	templateKey: string;
+	resultKey: string | null;
+	subContents: PersonalReportSubContent[];
+}
+
+export interface TestResult {
+	id: string;
+	name: string;
+	/** #19/#20 тайлангийн түлхүүр */
+	answerId: string;
+	spendingTime: SpendingTime | null;
+	/** ENOUGH_QUALITY | SUFFICIENT_QUALITY | POOR_QUALITY | ANY_QUALITY */
+	dataQuality: string;
+	personalReport: PersonalReport | null;
+}
+
+export interface CustomQuestionAnswer {
+	/** Нэг assessment-ийн бүх хариултад ижил — React key болгож болохгүй (✅) */
+	responseId: string;
+	testAnswerId: string;
+	/** Хариулт бүрт давтагдахгүй */
+	questionId: number;
+	questionText: string;
+	/** Талентын хариулт; хоосон бол "Хариулаагүй" */
+	content: string | null;
+	points: number;
+	spendingTime?: SpendingTime | null;
+}
+
+export interface EventSummaryItem {
+	eventType: string;
+	count: number;
+	/** Staging-ийн код уншдаг ч ажиглалтад ирээгүй */
+	seconds?: number | null;
+}
+
+export interface Assessment {
+	id: string;
+	completedAt: string | null;
+	spendingTime: SpendingTime | null;
+	testResults: TestResult[];
+	customQuestionAnswers: CustomQuestionAnswer[];
+	eventSummary: Record<string, EventSummaryItem | undefined>;
+}
+
+/** GET /customer/hiring-invitations/{recruitmentId}/{invitationId} (#15) */
+export interface InvitationResult {
+	id: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	status: InvitationStatus;
+	createdAt: string;
+	/** #16-ийн дарааллаар (✅) */
+	prevId: string | null;
+	nextId: string | null;
+	invitedBy: UserRef;
+	/** STARTED / PENDING / EXPIRED үед null */
+	assessment: Assessment | null;
+}
+
+export function fetchInvitationResult(
+	recruitmentId: string,
+	invitationId: string,
+) {
+	return apiGetOrThrow<InvitationResult>(
+		`/customer/hiring-invitations/${encodeURIComponent(recruitmentId)}/${encodeURIComponent(invitationId)}`,
+	);
+}
+
+/** GET /customer/hiring-invitations/names/{recruitmentId} (#16) — Page биш массив */
+export interface InvitationName {
+	id: string;
+	firstName: string;
+	lastName: string;
+	status: InvitationStatus;
+}
+
+export function fetchInvitationNames(recruitmentId: string) {
+	return apiGetOrThrow<InvitationName[]>(
+		`/customer/hiring-invitations/names/${encodeURIComponent(recruitmentId)}`,
+	);
+}
+
+/** GET /customer/hiring-invitations/{invitationId}/rate (#17) */
+export interface InvitationRate {
+	rated: boolean;
+	myPoints: number | null;
+	avgPoints: number | null;
+	count: number;
+}
+
+export function fetchInvitationRate(invitationId: string) {
+	return apiGetOrThrow<InvitationRate>(
+		`/customer/hiring-invitations/${encodeURIComponent(invitationId)}/rate`,
+	);
+}
+
+/** GET /customer/hiring-invitations/{invitationId}/notes (#18) */
+export interface InvitationNote {
+	id: number;
+	note: string;
+	createdAt: string;
+	createdBy: UserRef;
+}
+
+export function fetchInvitationNotes(invitationId: string) {
+	return apiGetOrThrow<InvitationNote[]>(
+		`/customer/hiring-invitations/${encodeURIComponent(invitationId)}/notes`,
+	);
+}
+
+function testReportPath(invitationId: string, answerId: string) {
+	return `/customer/hiring/test-result/report/${encodeURIComponent(invitationId)}/${encodeURIComponent(answerId)}`;
+}
+
+/**
+ * GET …/report/{invitationId}/{answerId} (#19) — `text/html` бүтэн баримт ✅.
+ * Хувийн мэдээлэл агуулна: зөвхөн sandbox iframe-д харуулна, log-д гаргахгүй.
+ */
+export async function fetchTestReportHtml(
+	invitationId: string,
+	answerId: string,
+): Promise<string> {
+	const data = await apiGetOrThrow<unknown>(
+		testReportPath(invitationId, answerId),
+		{ responseType: "text" },
+	);
+	if (typeof data === "string") return data;
+	// bundle-derived, unverified: staging апп {html|content|data} хэлбэрийг ч хүлээн авдаг
+	const d = data as {
+		html?: unknown;
+		content?: unknown;
+		data?: unknown;
+	} | null;
+	const html = d?.html ?? d?.content ?? d?.data;
+	return typeof html === "string" ? html : "";
+}
+
+/**
+ * GET …/report/{invitationId}/{answerId}/download (#20) — `application/pdf`,
+ * `Content-Disposition: attachment; filename="…pdf"` ✅ (proxy дамжуулна).
+ */
+export async function downloadTestReport(
+	invitationId: string,
+	answerId: string,
+): Promise<{ blob: Blob; contentDisposition: string | null }> {
+	try {
+		const response = await api.get<Blob>(
+			`${testReportPath(invitationId, answerId)}/download`,
+			{ responseType: "blob", headers: authHeaders(currentToken()) },
+		);
+		const header = response.headers["content-disposition"];
+		return {
+			blob: response.data,
+			contentDisposition: typeof header === "string" ? header : null,
+		};
+	} catch (error) {
+		throw await toApiErrorFromBlob(error);
+	}
 }
 
 export interface CreateRecruitmentPayload {

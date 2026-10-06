@@ -22,6 +22,7 @@ import {
 	getTalentInvitations,
 	type TalentInvitationItem,
 } from "@/lib/api";
+import { isResultAvailable } from "@/lib/constants/roleAssessment";
 
 const PAGE_SIZE = 10;
 
@@ -267,13 +268,13 @@ export default function TalentDetailPage() {
 												—
 											</td>
 											<td className="py-3 px-3">
-												{row.rated ? (
+												{isResultAvailable(row.status) ? (
 													<button
 														type="button"
 														onClick={() =>
-															// row.id нь invitation id; талентын үр дүнгийн хуудас ФАЗ 4-д
+															// row.id нь invitation id
 															router.push(
-																`/dashboard/recruitments/${row.recruitmentId}/results`,
+																`/dashboard/recruitments/${row.recruitmentId}/results/${row.id}`,
 															)
 														}
 														className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors"

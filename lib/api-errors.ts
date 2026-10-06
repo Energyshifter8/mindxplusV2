@@ -113,6 +113,29 @@ export function toApiError(error: unknown): ApiError {
 	return new ApiError(error instanceof Error ? error.message : "Network error");
 }
 
+/** `responseType: "blob"` хүсэлтийн алдааны body Blob болж ирдэг тул JSON болгож уншина. */
+export async function toApiErrorFromBlob(error: unknown): Promise<ApiError> {
+	if (
+		axios.isAxiosError(error) &&
+		error.response &&
+		typeof Blob !== "undefined" &&
+		error.response.data instanceof Blob
+	) {
+		try {
+			const parsed: unknown = JSON.parse(await error.response.data.text());
+			const problem = toProblemDetail(parsed);
+			return new ApiError(extractErrorText(parsed), {
+				status: error.response.status,
+				code: normalizeErrorCode(problem?.code),
+				problem,
+			});
+		} catch {
+			return new ApiError("Request failed", { status: error.response.status });
+		}
+	}
+	return toApiError(error);
+}
+
 // --- Монгол алдааны мессеж (code-оор, detail-ээр БИШ) ---
 
 const ERROR_MESSAGES: Record<string, string> = {

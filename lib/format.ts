@@ -30,7 +30,7 @@ export function formatDateTime(value: string | null | undefined): string {
 	});
 }
 
-/** Staging-ийн "Ж. Дорж" хэлбэр: овгийн эхний үсэг + нэр. */
+/** Staging-ийн "Ж. Дорж" хэлбэр: овгийн эхний үсэг (том) + нэр (bundle ✅). */
 export function formatPersonShort(
 	person:
 		| { firstName?: string | null; lastName?: string | null }
@@ -39,7 +39,7 @@ export function formatPersonShort(
 ): string {
 	if (!person) return "—";
 	const first = person.firstName?.trim() ?? "";
-	const lastInitial = person.lastName?.trim().charAt(0) ?? "";
+	const lastInitial = person.lastName?.trim().charAt(0).toUpperCase() ?? "";
 	if (!first && !lastInitial) return "—";
 	return lastInitial ? `${lastInitial}. ${first}`.trim() : first;
 }
@@ -62,4 +62,27 @@ export function sumMinutes(
 		}),
 		{ min: 0, max: 0 },
 	);
+}
+
+/** Секунд → "45сек" / "3мин 5сек" (staging-ийн явцын хяналтын формат ✅). */
+export function formatDurationSeconds(
+	totalSeconds: number | null | undefined,
+): string {
+	if (totalSeconds == null || totalSeconds < 0) return "—";
+	const minutes = Math.floor(totalSeconds / 60);
+	const seconds = totalSeconds % 60;
+	return minutes === 0 ? `${seconds}сек` : `${minutes}мин ${seconds}сек`;
+}
+
+export function formatSpendingTime(
+	time: { minutes?: number | null; seconds?: number | null } | null | undefined,
+): string {
+	if (!time) return "—";
+	return formatDurationSeconds((time.minutes ?? 0) * 60 + (time.seconds ?? 0));
+}
+
+/** Оноо: бүхэл бол тэр чигээр, бутархай бол 1 орон (staging ✅). */
+export function formatPoints(points: number | null | undefined): string {
+	if (points == null || !Number.isFinite(points)) return "—";
+	return Number.isInteger(points) ? String(points) : points.toFixed(1);
 }

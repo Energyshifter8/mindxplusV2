@@ -23,8 +23,17 @@
 | U14 | 2 | ⏳ | Drawer "Явц" | CREATED үед "--/--" | 📦 | Staging-тэй харьцуулах |
 | U15 | 3 | ✅ | `RecruitmentInvitation.ratingPoints` | #14-д `ratingPoints` | — | A4, V17: `rated=true` үед number, бусад үед огт ирэхгүй |
 | U16 | 3 | ⏳ | Dashboard "N мин" chip | Нэмэлт асуултын хугацаа нийлбэрт орох эсэх (одоо зөвхөн тест) | ❓ | Staging dashboard-тай харьцуулах |
-| U17 | 3 | ⏳ | Dashboard "Үр дүн" товч | Staging-д `COMPLETED`/`STARTED` үед идэвхтэй | 📦 | ФАЗ 4 |
+| U17 | 3 | ✅ | Dashboard "Үр дүн" товч | Идэвхжих нөхцөл | — | Staging bundle: `"COMPLETED"===e\|\|"STARTED"===e`; нэр дээр дарахад статусаас үл хамааран үр дүн рүү |
 | U18 | 3 | ✅ | `TestDetailDrawer` | Контент script/зураг/гадаад CSS-ээс хамаардаг эсэх | — | A8: 10 тест бүгд fragment, script/img/link байхгүй; хар текст хатуу бичигдсэн → цагаан цаас (F2) |
-| U19 | 3 | ⏳ | Dashboard "Нэр" багана | "Овог Нэр" дараалал | ❓ | Staging-тэй харьцуулах |
+| U19 | 3 | ✅ | Dashboard "Нэр" багана | Нэрийн дараалал | — | Staging bundle: `lastName firstName` |
 | U20 | 3 | 🟡 | #14 эрэмбэ, шүүлтүүр | Эрэмбэ ✅ `createdAt` буурах (A4). Status-аар шүүх параметр байгаа эсэх ⏳ | ❓ | Swagger |
 | U21 | 3 | ✅ | #14 side effect | `GET list/{rid}` хугацаа өнгөрсөн PENDING-ийг EXPIRED болгож хадгалдаг | — | Verification doc "Backend-ийн онцлог" |
+| U22 | 4 | ✅ | `DATA_QUALITY` | "Анхаарал төвлөрөл" mapping | — | Staging bundle: ENOUGH=Сайн, SUFFICIENT=Хангалттай, POOR=Сул, **ANY=Муу**, бусад=Тодорхойгүй (тайлангийн таамаг ANY-г буруу зааж байсан) |
+| U23 | 4 | ✅ | `PROCTORING_EVENTS` | Явцын хяналтын мөрүүд | — | Staging bundle: 5 мөр (CUT харуулдаггүй), хугацаа `seconds>0` үед "Xмин Yсек", `TAB_SWITCH` fallback |
+| U24 | 4 | ⏳ | `EventSummaryItem.seconds` | Staging код `seconds`-ийг уншдаг ч ажигласан хариунд ирээгүй (хугацаа харагдахгүй) | ❓ | Хугацаатай event-тэй assessment / Swagger |
+| U25 | 4 | ✅ | #20 татах | Төрөл, header | — | 200 `application/pdf` (`%PDF-`, ~32KB), `Content-Disposition: attachment; filename="….pdf"` ASCII. **Тест бүрт ижил файлын нэр** ирдэг (browser "(1)" нэмнэ) |
+| U26 | 4 | ⏳ | "Тайлан татах" товч | Browser-ийн бодит хадгалах үйлдэл (`saveBlob`) | — | Таны гараар нэг удаа дарах (файл диск рүү хадгалагдана) |
+| U27 | 4 | ⏳ | Тайлбар/зөвлөмж текст, gauge | Хэрэгжүүлээгүй (HTML тайлан ашиглав) | 📦 | Бүтээгдэхүүний шийдвэр |
+| U28 | 4 | ✅ | #15 `customQuestionAnswers` | React key | — | `responseId`, `testAnswerId` нь бүх хариултад ижил → `questionId` key (F7) |
+| U29 | 4 | ✅ | #15 STARTED/EXPIRED | `assessment` | — | `null` → "дуусгаагүй байна" мессеж |
+| U30 | 4 | ✅ | #16 / prev-next | Дараалал | — | `prevId/nextId` гинжин дараалал = #16-ийн дараалал (10 урилга) |

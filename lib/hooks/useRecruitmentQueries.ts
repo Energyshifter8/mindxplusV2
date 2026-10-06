@@ -2,11 +2,16 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
+	fetchInvitationNames,
+	fetchInvitationNotes,
+	fetchInvitationRate,
+	fetchInvitationResult,
 	fetchRecruitmentDetail,
 	fetchRecruitmentInvitations,
 	fetchRecruitmentList,
 	fetchRecruitmentStats,
 	fetchRoleAssessmentTest,
+	fetchTestReportHtml,
 	type RecruitmentListParams,
 } from "@/lib/api";
 import type { ApiPageParams } from "@/lib/pagination";
@@ -22,6 +27,19 @@ export const recruitmentKeys = {
 	detail: (id: string) => [...recruitmentKeys.all, "detail", id] as const,
 	invitations: (id: string, params: ApiPageParams) =>
 		[...recruitmentKeys.all, "invitations", id, params] as const,
+	names: (id: string) => [...recruitmentKeys.all, "names", id] as const,
+};
+
+export const invitationKeys = {
+	all: ["invitations"] as const,
+	result: (recruitmentId: string, invitationId: string) =>
+		[...invitationKeys.all, "result", recruitmentId, invitationId] as const,
+	rate: (invitationId: string) =>
+		[...invitationKeys.all, "rate", invitationId] as const,
+	notes: (invitationId: string) =>
+		[...invitationKeys.all, "notes", invitationId] as const,
+	report: (invitationId: string, answerId: string) =>
+		[...invitationKeys.all, "report", invitationId, answerId] as const,
 };
 
 export const roleAssessmentTestKeys = {
@@ -74,5 +92,55 @@ export function useRoleAssessmentTest(catalogTestId: string | undefined) {
 		queryFn: () => fetchRoleAssessmentTest(catalogTestId as string),
 		enabled: !!catalogTestId,
 		staleTime: 5 * 60 * 1000,
+	});
+}
+
+export function useInvitationNames(recruitmentId: string | undefined) {
+	return useQuery({
+		queryKey: recruitmentKeys.names(recruitmentId ?? ""),
+		queryFn: () => fetchInvitationNames(recruitmentId as string),
+		enabled: !!recruitmentId,
+	});
+}
+
+export function useInvitationResult(
+	recruitmentId: string | undefined,
+	invitationId: string | undefined,
+) {
+	return useQuery({
+		queryKey: invitationKeys.result(recruitmentId ?? "", invitationId ?? ""),
+		queryFn: () =>
+			fetchInvitationResult(recruitmentId as string, invitationId as string),
+		enabled: !!recruitmentId && !!invitationId,
+	});
+}
+
+export function useInvitationRate(invitationId: string | undefined) {
+	return useQuery({
+		queryKey: invitationKeys.rate(invitationId ?? ""),
+		queryFn: () => fetchInvitationRate(invitationId as string),
+		enabled: !!invitationId,
+	});
+}
+
+export function useInvitationNotes(invitationId: string | undefined) {
+	return useQuery({
+		queryKey: invitationKeys.notes(invitationId ?? ""),
+		queryFn: () => fetchInvitationNotes(invitationId as string),
+		enabled: !!invitationId,
+	});
+}
+
+/** Хувийн мэдээлэлтэй HTML тул кэшид удаан хадгалахгүй. */
+export function useTestReportHtml(
+	invitationId: string | undefined,
+	answerId: string | undefined,
+) {
+	return useQuery({
+		queryKey: invitationKeys.report(invitationId ?? "", answerId ?? ""),
+		queryFn: () =>
+			fetchTestReportHtml(invitationId as string, answerId as string),
+		enabled: !!invitationId && !!answerId,
+		gcTime: 60 * 1000,
 	});
 }

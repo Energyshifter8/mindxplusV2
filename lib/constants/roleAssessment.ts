@@ -40,3 +40,73 @@ export function isRecruitmentStatus(
 export function isInvitationStatus(value: unknown): value is InvitationStatus {
 	return (INVITATION_STATUSES as readonly unknown[]).includes(value);
 }
+
+/** Staging dashboard: "Үр дүн" товч зөвхөн COMPLETED/STARTED үед идэвхтэй (bundle ✅). */
+export function isResultAvailable(status: string): boolean {
+	return status === "COMPLETED" || status === "STARTED";
+}
+
+// Анхаарал төвлөрөл (TestResult.dataQuality) — staging bundle-ийн mapping ✅
+export type DataQualityTone =
+	| "success"
+	| "info"
+	| "warning"
+	| "error"
+	| "neutral";
+
+export const DATA_QUALITY: Record<
+	string,
+	{ label: string; tone: DataQualityTone }
+> = {
+	ENOUGH_QUALITY: { label: "Сайн", tone: "success" },
+	SUFFICIENT_QUALITY: { label: "Хангалттай", tone: "info" },
+	POOR_QUALITY: { label: "Сул", tone: "warning" },
+	ANY_QUALITY: { label: "Муу", tone: "error" },
+};
+
+export const DATA_QUALITY_UNKNOWN = {
+	label: "Тодорхойгүй",
+	tone: "neutral" as DataQualityTone,
+};
+
+// Явцын хяналт (assessment.eventSummary) — staging bundle-ийн жагсаалт, дараалал ✅.
+// CUT ирдэг ч staging харуулдаггүй. PAGE_VISIBILITY_HIDDEN байхгүй бол TAB_SWITCH-ийг уншина.
+export const PROCTORING_EVENTS: {
+	key: string;
+	fallbackKey?: string;
+	title: string;
+	description: string;
+	hasDuration: boolean;
+}[] = [
+	{
+		key: "FULLSCREEN_EXIT",
+		title: "Fullscreen exits",
+		description: "Бүтэн дэлгэцийн горимоос гарсан.",
+		hasDuration: true,
+	},
+	{
+		key: "PAGE_VISIBILITY_HIDDEN",
+		fallbackKey: "TAB_SWITCH",
+		title: "Tab switches",
+		description: "Өөр tab руу шилжсэн.",
+		hasDuration: true,
+	},
+	{
+		key: "WINDOW_FOCUS_LOST",
+		title: "Window focus lost",
+		description: "Цонх идэвхгүй болсон.",
+		hasDuration: true,
+	},
+	{
+		key: "COPY",
+		title: "Copy event",
+		description: "Текст хуулах оролдлого бүртгэгдсэн.",
+		hasDuration: false,
+	},
+	{
+		key: "PASTE",
+		title: "Paste event",
+		description: "Текст буулгах үйлдэл бүртгэгдсэн.",
+		hasDuration: false,
+	},
+];

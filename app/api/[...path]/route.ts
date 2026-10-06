@@ -56,6 +56,10 @@ async function proxyRequest(
 	const responseHeaders = new Headers();
 	const respContentType = targetResponse.headers.get("content-type");
 	if (respContentType) responseHeaders.set("Content-Type", respContentType);
+	// "Тайлан татах" (#20): файлын нэрийг Content-Disposition-оос уншина
+	const contentDisposition = targetResponse.headers.get("content-disposition");
+	if (contentDisposition)
+		responseHeaders.set("Content-Disposition", contentDisposition);
 
 	// Forward Set-Cookie headers from backend to browser
 	const setCookies: string[] =
