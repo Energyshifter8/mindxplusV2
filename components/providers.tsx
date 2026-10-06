@@ -15,11 +15,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 						staleTime: 60 * 1000,
 						gcTime: 5 * 60 * 1000,
 						retry: (failureCount, error) => {
-							if (
-								error instanceof Error &&
-								"status" in error &&
-								(error as { status: number }).status === 401
-							) {
+							// 4xx (401, 404, plan_expired г.м.) дахин оролдоход засрахгүй
+							const status =
+								error instanceof Error && "status" in error
+									? (error as { status?: number }).status
+									: undefined;
+							if (status !== undefined && status >= 400 && status < 500) {
 								return false;
 							}
 							return failureCount < 3;

@@ -69,7 +69,7 @@ export default function TalentsPage() {
 			getHiringInvitations({
 				page: currentPage,
 				size: PAGE_SIZE,
-				...(searchQuery ? { name: searchQuery } : {}),
+				...(searchQuery ? { q: searchQuery } : {}),
 			}),
 		refetchInterval: 30000,
 		refetchIntervalInBackground: false,

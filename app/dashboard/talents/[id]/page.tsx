@@ -12,7 +12,11 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { EmptyState, TableSkeleton } from "@/components/shared/ListComponents";
+import {
+	EmptyState,
+	InvitationStatusBadge,
+	TableSkeleton,
+} from "@/components/shared/ListComponents";
 import {
 	getTalentDetail,
 	getTalentInvitations,
@@ -41,38 +45,6 @@ function StarBadge({ rating }: { rating: number }) {
 		>
 			<Star size={10} className="fill-yellow-500" />
 			{rating}
-		</span>
-	);
-}
-
-function InvitationStatusBadge({ status }: { status: string }) {
-	const config: Record<string, { bg: string; text: string; label: string }> = {
-		PENDING: {
-			bg: "bg-badge-amber/15 border-badge-amber/30",
-			text: "text-badge-amber",
-			label: "Хүлээгдэж байна",
-		},
-		COMPLETED: {
-			bg: "bg-badge-green/15 border-badge-green/30",
-			text: "text-badge-green",
-			label: "Дууссан",
-		},
-		EXPIRED: {
-			bg: "bg-muted border-border",
-			text: "text-muted-foreground",
-			label: "Хугацаа дууссан",
-		},
-	};
-	const c = config[status] ?? config.PENDING;
-	return (
-		<span
-			className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[9px] uppercase tracking-widest font-bold border ${c.bg} ${c.text}`}
-			style={{ fontFamily: "'JetBrains Mono', monospace" }}
-		>
-			<span
-				className={`h-1.5 w-1.5 rounded-full ${c.bg.replace("/15", "").replace("border-", "bg-")}`}
-			/>
-			{c.label}
 		</span>
 	);
 }
@@ -291,15 +263,17 @@ export default function TalentDetailPage() {
 												className="py-3 px-3 text-xs text-foreground/80 whitespace-nowrap"
 												style={{ fontFamily: "'JetBrains Mono', monospace" }}
 											>
-												{row.rated ? formatDate(row.completedAt) : "—"}
+												{/* #23 хариунд completedAt байхгүй (docs/role-assessment-unverified.md) */}
+												—
 											</td>
 											<td className="py-3 px-3">
 												{row.rated ? (
 													<button
 														type="button"
 														onClick={() =>
+															// row.id нь invitation id; талентын үр дүнгийн хуудас ФАЗ 4-д
 															router.push(
-																`/dashboard/recruitments/${row.id}/results`,
+																`/dashboard/recruitments/${row.recruitmentId}/results`,
 															)
 														}
 														className="flex items-center gap-1 px-2 py-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:bg-primary/10 transition-colors"

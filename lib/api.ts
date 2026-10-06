@@ -1,4 +1,16 @@
 import axios from "axios";
+import {
+	extractErrorText,
+	normalizeErrorCode,
+	type ProblemDetail,
+	toApiError,
+	toProblemDetail,
+} from "@/lib/api-errors";
+import type {
+	InvitationStatus,
+	RecruitmentStatus,
+} from "@/lib/constants/roleAssessment";
+import type { ApiPageParams } from "@/lib/pagination";
 
 // --- Axios instance ---
 
@@ -109,18 +121,8 @@ function authHeaders(token: string | null): Record<string, string> {
 	return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-function extractError(data: unknown): string {
-	if (typeof data === "object" && data !== null) {
-		const d = data as Record<string, unknown>;
-		return (
-			(typeof d.message === "string" && d.message) ||
-			(typeof d.error === "string" && d.error) ||
-			(typeof d.detail === "string" && d.detail) ||
-			(typeof d.title === "string" && d.title) ||
-			"Request failed"
-		);
-	}
-	return "Request failed";
+function currentToken(): string | null {
+	return typeof window !== "undefined" ? localStorage.getItem("token") : null;
 }
 
 export interface ApiResponse<T> {
@@ -128,6 +130,28 @@ export interface ApiResponse<T> {
 	data?: T;
 	message?: string;
 	error?: string;
+	/** HTTP status (алдааны үед). Сүлжээний алдаанд undefined. */
+	status?: number;
+	/** ProblemDetail.code, normalizeErrorCode-оор жижиг үсэг болгосон. */
+	code?: string;
+	problem?: ProblemDetail;
+}
+
+function toFailedResponse<T>(error: unknown): ApiResponse<T> {
+	if (axios.isAxiosError(error) && error.response) {
+		const problem = toProblemDetail(error.response.data);
+		return {
+			success: false,
+			error: extractErrorText(error.response.data),
+			status: error.response.status,
+			code: normalizeErrorCode(problem?.code),
+			problem,
+		};
+	}
+	return {
+		success: false,
+		error: error instanceof Error ? error.message : "Network error",
+	};
 }
 
 export async function apiPost<T>(
@@ -135,50 +159,82 @@ export async function apiPost<T>(
 	body: object,
 ): Promise<ApiResponse<T>> {
 	try {
-		const token =
-			typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
 		const response = await api.post<T>(endpoint, body, {
-			headers: authHeaders(token),
+			headers: authHeaders(currentToken()),
 		});
 
 		return { success: true, data: response.data };
 	} catch (error) {
-		if (axios.isAxiosError(error) && error.response) {
-			return {
-				success: false,
-				error: extractError(error.response.data),
-			};
-		}
-		return {
-			success: false,
-			error: error instanceof Error ? error.message : "Network error",
-		};
+		return toFailedResponse<T>(error);
 	}
 }
 
 export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 	try {
-		const token =
-			typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
 		const response = await api.get<T>(endpoint, {
-			headers: authHeaders(token),
+			headers: authHeaders(currentToken()),
 		});
 
 		return { success: true, data: response.data };
 	} catch (error) {
-		if (axios.isAxiosError(error) && error.response) {
-			return {
-				success: false,
-				error: extractError(error.response.data),
-			};
-		}
-		return {
-			success: false,
-			error: error instanceof Error ? error.message : "Network error",
-		};
+		return toFailedResponse<T>(error);
 	}
+}
+
+// React Query hook-уудад зориулсан хувилбар: алдаа гарвал ApiError throw хийнэ
+// (isError ажиллана). apiGet/apiPost-ийн {success,data,error} зан төлөв өөрчлөгдөөгүй.
+
+export async function apiGetOrThrow<T>(endpoint: string): Promise<T> {
+	try {
+		const response = await api.get<T>(endpoint, {
+			headers: authHeaders(currentToken()),
+		});
+		return response.data;
+	} catch (error) {
+		throw toApiError(error);
+	}
+}
+
+export async function apiPostOrThrow<T>(
+	endpoint: string,
+	body: unknown,
+): Promise<T> {
+	try {
+		const response = await api.post<T>(endpoint, body, {
+			headers: authHeaders(currentToken()),
+		});
+		return response.data;
+	} catch (error) {
+		throw toApiError(error);
+	}
+}
+
+/** undefined/null/хоосон утгыг алгасаж query string үүсгэнэ ("status=undefined" гарахгүй). */
+function buildQuery(
+	params: Record<string, string | number | boolean | null | undefined>,
+): string {
+	const query = new URLSearchParams();
+	for (const [key, value] of Object.entries(params)) {
+		if (value === undefined || value === null || value === "") continue;
+		query.set(key, String(value));
+	}
+	const qs = query.toString();
+	return qs ? `?${qs}` : "";
+}
+
+// --- Spring Data Page (staging ✅) ---
+
+export interface SpringPage<T> {
+	content: T[];
+	totalElements: number;
+	totalPages: number;
+	/** Одоогийн хуудас, 0-ээс эхэлнэ. UI-д lib/pagination-оор хөрвүүлнэ. */
+	number: number;
+	size: number;
+	first: boolean;
+	last: boolean;
+	empty: boolean;
+	numberOfElements: number;
 }
 
 export const NineMinuteTimer = () => {
@@ -218,16 +274,6 @@ export interface RecruitmentStats {
 	totalInvitationCount: number;
 	totalCompletedCount: number;
 	invitationBalance: number;
-}
-
-export interface UserStats {
-	publishedCount: number;
-	remainingQuota: number;
-	totalQuota: number;
-}
-
-export function getUserStats() {
-	return apiGet<UserStats>("/customer/auth/check-token");
 }
 
 export function getRecruitmentStats<T>() {
@@ -274,16 +320,6 @@ export interface SurveyItem {
 	respondentCount?: number;
 }
 
-export interface RecruitmentItem {
-	id: string;
-	title: string;
-	description?: string;
-	status: "PUBLISHED" | "DRAFT" | "CLOSED" | "COMPLETED";
-	createdAt: string;
-	updatedAt: string;
-	respondentCount?: number;
-}
-
 export function getSurveysList<T>() {
 	return apiGet<T>("/customer/surveys");
 }
@@ -323,26 +359,27 @@ export function getSurveyList(params?: {
 export interface RecruitmentListItem {
 	id: string;
 	name: string;
-	status: string;
+	status: RecruitmentStatus;
 	createdAt: string;
-	publishedAt: string;
-	closedAt: string;
+	publishedAt: string | null;
+	closedAt: string | null;
 	totalInvitationCount: number;
 	completedInvitationCount: number;
 }
 
-export function getRecruitmentList(params?: {
-	page?: number;
-	size?: number;
-	status?: string;
+export interface RecruitmentListParams extends ApiPageParams {
+	/** Байхгүй бол бүх статус. `CLOSED` ч дэмжигддэг (staging ✅). */
+	status?: RecruitmentStatus;
 	name?: string;
-}) {
-	const query = new URLSearchParams(
-		params as Record<string, string>,
-	).toString();
-	return apiGet<PaginatedResponse<RecruitmentListItem>>(
-		`/customer/recruitments/${query ? `?${query}` : ""}`,
-	);
+}
+
+function recruitmentListPath(params: RecruitmentListParams): string {
+	// Төгсгөлийн "/" заавал: "/customer/recruitments" нь 404 буцаадаг (staging ✅)
+	return `/customer/recruitments/${buildQuery({ ...params })}`;
+}
+
+export function getRecruitmentList(params: RecruitmentListParams) {
+	return apiGet<SpringPage<RecruitmentListItem>>(recruitmentListPath(params));
 }
 
 export interface CreateRecruitmentPayload {
@@ -353,17 +390,48 @@ export interface CreateRecruitmentResponse {
 	id: string;
 }
 
-export function createRecruitment(payload: CreateRecruitmentPayload) {
-	return apiPost<CreateRecruitmentResponse>("/customer/recruitments", payload);
+// bundle-derived, unverified: POST /customer/recruitments/new {str} — бодит
+// хүсэлтээр шалгаагүй (дуудахад серверт CREATED ноорог үүснэ).
+// Хариу нь raw id string гэж bundle-д харагдсан; {id} хэлбэрийг ч зохицуулна.
+export async function createRecruitment(
+	payload: CreateRecruitmentPayload,
+): Promise<ApiResponse<CreateRecruitmentResponse>> {
+	const res = await apiPost<unknown>("/customer/recruitments/new", {
+		str: payload.name,
+	});
+	if (!res.success) {
+		return { ...res, data: undefined };
+	}
+	const id =
+		typeof res.data === "string"
+			? res.data
+			: typeof res.data === "object" &&
+					res.data !== null &&
+					typeof (res.data as { id?: unknown }).id === "string"
+				? (res.data as { id: string }).id
+				: undefined;
+	if (!id) {
+		return { success: false, error: "Unexpected create response" };
+	}
+	return { success: true, data: { id } };
 }
 
+/** GET /customer/hiring-invitations/latest-completed (#24) — staging ✅ ажигласан. */
 export interface CompletedInvitation {
 	id: string;
+	recruitmentId: string;
 	recruitmentName: string;
+	email: string;
 	firstName: string;
 	lastName: string;
-	completedAt: string;
-	status: string;
+	phoneNumber: string | null;
+	status: InvitationStatus;
+	dueDate: string;
+	createdAt: string;
+	completedAt: string | null;
+	createdBy: string;
+	rated: boolean;
+	ratingPoints: number | null;
 }
 
 export function getLatestCompletedInvitations(limit = 5) {
@@ -390,28 +458,16 @@ export interface HiringInvitationItem {
 	recruitments: TalentRecruitment[];
 }
 
-export interface TalentListPage {
-	content: HiringInvitationItem[];
-	totalElements: number;
-	totalPages: number;
-	size: number;
-	number: number;
-	last: boolean;
-	first: boolean;
-	empty: boolean;
-	numberOfElements: number;
-}
+export type TalentListPage = SpringPage<HiringInvitationItem>;
 
 export function getHiringInvitations(params?: {
 	page?: number;
 	size?: number;
-	name?: string;
+	/** Хайлт. `name` параметрийг API тоодоггүй, `q` ажилладаг (staging ✅). */
+	q?: string;
 }) {
-	const query = new URLSearchParams(
-		params as Record<string, string>,
-	).toString();
 	return apiGet<TalentListPage>(
-		`/customer/hiring-invitations/talents${query ? `?${query}` : ""}`,
+		`/customer/hiring-invitations/talents${buildQuery({ ...params })}`,
 	);
 }
 
@@ -431,33 +487,37 @@ export function getTalentDetail(id: string) {
 	return apiGet<TalentDetail>(`/customer/hiring-invitations/talents/${id}`);
 }
 
-export interface TalentInvitationItem {
-	id: number;
-	recruitmentName: string;
-	tests: string[];
-	createdAt: string;
-	status: string;
-	rated: boolean;
-	completedAt: string | null;
+export interface UserRef {
+	// bundle-derived, unverified: id-ийн төрөл (uuid string гэж үзэв)
+	id: string;
+	firstName: string;
+	lastName: string;
 }
 
-export interface TalentInvitationPage {
-	content: TalentInvitationItem[];
-	totalElements: number;
-	totalPages: number;
-	size: number;
-	number: number;
+/**
+ * GET /customer/hiring-invitations/talents/{talentId}/invitations (#23).
+ * Тайлан §3.2 ба staging-ийн ажиглалт ✅: `completedAt`, имэйл/нэр талбар БАЙХГҮЙ.
+ */
+export interface TalentInvitationItem {
+	id: string;
+	createdAt: string;
+	status: InvitationStatus;
+	rated: boolean;
+	recruitmentId: string;
+	recruitmentName: string;
+	invitedBy: UserRef;
+	/** Тестийн нэрс */
+	tests: string[];
 }
+
+export type TalentInvitationPage = SpringPage<TalentInvitationItem>;
 
 export function getTalentInvitations(
 	id: string,
 	params?: { page?: number; size?: number },
 ) {
-	const query = new URLSearchParams(
-		params as Record<string, string>,
-	).toString();
 	return apiGet<TalentInvitationPage>(
-		`/customer/hiring-invitations/talents/${id}/invitations${query ? `?${query}` : ""}`,
+		`/customer/hiring-invitations/talents/${id}/invitations${buildQuery({ ...params })}`,
 	);
 }
 

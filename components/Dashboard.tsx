@@ -220,7 +220,7 @@ const DataTable = memo(function DataTable({
 	);
 });
 
-function formatDate(dateStr: string): string {
+function formatDate(dateStr: string | null): string {
 	if (!dateStr) return "—";
 	const d = new Date(dateStr);
 	if (Number.isNaN(d.getTime())) return "—";
@@ -236,10 +236,10 @@ function statusBadge(status: string): {
 	color: "green" | "amber";
 } {
 	const map: Record<string, { label: string; color: "green" | "amber" }> = {
-		PUBLISHED: { label: "Нийтэлсэн", color: "green" },
+		// санал: "Нийтэлсэн" → "Идэвхтэй" (staging болон SurveyStatusBadge-тэй нэгтгэв)
+		PUBLISHED: { label: "Идэвхтэй", color: "green" },
 		CLOSED: { label: "Хаагдсан", color: "green" },
-		COMPLETED: { label: "Дууссан", color: "green" },
-		DRAFT: { label: "Үүссэн", color: "amber" },
+		CREATED: { label: "Үүссэн", color: "amber" },
 	};
 	return map[status] ?? { label: status, color: "amber" };
 }

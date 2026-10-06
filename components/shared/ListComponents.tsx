@@ -2,6 +2,14 @@
 
 import { Check, FileText } from "lucide-react";
 import { memo } from "react";
+import {
+	INVITATION_STATUS_LABELS,
+	type InvitationStatus,
+	isInvitationStatus,
+	isRecruitmentStatus,
+	RECRUITMENT_STATUS_LABELS,
+	type RecruitmentStatus,
+} from "@/lib/constants/roleAssessment";
 
 export const GridTexture = memo(function GridTexture() {
 	return (
@@ -128,38 +136,39 @@ export const SurveyStatusBadge = memo(function SurveyStatusBadge({
 	);
 });
 
+const RECRUITMENT_BADGE_STYLES: Record<
+	RecruitmentStatus,
+	{ dotClass: string; borderClass: string }
+> = {
+	CREATED: {
+		dotClass: "bg-badge-amber",
+		borderClass: "border-badge-amber/30",
+	},
+	PUBLISHED: {
+		dotClass: "bg-badge-green",
+		borderClass: "border-badge-green/30",
+	},
+	CLOSED: {
+		dotClass: "bg-badge-gray",
+		borderClass: "border-badge-gray/30",
+	},
+};
+
 export const RecruitmentStatusBadge = memo(function RecruitmentStatusBadge({
 	status,
 }: {
 	status: string;
 }) {
-	const config: Record<
-		string,
-		{ label: string; dotClass: string; borderClass: string }
-	> = {
-		DRAFT: {
-			label: "Үүссэн",
-			dotClass: "bg-badge-amber",
-			borderClass: "border-badge-amber/30",
-		},
-		PUBLISHED: {
-			label: "Нийтэлсэн",
-			dotClass: "bg-badge-green",
-			borderClass: "border-badge-green/30",
-		},
-		CLOSED: {
-			label: "Хаагдсан",
-			dotClass: "bg-badge-gray",
-			borderClass: "border-badge-gray/30",
-		},
-		COMPLETED: {
-			label: "Дууссан",
-			dotClass: "bg-[#3B82F6]",
-			borderClass: "border-[#3B82F6]/30",
-		},
-	};
-
-	const { label, dotClass, borderClass } = config[status] ?? config.DRAFT;
+	const { label, dotClass, borderClass } = isRecruitmentStatus(status)
+		? {
+				label: RECRUITMENT_STATUS_LABELS[status],
+				...RECRUITMENT_BADGE_STYLES[status],
+			}
+		: {
+				label: status,
+				dotClass: "bg-badge-gray",
+				borderClass: "border-badge-gray/30",
+			};
 
 	return (
 		<span
@@ -167,6 +176,55 @@ export const RecruitmentStatusBadge = memo(function RecruitmentStatusBadge({
 			style={{ fontFamily: "'JetBrains Mono', monospace" }}
 		>
 			<span className={`w-1.5 h-1.5 rounded-full ${dotClass}`} />
+			{label}
+		</span>
+	);
+});
+
+const INVITATION_BADGE_STYLES: Record<
+	InvitationStatus,
+	{ boxClass: string; dotClass: string }
+> = {
+	PENDING: {
+		boxClass: "bg-badge-amber/15 border-badge-amber/30 text-badge-amber",
+		dotClass: "bg-badge-amber",
+	},
+	STARTED: {
+		boxClass: "bg-[#3B82F6]/15 border-[#3B82F6]/30 text-[#3B82F6]",
+		dotClass: "bg-[#3B82F6]",
+	},
+	COMPLETED: {
+		boxClass: "bg-badge-green/15 border-badge-green/30 text-badge-green",
+		dotClass: "bg-badge-green",
+	},
+	EXPIRED: {
+		boxClass: "bg-muted border-border text-muted-foreground",
+		dotClass: "bg-badge-gray",
+	},
+};
+
+export const InvitationStatusBadge = memo(function InvitationStatusBadge({
+	status,
+}: {
+	status: string;
+}) {
+	const { label, boxClass, dotClass } = isInvitationStatus(status)
+		? {
+				label: INVITATION_STATUS_LABELS[status],
+				...INVITATION_BADGE_STYLES[status],
+			}
+		: {
+				label: status,
+				boxClass: "bg-muted border-border text-muted-foreground",
+				dotClass: "bg-badge-gray",
+			};
+
+	return (
+		<span
+			className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[9px] uppercase tracking-widest font-bold border whitespace-nowrap ${boxClass}`}
+			style={{ fontFamily: "'JetBrains Mono', monospace" }}
+		>
+			<span className={`h-1.5 w-1.5 rounded-full ${dotClass}`} />
 			{label}
 		</span>
 	);

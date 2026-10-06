@@ -58,7 +58,7 @@ function getRecruitmentKebabItems(
 ): KebabMenuItem[] {
 	const items: KebabMenuItem[] = [];
 
-	if (row.status === "DRAFT") {
+	if (row.status === "CREATED") {
 		items.push({
 			label: "Засах",
 			icon: <Pencil size={11} />,
@@ -86,7 +86,7 @@ function getRecruitmentKebabItems(
 			onClick: () => {},
 		});
 	} else {
-		// CLOSED, COMPLETED
+		// CLOSED
 		items.push({
 			label: "Үр дүн",
 			icon: <BarChart3 size={11} />,
@@ -97,14 +97,13 @@ function getRecruitmentKebabItems(
 	return items;
 }
 
-type FilterTab = "ALL" | "DRAFT" | "PUBLISHED" | "CLOSED" | "COMPLETED";
+type FilterTab = "ALL" | "CREATED" | "PUBLISHED" | "CLOSED";
 
 const FILTER_TABS: { key: FilterTab; label: string }[] = [
 	{ key: "ALL", label: "Бүгд" },
-	{ key: "DRAFT", label: "Үүссэн" },
+	{ key: "CREATED", label: "Үүссэн" },
 	{ key: "PUBLISHED", label: "Идэвхтэй" },
 	{ key: "CLOSED", label: "Хаагдсан" },
-	{ key: "COMPLETED", label: "Дууссан" },
 ];
 
 export default function RecruitmentsPage() {
@@ -353,7 +352,7 @@ export default function RecruitmentsPage() {
 											</td>
 											<td className="py-3 px-3">
 												<div className="flex items-center gap-1.5">
-													{row.status === "DRAFT" && (
+													{row.status === "CREATED" && (
 														<button
 															type="button"
 															onClick={() =>
@@ -380,8 +379,7 @@ export default function RecruitmentsPage() {
 															Түгээх
 														</button>
 													)}
-													{(row.status === "CLOSED" ||
-														row.status === "COMPLETED") && (
+													{row.status === "CLOSED" && (
 														<button
 															type="button"
 															onClick={() =>
@@ -457,7 +455,7 @@ export default function RecruitmentsPage() {
 											</div>
 										</div>
 										<div className="flex items-center gap-2 pt-3 border-t border-border/50">
-											{row.status === "DRAFT" && (
+											{row.status === "CREATED" && (
 												<button
 													type="button"
 													onClick={() =>
@@ -487,8 +485,7 @@ export default function RecruitmentsPage() {
 													Түгээх
 												</button>
 											)}
-											{(row.status === "CLOSED" ||
-												row.status === "COMPLETED") && (
+											{row.status === "CLOSED" && (
 												<button
 													type="button"
 													onClick={() =>
