@@ -230,6 +230,32 @@ export const InvitationStatusBadge = memo(function InvitationStatusBadge({
 	);
 });
 
+const TEST_COLOR_CHIP_CLASS: Record<string, string> = {
+	GREEN: "border-badge-green/30 bg-badge-green/15 text-badge-green",
+	YELLOW: "border-badge-amber/30 bg-badge-amber/15 text-badge-amber",
+};
+
+/** Тестийн категорийн chip (color: GREEN = Бие хүний онцлог, YELLOW = Зөөлөн ур чадвар). */
+export function TestCategoryChip({
+	color,
+	label,
+}: {
+	color: string;
+	label: string;
+}) {
+	return (
+		<span
+			className={`inline-block shrink-0 border px-1.5 py-0.5 text-[9px] uppercase tracking-widest whitespace-nowrap ${
+				TEST_COLOR_CHIP_CLASS[color] ??
+				"border-border bg-muted text-muted-foreground"
+			}`}
+			style={{ fontFamily: "'JetBrains Mono', monospace" }}
+		>
+			{label}
+		</span>
+	);
+}
+
 export function ErrorState({
 	text,
 	onRetry,

@@ -440,6 +440,50 @@ export function fetchRecruitmentDetail(id: string) {
 	);
 }
 
+/** GET /customer/hiring-invitations/list/{recruitmentId} (#14) — тайлан §3.2 ✅ */
+export interface RecruitmentInvitation {
+	id: string;
+	recruitmentId: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+	phoneNumber: string | null;
+	/** YYYY-MM-DD */
+	dueDate: string;
+	status: InvitationStatus;
+	createdAt: string;
+	completedAt?: string | null;
+	rated: boolean;
+	// bundle-derived, unverified: ratingPoints талбар #14-ийн хариунд байгаа эсэх
+	ratingPoints?: number | null;
+	invitedBy: UserRef;
+}
+
+export function fetchRecruitmentInvitations(
+	recruitmentId: string,
+	params: ApiPageParams,
+) {
+	return apiGetOrThrow<SpringPage<RecruitmentInvitation>>(
+		`/customer/hiring-invitations/list/${encodeURIComponent(recruitmentId)}${buildQuery({ ...params })}`,
+	);
+}
+
+/** GET /customer/role-assessments/tests/{catalogTestId} (#10) — тайлан §3.2 ✅ */
+export interface RoleAssessmentTestDetail {
+	id: string;
+	name: string;
+	description: string;
+	pageSize: number;
+	/** Серверээс ирэх HTML. Зөвхөн sandbox iframe-д харуулна. */
+	content: string;
+}
+
+export function fetchRoleAssessmentTest(catalogTestId: string) {
+	return apiGetOrThrow<RoleAssessmentTestDetail>(
+		`/customer/role-assessments/tests/${encodeURIComponent(catalogTestId)}`,
+	);
+}
+
 export interface CreateRecruitmentPayload {
 	name: string;
 }

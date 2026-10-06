@@ -41,7 +41,7 @@
 | Хайлт | #1 `name` | 🟡 | ✅ | ФАЗ 2: 350мс debounce, URL `?name=` |
 | Detail drawer | #3 | ❌ | ✅ | ФАЗ 2: `components/recruitments/RecruitmentDetailDrawer.tsx` |
 | Үүсгэх modal | #25 | ♻️ | ✅ | ФАЗ 2: амжилттай бол `/edit` placeholder руу. Бодит дуудлагаар шалгаагүй (U1) |
-| Dashboard (урьсан талентууд) | #3, #14, #10 | ❌ | ❌ | ФАЗ 3 |
+| Dashboard (урьсан талентууд) | #3, #14, #10 | ❌ | ✅ | ФАЗ 3: `/dashboard/recruitments/{id}/results`. Урьсан талентууд (хуудаслалттай), сонгосон тестүүд (+тестийн drawer, sandbox iframe), нэмэлт асуултууд. Зөвхөн унших: "Талент урих", "Дахин урих", "Үр дүн" товч disabled (ФАЗ 4/5). Алдаатай үед үйлдлийн товч харагдахгүй |
 | Үр дүн / тайлан | #15–20 | ❌ | ❌ | ФАЗ 4 |
 | Урих / Дахин урих | #36–38 | ❌ | ❌ | ФАЗ 5 |
 | Wizard, preview | #4–13, #29–35 | ❌ | ❌ | ФАЗ 6 |
@@ -59,8 +59,15 @@
 | `/role-assessment?page={1..}&size={n}` | `/dashboard/recruitments?page=&size=&status=&name=` | ✅ ФАЗ 2. Staging tab/хайлтыг state-д хадгалдаг; төсөлд URL-д (reload-д хадгалагдана) |
 | `/role-assessment/{id}` (wizard) | `/dashboard/recruitments/{id}/edit` | Placeholder, ФАЗ 6 |
 | `/role-assessment/{id}/preview` | — | ФАЗ 6 |
-| `/role-assessment/{id}/dashboard` | `/dashboard/recruitments/{id}/results` | ФАЗ 3 (өмнөх placeholder-ийн оронд) |
+| `/role-assessment/{id}/dashboard` | `/dashboard/recruitments/{id}/results?page=&size=` | ✅ ФАЗ 3 (өмнөх placeholder-ийн оронд) |
 | `/role-assessment/{id}/dashboard/{invitationId}` | `/dashboard/recruitments/{id}/results/{invitationId}` (санал) | ФАЗ 4 |
 | `/invited-talents` | `/dashboard/talents` | ✅ |
 | `/invited-talents/{talentId}` | `/dashboard/talents/{id}` | 🟡 |
 | `/membership` (`plan_expired` modal) | — | Хуудас байхгүй |
+
+## Шийдвэрүүд (хянах)
+
+- Жагсаалтын `status`, `name` нь `page`, `size`-тай хамт URL-д байна (staging-д state). Ингэснээр tab/хайлт солиход хуудас 1 болох нь нэг удаагийн URL шинэчлэлээр явагдаж, race үүсэхгүй.
+- Dashboard-д staging-д байхгүй 3 статистик карт (Нийт урьсан / Дуусгасан / Дуусгах хувь) үлдсэн. Өмнөх placeholder-ийн картууд байсан ба одоо #3-ийн `count`-аас бодит утга авна.
+- 4xx алдааг React Query дахин оролддоггүй (`components/providers.tsx`), алдааны төлөвт "Дахин оролдох" товч зөвхөн 5xx/сүлжээний алдаанд гарна.
+- Нүүр хуудасны status map-д `PUBLISHED` = "Идэвхтэй" (survey хүснэгтэд ч хамаарна, `SurveyStatusBadge`-тэй ижил).

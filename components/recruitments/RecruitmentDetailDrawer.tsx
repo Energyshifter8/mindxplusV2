@@ -1,13 +1,13 @@
 "use client";
 
-import { X } from "lucide-react";
-import { useEffect } from "react";
+import { Drawer } from "@/components/shared/Drawer";
 import {
 	ErrorState,
 	RecruitmentStatusBadge,
+	TestCategoryChip,
 } from "@/components/shared/ListComponents";
 import type { RecruitmentDetail, UserRef } from "@/lib/api";
-import { getErrorMessage } from "@/lib/api-errors";
+import { getErrorMessage, isRetryableError } from "@/lib/api-errors";
 import {
 	formatDateTime,
 	formatMinutesRange,
@@ -16,12 +16,6 @@ import {
 import { useRecruitmentDetail } from "@/lib/hooks/useRecruitmentQueries";
 
 const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
-const CONDENSED = { fontFamily: "'Barlow Condensed', sans-serif" } as const;
-
-const COLOR_CHIP_CLASS: Record<string, string> = {
-	GREEN: "border-badge-green/30 bg-badge-green/15 text-badge-green",
-	YELLOW: "border-badge-amber/30 bg-badge-amber/15 text-badge-amber",
-};
 
 interface RecruitmentDetailDrawerProps {
 	recruitmentId: string;
@@ -35,75 +29,32 @@ export default function RecruitmentDetailDrawer({
 	const { data, isLoading, isError, error, refetch, isFetching } =
 		useRecruitmentDetail(recruitmentId);
 
-	useEffect(() => {
-		function handleKey(e: KeyboardEvent) {
-			if (e.key === "Escape") onClose();
-		}
-		document.addEventListener("keydown", handleKey);
-		return () => document.removeEventListener("keydown", handleKey);
-	}, [onClose]);
-
 	return (
-		// biome-ignore lint/a11y/useKeyWithClickEvents: drawer backdrop
-		// biome-ignore lint/a11y/noStaticElementInteractions: drawer backdrop
-		<div
-			className="fixed inset-0 z-50 flex justify-end bg-black/70"
-			onClick={onClose}
+		<Drawer
+			eyebrow="Дэлгэрэнгүй"
+			title={data?.name ?? (isLoading ? "…" : "—")}
+			onClose={onClose}
 		>
-			<aside
-				aria-label="Талентийн үнэлгээний дэлгэрэнгүй"
-				className="relative flex h-full w-full max-w-lg flex-col border-l-2 border-border bg-card"
-				onClick={(e) => e.stopPropagation()}
-				onKeyDown={(e) => e.stopPropagation()}
-			>
-				<div className="flex items-start justify-between gap-3 border-b-2 border-border p-5">
-					<div className="min-w-0">
-						<p
-							className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground"
-							style={MONO}
-						>
-							Дэлгэрэнгүй
-						</p>
-						<h2
-							className="truncate text-xl font-black uppercase leading-tight text-foreground"
-							style={CONDENSED}
-						>
-							{data?.name ?? (isLoading ? "…" : "—")}
-						</h2>
-					</div>
-					<button
-						type="button"
-						onClick={onClose}
-						aria-label="Хаах"
-						className="inline-flex h-8 w-8 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-					>
-						<X size={16} />
-					</button>
+			{isLoading ? (
+				<div className="space-y-4 p-5">
+					{Array.from({ length: 6 }).map((_, i) => (
+						// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton
+						<div key={`skel-${i}`} className="h-4 animate-pulse bg-muted" />
+					))}
 				</div>
-
-				<div className="flex-1 overflow-y-auto">
-					{isLoading ? (
-						<div className="space-y-4 p-5">
-							{Array.from({ length: 6 }).map((_, i) => (
-								// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton
-								<div key={`skel-${i}`} className="h-4 animate-pulse bg-muted" />
-							))}
-						</div>
-					) : isError || !data ? (
-						<ErrorState
-							text={getErrorMessage(
-								error,
-								"Талентийн үнэлгээний мэдээлэл авахад алдаа гарлаа",
-							)}
-							onRetry={() => refetch()}
-							isRetrying={isFetching}
-						/>
-					) : (
-						<DetailBody detail={data} />
+			) : isError || !data ? (
+				<ErrorState
+					text={getErrorMessage(
+						error,
+						"Талентийн үнэлгээний мэдээлэл авахад алдаа гарлаа",
 					)}
-				</div>
-			</aside>
-		</div>
+					onRetry={isRetryableError(error) ? () => refetch() : undefined}
+					isRetrying={isFetching}
+				/>
+			) : (
+				<DetailBody detail={data} />
+			)}
+		</Drawer>
 	);
 }
 
@@ -148,15 +99,7 @@ function DetailBody({ detail }: { detail: RecruitmentDetail }) {
 									<span className="text-sm font-bold text-foreground">
 										{test.name}
 									</span>
-									<span
-										className={`shrink-0 border px-1.5 py-0.5 text-[9px] uppercase tracking-widest ${
-											COLOR_CHIP_CLASS[test.color] ??
-											"border-border bg-muted text-muted-foreground"
-										}`}
-										style={MONO}
-									>
-										{test.category}
-									</span>
+									<TestCategoryChip color={test.color} label={test.category} />
 								</div>
 								<div
 									className="flex gap-4 text-[10px] uppercase tracking-widest text-muted-foreground"

@@ -132,6 +132,12 @@ export function getErrorMessage(source: unknown, fallback?: string): string {
 	return fallback ?? GENERIC_ERROR_MESSAGE;
 }
 
+/** 4xx (олдсонгүй, эрхгүй, багц дууссан г.м.) дахин оролдоход засрахгүй. */
+export function isRetryableError(error: unknown): boolean {
+	if (!(error instanceof ApiError) || error.status === undefined) return true;
+	return error.status >= 500;
+}
+
 export function isApiErrorCode(error: unknown, code: string): boolean {
 	return error instanceof ApiError && error.code === normalizeErrorCode(code);
 }

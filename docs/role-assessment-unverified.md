@@ -21,3 +21,9 @@
 | U12 | 2 | Жагсаалтын эрэмбэ | Sort параметргүй үед `createdAt` буурахаар ирдэг гэж ажигласан; `name` хайлт contains / case-insensitive эсэх | ❓ тайлан §2a, §6.2 | Swagger |
 | U13 | 2 | `lib/api.ts` `RecruitmentDetail` | `publishedAt/publishedBy/closedAt/closedBy` байхгүй үед null уу, огт ирэхгүй юу (хоёуланг зохицуулсан) | ✅/❓ | GET #3-ийг CREATED/PUBLISHED/CLOSED тус бүрээр |
 | U14 | 2 | `RecruitmentDetailDrawer` "Явц" | CREATED үед "--/--", бусад үед `count.completed/count.total` (staging-ийн жагсаалтын дүрмээр) | 📦 | Staging-тэй харьцуулах |
+| U15 | 3 | `lib/api.ts` `RecruitmentInvitation.ratingPoints` | #14-ийн хариунд `ratingPoints` байгаа эсэх (#24-д ✅ ажиглагдсан). Байхгүй бол "—" харуулна | 📦 тайлан #14 | GET #14 |
+| U16 | 3 | Dashboard "N мин" chip | Нийт хугацааг зөвхөн тестүүдийн min/max-аар бодсон; нэмэлт асуултын хугацаа орох эсэх | ❓ | Staging dashboard-тай харьцуулах |
+| U17 | 3 | Dashboard "Үр дүн" товч | Staging-д `COMPLETED`/`STARTED` үед идэвхтэй, `PENDING` үед идэвхгүй. Одоогоор бүгд disabled (ФАЗ 4) | 📦 | ФАЗ 4 |
+| U18 | 3 | `TestDetailDrawer` | `content` HTML-ийг `sandbox=""` iframe-д харуулна (script ажиллахгүй). Контент script/гадаад CSS-ээс хамаардаг эсэх, зургийн URL | ❓ | Browser дээр тест бүрийг нээж харах |
+| U19 | 3 | Dashboard "Нэр" багана | "Овог Нэр" дараалал (`lastName firstName`); staging-д маскалсан тул тодорхойгүй | ❓ | Staging-тэй харьцуулах |
+| U20 | 3 | #14 эрэмбэ, шүүлтүүр | Урилгын жагсаалтын эрэмбэ, status-аар шүүх параметр байгаа эсэх (ашиглаагүй) | ❓ тайлан §6.2 | Swagger |
