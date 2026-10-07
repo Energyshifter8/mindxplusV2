@@ -37,11 +37,11 @@ Baseline: source tsc 0 · eslint 0 алдаа / 10 warning · biome 1 (хууч�
 - [x] `/preview`
 - [x] Unit тест (`wizard.test.mjs`), screenshot (`screens/03-*`, `04-*`), dry-run e2e
 
-## 4. Dashboard
-- [ ] Хүснэгт, тест, асуулт, 3 хуурамч карт хасах
-- [ ] Урих modal (search-by-email, validation)
-- [ ] Сунгах (EXPIRED)
-- [ ] Хаах
+## 4. Dashboard (`/results` → алхам 8-д `/dashboard`)
+- [x] Хүснэгт (badge, од, огноо, урьсан, хуудаслалт URL), тест (drawer), асуулт, 3 хуурамч карт хассан
+- [x] Урих modal (зөвхөн PUBLISHED), дахин урих/сунгах (EXPIRED), plan_expired modal
+- [x] Хаах (confirm, dry-run шалгасан), "Дэлгэрэнгүй" drawer; screenshot `screens/05-dashboard-local.jpg`
+- [x] Хайлт: API (`list/{id}`) зөвхөн page/size, staging-д ч байхгүй → хийгээгүй (mismatches)
 
 ## 5. Талентын үр дүн
 - [ ] Харагдал, од өгөх, тэмдэглэл нэмэх, "Анхааруулга"
@@ -52,7 +52,7 @@ Baseline: source tsc 0 · eslint 0 алдаа / 10 warning · biome 1 (хууч�
 
 ## 7. Нэр солих / хаах / устгах
 - [x] Жагсаалт, kebab, confirm (ФАЗ 2-т хийгдсэн)
-- [ ] Dashboard-ын "Талент үнэлгээ хаах"
+- [x] Dashboard-ын "Талент үнэлгээ хаах"
 
 ## 8. Route
 - [ ] `/role-assessment`, `/invited-talents`, redirects, линк, sidebar

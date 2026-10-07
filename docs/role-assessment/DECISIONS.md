@@ -31,3 +31,9 @@
 - **"?" тусламжийн widget:** shell-ийн хэсэг тул хийгээгүй.
 - **React compiler lint:** effect доторх setState-ийг React-ийн "render үед state тохируулах" загвараар сольсон (logic өөрчлөгдөөгүй, dry-run-д дахин шалгасан).
 - **A11y:** асуулт = `<label>` + native checkbox (staging `div onClick`); баруун алхмууд = "stretched button" (title доторх button-ий `::after` мөрийг хамарна, "хасах" товч z-10) — button дотор button үүсэхгүй; ангиллын товчнууд `<fieldset>`+sr-only legend.
+- **Dashboard хайлт:** даалгаварт "хайлт" гэсэн ч `GET /customer/hiring-invitations/list/{id}` зөвхөн `page,size` авдаг, staging dashboard-д ч хайлт байхгүй → таамгаар параметр нэмээгүй.
+- **Dashboard товч:** staging "Талент урих/хаах"-ийг CLOSED-оос бусад үед (ачаалж байхад ч) харуулдаг; бид статус ирсний дараа харуулж, PUBLISHED биш бол disabled + шалтгаан (зөвхөн PUBLISHED-д урих дүрэм).
+- **Dashboard гарчиг:** staging-д хоёр `h1`; бид модулийн гарчгийг `p`, үнэлгээний нэрийг `h1` болгосон (a11y), харагдац ижил.
+- **plan_expired modal:** "Багцтай танилцах" → `/membership` (staging). Энэ аппад membership хуудас байхгүй тул 404 — модуль хамрах хүрээнээс гадуур (mismatches).
+- **Хуучин компонент:** `components/recruitments/{RecruitmentDetailDrawer,TestDetailDrawer}` ашиглагдахгүй болсон тул устгав; `TestReportDrawer` алхам 5 хүртэл.
+- **Тестийн орчин (нэмэлт):** hidden tab-д React 19.2-ийн SSR Suspense reveal (rAF) зогсдог тул `div#S:0[hidden]` DOM-д үлддэг (давхар `id`) — бодит хэрэглэгчид нөлөөгүй.

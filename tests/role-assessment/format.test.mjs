@@ -11,6 +11,7 @@ import {
 	formatYmd,
 	isCyrillicName,
 	keepCyrillic,
+	minutesRangeOrDash,
 	splitDateTime,
 } from "../../lib/format.ts";
 
@@ -91,4 +92,13 @@ test("кирилл нэрийн шүүлтүүр", () => {
 	assert.equal(isCyrillicName(" Бат "), true);
 	assert.equal(isCyrillicName("Bat"), false);
 	assert.equal(isCyrillicName("  "), false);
+});
+
+test("dashboard хугацаа (staging module 34795)", () => {
+	assert.equal(minutesRangeOrDash(15, 20), "15-20 Мин");
+	assert.equal(minutesRangeOrDash(0, 8), "8 Мин");
+	assert.equal(minutesRangeOrDash(5, 0), "5 Мин");
+	assert.equal(minutesRangeOrDash(0, 0), "---");
+	assert.equal(minutesRangeOrDash(null, undefined), "---");
+	assert.equal(minutesRangeOrDash(26, 33, "мин"), "26-33 мин");
 });
