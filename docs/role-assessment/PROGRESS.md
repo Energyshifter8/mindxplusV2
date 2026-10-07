@@ -26,15 +26,16 @@ Baseline: source tsc 0 · eslint 0 алдаа / 10 warning · biome 1 (хууч�
 - [x] Tab, хайлт, хуудаслалт, статистик, хүснэгт/grid, badge, kebab, drawer, үүсгэх/нэр солих/устгах/хаах modal, урих modal (dry-run шалгасан)
 - [x] Төлөв: loading/empty/error; GET матриц (list → statistics, staging-ийн дараалал); staging screenshot-той харьцуулсан (`screens/01-list-local.jpg`); live extract diff — staging session дууссан (DECISIONS)
 
-## 3. Wizard
-- [ ] Layout (sidebar-гүй), header, stepper, баруун карт
-- [ ] Quill wrapper (lazy, SSR-safe, StrictMode guard)
-- [ ] Алхам 1 + `ra_draft_{id}` + лого
-- [ ] Алхам 2 (тест, ангилал, drawer, санал болгох)
-- [ ] Алхам 3 (каталогийн асуулт)
-- [ ] Алхам 4 + нийтлэх (confirm)
-- [ ] Унших горим (PUBLISHED/CLOSED)
-- [ ] `/preview`
+## 3. Wizard — `768a5081` (quill), `7407e985` (wizard), preview
+- [x] Layout (sidebar-гүй), header, stepper, баруун карт
+- [x] Quill wrapper (lazy, SSR-safe, StrictMode guard)
+- [x] Алхам 1 + `ra_draft_{id}` + лого
+- [x] Алхам 2 (тест, ангилал, drawer, санал болгох)
+- [x] Алхам 3 (каталогийн асуулт)
+- [x] Алхам 4 + нийтлэх (confirm)
+- [x] Унших горим (PUBLISHED/CLOSED)
+- [x] `/preview`
+- [x] Unit тест (`wizard.test.mjs`), screenshot (`screens/03-*`, `04-*`), dry-run e2e
 
 ## 4. Dashboard
 - [ ] Хүснэгт, тест, асуулт, 3 хуурамч карт хасах
