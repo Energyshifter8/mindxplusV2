@@ -5,6 +5,8 @@ import { TalentDetailView } from "@/components/role-assessment/talents/TalentDet
 
 /** Staging /invited-talents/{talentId} */
 export default function TalentDetailPage() {
-	const params = useParams<{ id: string }>();
-	return <TalentDetailView key={params.id} talentId={params.id ?? ""} />;
+	const params = useParams<{ talentId: string }>();
+	return (
+		<TalentDetailView key={params.talentId} talentId={params.talentId ?? ""} />
+	);
 }
