@@ -525,7 +525,7 @@ export default function Dashboard() {
 							title="Талентийн үнэлгээ"
 							subtitle="Үүссэн талентийн үнэлгээ болон оролцогчдын бөглөсөн үр дүнг шуудхарах."
 							buttonText="Талентийн үнэлгээ үүсгэх"
-							onButtonClick={() => router.push("/dashboard/recruitments")}
+							onButtonClick={() => router.push("/role-assessment")}
 						>
 							<div className="grid grid-cols-3 gap-3 mb-5">
 								<MiniStatCard

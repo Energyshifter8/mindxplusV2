@@ -18,7 +18,7 @@ export default function SidebarGate({
 	// Survey editor ба талентийн үнэлгээний wizard/preview (staging `(editor)` бүлэг) sidebar-гүй
 	const isEditorPage =
 		/^\/dashboard\/surveys\/[^/]+\/edit/.test(pathname) ||
-		/^\/dashboard\/recruitments\/[^/]+\/(edit|preview)(\/|$)/.test(pathname);
+		/^\/role-assessment\/[^/]+(\/preview)?\/?$/.test(pathname);
 
 	return (
 		<div className="flex h-screen overflow-hidden bg-background">

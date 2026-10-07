@@ -48,3 +48,5 @@
 - **Талентын жагсаалт URL:** staging хайлт/шүүлтийг state-д хадгалдаг; бид `q`, `marked=true`-г URL-д (жагсаалттай нийцтэй, refresh/share). Талентын дэлгэрэнгүйн түүхийн хуудаслалт staging шиг state-д.
 - **Талентын дэлгэрэнгүй bookmark:** staging зөвхөн төлөв (дүүргэсэн icon) харуулдаг, toggle байхгүй → parity; sr-only "Хадгалсан/Хадгалаагүй".
 - **Хоосон зураг:** staging-ийн `/images/invited-talents-empty.svg` (bundle-д заасан статик зам)-ийг татаж шалгав (зөвхөн svg/g/path) → `public/images/role-assessment/`.
+- **Route шилжүүлэлт:** route group биш шинэ дээд түвшний `app/role-assessment`, `app/invited-talents` (+ `components/DashboardShell.tsx`-ийг `/dashboard` layout-тай хуваалцана) — бусад модулийн замд хүрэхгүй. Wizard/preview sidebar-гүй нь `SidebarGate` regex-ээр (staging `(editor)` бүлэг). Redirect `permanent:false` (307): browser кэшлэхгүй. Sidebar-ын идэвхтэй төлөв өмнөх шигээ яг таарахад (`pathname === href`).
+- **Dev server:** `next.config.ts` өөрчлөгдөхөд Next өөрөө `next-server` child-ийг дахин асаасан (parent `next dev` хэвээр, PPID ижил) — `pnpm dev` ажиллуулаагүй.

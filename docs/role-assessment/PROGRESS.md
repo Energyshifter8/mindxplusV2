@@ -37,7 +37,7 @@ Baseline: source tsc 0 · eslint 0 алдаа / 10 warning · biome 1 (хууч�
 - [x] `/preview`
 - [x] Unit тест (`wizard.test.mjs`), screenshot (`screens/03-*`, `04-*`), dry-run e2e
 
-## 4. Dashboard (`/results` → алхам 8-д `/dashboard`)
+## 4. Dashboard
 - [x] Хүснэгт (badge, од, огноо, урьсан, хуудаслалт URL), тест (drawer), асуулт, 3 хуурамч карт хассан
 - [x] Урих modal (зөвхөн PUBLISHED), дахин урих/сунгах (EXPIRED), plan_expired modal
 - [x] Хаах (confirm, dry-run шалгасан), "Дэлгэрэнгүй" drawer; screenshot `screens/05-dashboard-local.jpg`
@@ -59,7 +59,7 @@ Baseline: source tsc 0 · eslint 0 алдаа / 10 warning · biome 1 (хууч�
 - [x] Dashboard-ын "Талент үнэлгээ хаах"
 
 ## 8. Route
-- [ ] `/role-assessment`, `/invited-talents`, redirects, линк, sidebar
+- [x] `/role-assessment` (wizard `/{id}`, `/{id}/preview` sidebar-гүй; `/{id}/dashboard[/{iid}]`), `/invited-talents[/{talentId}]`, `redirects()` (307, query хадгална), `lib/routes.ts`, Sidebar/нүүрийн линк
 
 ## 9. Баримт
 - [ ] README, MANUAL-QA.md, unverified.md, mismatches.md, FINAL тайлан

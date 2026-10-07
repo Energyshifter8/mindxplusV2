@@ -54,12 +54,12 @@ const navSections: { title: string; items: NavItem[] }[] = [
 		items: [
 			{
 				label: "Талентийн үнэлгээ",
-				href: "/dashboard/recruitments",
+				href: "/role-assessment",
 				icon: Users,
 			},
 			{
 				label: "Миний урьсан талентууд",
-				href: "/dashboard/talents",
+				href: "/invited-talents",
 				icon: User,
 			},
 		],
