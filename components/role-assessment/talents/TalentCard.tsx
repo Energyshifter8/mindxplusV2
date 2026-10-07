@@ -71,7 +71,7 @@ export function TalentCard({
 			className="flex w-full max-w-[500px] flex-col gap-3 rounded-2xl border border-Stroke-700 bg-white p-4 font-sf hover:bg-Primary-softBg"
 		>
 			<div className="flex items-center gap-0.5">
-				<h2 className="shrink-0 font-semibold text-[20px] text-TextColor-main leading-6">
+				<h2 className="min-w-0 break-words font-semibold text-[20px] text-TextColor-main leading-6">
 					{talent.displayName}
 				</h2>
 				{talent.rating === null ? (

@@ -30,7 +30,13 @@ export function RaScope({
 }) {
 	return (
 		<div
-			className={cn("ra-scope flex min-h-full flex-col", className)}
+			className={cn(
+				// Хуудасны root нь flex item: staging-ийн `mx-auto` flex-col-д stretch-ийг унтрааж
+				// өргөнийг хүснэгтийн min-content (1100px) болгодог тул `w-full min-w-0` —
+				// хүснэгт өөрийн overflow-auto дотроо гүйлгэгдэнэ
+				"ra-scope flex min-h-full min-w-0 flex-col [&>*]:w-full [&>*]:min-w-0",
+				className,
+			)}
 			// Sticky толгойнууд banner-ын (h-[37px]) доор байрлана
 			style={
 				{
