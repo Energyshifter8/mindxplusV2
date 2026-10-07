@@ -44,12 +44,6 @@ export const INVITATION_STATUS_LABELS: Record<InvitationStatus, string> = {
 // Тестийн өнгө — swagger: HiringTestPublicDTO.color (staging каталогт GREEN, YELLOW ✅)
 export type TestColor = HiringTestColor;
 
-export function isRecruitmentStatus(
-	value: unknown,
-): value is RecruitmentStatus {
-	return (RECRUITMENT_STATUSES as readonly unknown[]).includes(value);
-}
-
 export function isInvitationStatus(value: unknown): value is InvitationStatus {
 	return (INVITATION_STATUSES as readonly unknown[]).includes(value);
 }

@@ -23,7 +23,6 @@ import {
 	fetchTalentInvitations,
 	fetchTalents,
 	fetchTestCategories,
-	fetchTestReportHtml,
 } from "@/lib/api/role-assessment";
 import type { ApiPageParams } from "@/lib/pagination";
 import type {
@@ -127,21 +126,6 @@ export function useInvitationNotes(invitationId: string | undefined) {
 		queryKey: raKeys.notes(invitationId ?? ""),
 		queryFn: () => fetchInvitationNotes(invitationId as string),
 		enabled: !!invitationId,
-	});
-}
-
-/** Хувийн мэдээлэлтэй HTML тул кэшид удаан хадгалахгүй. */
-export function useTestReportHtml(
-	invitationId: string | undefined,
-	answerId: string | undefined,
-) {
-	return useQuery({
-		...RA_QUERY_OPTIONS,
-		queryKey: raKeys.report(invitationId ?? "", answerId ?? ""),
-		queryFn: () =>
-			fetchTestReportHtml(invitationId as string, answerId as string),
-		enabled: !!invitationId && !!answerId,
-		gcTime: 60 * 1000,
 	});
 }
 
