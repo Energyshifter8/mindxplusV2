@@ -181,3 +181,54 @@ export function isCyrillicName(value: string): boolean {
 	const text = value.trim();
 	return text.length > 0 && /^[\u0400-\u04FF\s-]+$/.test(text);
 }
+
+/** Локал огноо + `days` хоног → "YYYY-MM-DD" (staging `dayjs().add(n,"days")`). */
+export function addDaysYmd(days: number, now: Date = new Date()): string {
+	const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + days);
+	return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+
+/** "YYYY-MM-DD" → "YYYY/MM/DD" (огноо сонгогчийн харагдац). */
+export function formatSlashDate(value: string | null | undefined): string {
+	return value && /^\d{4}-\d{2}-\d{2}$/.test(value)
+		? value.replace(/-/g, "/")
+		: "";
+}
+
+/** Утасны дугаар: зөвхөн цифр, ≤ 8 (staging урих форм). */
+export function digitsOnly(value: string | null | undefined, max = 8): string {
+	return String(value ?? "")
+		.replace(/\D/g, "")
+		.slice(0, max);
+}
+
+// --- Явц, хугацааны label (📦 module 87100) ---
+
+/** Жагсаалтын "Явц": CREATED → "--/--", бусад "completed/total". */
+export function listProgressLabel(row: {
+	status?: string;
+	completedInvitationCount?: number | null;
+	totalInvitationCount?: number | null;
+}): string {
+	if (row.status === "CREATED") return "--/--";
+	return `${row.completedInvitationCount ?? 0}/${row.totalInvitationCount ?? 0}`;
+}
+
+/** Дэлгэрэнгүйн "Явц": CREATED → "--/--", бусад count.completed/count.total. */
+export function detailProgressLabel(detail: {
+	status?: string;
+	count?: { completed?: number | null; total?: number | null } | null;
+}): string {
+	if (detail.status === "CREATED") return "--/--";
+	return `${detail.count?.completed ?? 0}/${detail.count?.total ?? 0}`;
+}
+
+/** Тест/асуултын хугацаа: "min-max Мин" эсвэл "N Мин". */
+export function minutesLabel(item: {
+	minMinutes?: number | null;
+	maxMinutes?: number | null;
+}): string {
+	return item.minMinutes && item.maxMinutes
+		? `${item.minMinutes}-${item.maxMinutes} Мин`
+		: `${item.maxMinutes || item.minMinutes || 0} Мин`;
+}

@@ -10,9 +10,12 @@ import {
 	closeRecruitment,
 	createRecruitment,
 	deleteRecruitment,
+	extendInvitation,
+	inviteTalent,
 	renameRecruitment,
 } from "@/lib/api/role-assessment";
 import { getErrorMessage } from "@/lib/api-errors";
+import type { InviteTalentPayload } from "@/lib/types/role-assessment";
 import { HOME_RECRUITMENT_KEYS, raKeys } from "./keys";
 
 // Toast-ын текст: staging жагсаалтын хуудас (📦 bundle). Алдааны мессежийг staging
@@ -90,6 +93,49 @@ export function useRenameRecruitment() {
 		},
 		onError: (error) => {
 			toast.error(getErrorMessage(error, "Нэр өөрчлөхөд алдаа гарлаа"));
+		},
+	});
+}
+
+// --- Урих / дахин урих (📦 module 4089) ---
+
+/** "Урилга илгээх" — ЖИНХЭНЭ имэйл илгээдэг тул dry-run-д хамгаалагдсан. */
+export function useInviteTalent() {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: (payload: InviteTalentPayload) => inviteTalent(payload),
+		onSuccess: (_data, payload) => {
+			toast.success("Урилга амжилтай илгээгдлээ");
+			invalidateRecruitmentLists(queryClient);
+			queryClient.invalidateQueries({
+				queryKey: raKeys.invitationsOf(payload.recruitmentId),
+			});
+			queryClient.invalidateQueries({
+				queryKey: raKeys.detail(payload.recruitmentId),
+			});
+			queryClient.invalidateQueries({ queryKey: raKeys.talentLists() });
+		},
+		onError: (error) => {
+			toast.error(getErrorMessage(error, "Урилга илгээхэд алдаа гарлаа"));
+		},
+	});
+}
+
+/** "Дахин урих" — EXPIRED урилгын хугацааг сунгана. */
+export function useExtendInvitation(recruitmentId: string) {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: (vars: { invitationId: string; dueDate: string }) =>
+			extendInvitation(vars.invitationId, vars.dueDate),
+		onSuccess: () => {
+			toast.success("Урилга амжилтай сунгагдлаа");
+			queryClient.invalidateQueries({
+				queryKey: raKeys.invitationsOf(recruitmentId),
+			});
+			queryClient.invalidateQueries({ queryKey: raKeys.talentLists() });
+		},
+		onError: (error) => {
+			toast.error(getErrorMessage(error, "Урилга сунгахад алдаа гарлаа"));
 		},
 	});
 }

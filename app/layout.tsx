@@ -7,7 +7,6 @@ import {
 	Manrope,
 } from "next/font/google";
 import Providers from "@/components/providers";
-import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -51,7 +50,6 @@ export default function RootLayout({
 		>
 			<body className="antialiased">
 				<Providers>{children}</Providers>
-				<Toaster />
 			</body>
 		</html>
 	);
