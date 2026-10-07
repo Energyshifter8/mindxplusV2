@@ -215,6 +215,27 @@ export function DateTimeStack({ value }: { value?: string | null }) {
 	);
 }
 
+/** Dashboard-ын огноо (📦 module 62244): нэг мөрөнд "огноо • цаг" */
+export function DateTimeInline({ value }: { value?: string | null }) {
+	const { date, time } = splitDateTime(value);
+	const text =
+		"font-medium text-[14px] text-TextColor-secondary leading-[1.4] tracking-[0.2px]";
+	return (
+		<div className="inline-flex items-center gap-2 whitespace-nowrap">
+			<span className={text}>{date}</span>
+			{time ? (
+				<>
+					<span
+						aria-hidden="true"
+						className="size-1 shrink-0 rounded-full bg-TextColor-third"
+					/>
+					<span className={text}>{time}</span>
+				</>
+			) : null}
+		</div>
+	);
+}
+
 /** Staging-ийн хоосон төлөв (зурагтай) */
 export function EmptyIllustration({
 	title,

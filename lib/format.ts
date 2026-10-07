@@ -232,3 +232,18 @@ export function minutesLabel(item: {
 		? `${item.minMinutes}-${item.maxMinutes} Мин`
 		: `${item.maxMinutes || item.minMinutes || 0} Мин`;
 }
+
+/**
+ * Staging dashboard (📦 module 34795): "min-max Мин" / "max Мин" / "min Мин" / "---".
+ * Тестийн нийт хугацаанд `unit = "мин"` (жижиг үсэг).
+ */
+export function minutesRangeOrDash(
+	min: number | null | undefined,
+	max: number | null | undefined,
+	unit = "Мин",
+): string {
+	if (min && max) return `${min}-${max} ${unit}`;
+	if (max) return `${max} ${unit}`;
+	if (min) return `${min} ${unit}`;
+	return "---";
+}
