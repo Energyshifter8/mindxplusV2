@@ -44,7 +44,7 @@
 ## Customer recruitments — endpoint давхарга (2026-10-06)
 
 Эх сурвалж: setup хуудасны bundle (`app/(editor)/role-assessment/[id]`, 📦), swagger, staging дээр
-localhost proxy-оор GET ✅. POST-уудыг staging руу илгээгээгүй (docs/role-assessment-unverified.md U33–U40).
+localhost proxy-оор GET ✅. POST-уудыг staging руу илгээгээгүй (docs/role-assessment/unverified.md U33–U40).
 
 | # | Endpoint (staging) | Swagger | Зөрүү / ажиглалт | Шийдвэр (`lib/api.ts`) |
 |---|---|---|---|---|

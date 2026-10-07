@@ -1,7 +1,7 @@
 # Талентийн үнэлгээ — ФАЗ 0: аудит + төлөвлөгөө
 
-- **Огноо:** 2026-10-07 · **Төлөв:** ФАЗ 0 дууссан, таны "батлав"-ыг хүлээж байна
-- **Код өөрчлөөгүй.** Энэ файл л нэмэгдсэн (commit хийгээгүй, §1-ийг үз).
+- **Огноо:** 2026-10-07 · **Төлөв:** ФАЗ 0 батлагдсан (§8 шийдвэрүүд). Хуучин `docs/role-assessment-*.md` → `docs/role-assessment/*.md`
+- ФАЗ 0-д код өөрчлөөгүй.
 - Тэмдэглэгээ: ✅ ажигласан/баталгаатай · 📦 staging bundle-ээс (дараагүй) · ❓ таамаг
 
 ---
@@ -172,3 +172,20 @@
 | **Q9** | Dashboard дахь staging-д байхгүй 3 статистик карт (`results/page.tsx:257-273`) | Хасна (staging parity) |
 
 Хариулт ирэхээс өмнө ФАЗ 1-ийн ажлыг эхлүүлэхгүй.
+
+## 8. Батлагдсан шийдвэрүүд (2026-10-07)
+
+B1 ✅ (`feature/role-assessment` = `main` = `25a6b611`). B2 шаардлагагүй. Q1–Q9 зөвшөөрөгдсөн, дараах залруулгатай:
+
+| # | Шийдвэр |
+|---|---|
+| D1 Харагдац | Staging харагдал (light, Manrope, токен) **зөвхөн RA route-уудад scoped**; RA контентын wrapper өөрийн background/токенийг тусгаарлана. Sidebar, бусад модульд хүрэхгүй. ФАЗ 2-ын дараа маскалсан хажуу хажуугийн screenshot → **ЗОГСОХ**, батлагдсаны дараа бусад хуудсанд тараана |
+| D2 Editor | `quill@2.0.3` + өөрийн wrapper (шинэ dependency зөвшөөрөгдсөн). SSR-safe, зөвхөн wizard-д lazy, StrictMode-д давхар init хийхгүй (ref guard + cleanup), утга HTML, toolbar staging-тэй адил (Normal picker, B/I/U, link, ordered/bullet list, clear). Read-only харагдацад ижил зөвшөөрсөн format-ууд л үлдэнэ |
+| D3 Sanitizer | Шинэ сан нэмэхгүй. Серверийн HTML: `<iframe sandbox="" srcDoc>` (allow-scripts + allow-same-origin хослуулахгүй), тогтмол өндөр + scroll. Rich text: read-only Quill, link protocol шалгалттай |
+| D4 Dry-run | **Бүх орчинд нэг дүрэм**: бичих хүсэлт зөвхөн `NEXT_PUBLIC_RA_ALLOW_WRITES === "1"` үед сүлжээнд гарна, үгүй бол dry-run + тод banner. Flag-ыг хэрэглэгч `.env.local`-д тавина (Claude хэзээ ч тавихгүй); `.env.example`-д тайлбартай, утгагүй. Flag өөрчлөхөд dev server-ийг хэрэглэгч дахин асаана. Create-ийн fake id руу сүлжээний GET явуулахгүй; dry-run-д wizard local form state + `ra_draft`-аар үргэлжилнэ |
+| D5 | `search-by-email` → "олдсонгүй", `recommend` → `[]` (dry-run). Read-only эсэх батлагдаагүй → MANUAL-QA-д ALLOW_WRITES дор шалгана |
+| D6 | #23 `TalentInvitationItem`-д `ratingPoints?` нэмнэ |
+| D7 | `node --test` + зөвхөн `"test"` script. tsconfig/eslint/alias өөрчлөх шаардлага гарвал зогсож асууна. Тестлэх цэвэр функц alias-гүй |
+| D8 | Хайлтын 350мс debounce үлдэнэ (зориудын зөрүү → mismatches.md) |
+| D9 | Dashboard-ын staging-д байхгүй 3 статистик картыг хасна |
+| Залруулга | "Гарах" dialog-гүй + `ra_draft_{id}` (restore дүрмийг bundle-аас; draft-д зөвхөн форм талбар). Custom асуулт (customer-question-controller) ФАЗ 4-өөс хасагдсан. `set-tests` шууд массив батлагдсан. Polling/focus refetch-ийг RA hook бүрт (глобал default биш). tsc baseline = source 0 алдаа (`.next/dev/types`-ийг тооцохгүй) + `next build` typecheck |

@@ -68,7 +68,7 @@
 
 ## Батлах боломжгүй (POST шаардлагатай)
 
-U1 (`createRecruitment` хариуны хэлбэр), U2 (`plan_expired`) нь бодит POST эсвэл багц дууссан account шаарддаг тул GET-ээр батлах боломжгүй. `docs/role-assessment-unverified.md`-д хэвээр.
+U1 (`createRecruitment` хариуны хэлбэр), U2 (`plan_expired`) нь бодит POST эсвэл багц дууссан account шаарддаг тул GET-ээр батлах боломжгүй. `docs/role-assessment/unverified.md`-д хэвээр.
 
 ## ФАЗ 4 (талентын үр дүн)
 
