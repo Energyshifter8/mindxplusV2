@@ -5,6 +5,10 @@
 ажиглалт хангалтгүй. Төлөв: ✅ = staging дээр GET-ээр батлагдсан
 (`docs/role-assessment/verification.md`), ⏳ = нээлттэй.
 
+> Алхам 8-д замууд шилжсэн: `app/dashboard/recruitments/*` → `app/role-assessment/*`,
+> `app/dashboard/talents/*` → `app/invited-talents/*` (хүснэгтийн хуучин замууд түүхэн).
+> Гараар шалгах дараалал: `MANUAL-QA.md`.
+
 | # | Фаз | Төлөв | Хаана | Юу | Эх сурвалж | Батлах арга / үр дүн |
 |---|---|---|---|---|---|---|
 | U1 | 1 | 🟡 | `lib/api.ts` `createRecruitment` | `POST /customer/recruitments/new`, body `{str}`, хариу нь raw id string уу, `{id}` уу (хоёуланг зохицуулсан) | 📦 тайлан §2d, #25 | **Swagger ✅**: body `StrDTO {str*}` → `200 string`. Бодит дуудлагаар шалгаагүй (ноорог үүснэ) |
@@ -33,7 +37,7 @@
 | U24 | 4 | ✅ | `EventSummaryItem.seconds` | Staging код `seconds`-ийг уншдаг ч ажигласан хариунд ирээгүй (хугацаа харагдахгүй) | ❓ | **Swagger**: `BehaviorEventSummary.seconds: int32` бодит талбар; ажигласан хариунд утгагүй үед ирээгүй |
 | U25 | 4 | ✅ | #20 татах | Төрөл, header | — | 200 `application/pdf` (`%PDF-`, ~32KB), `Content-Disposition: attachment; filename="….pdf"` ASCII. **Тест бүрт ижил файлын нэр** ирдэг (browser "(1)" нэмнэ) |
 | U26 | 4 | ⏳ | "Тайлан татах" товч | Browser-ийн бодит хадгалах үйлдэл (`saveBlob`) | — | Таны гараар нэг удаа дарах (файл диск рүү хадгалагдана) |
-| U27 | 4 | ⏳ | Тайлбар/зөвлөмж текст, gauge | Хэрэгжүүлээгүй (HTML тайлан ашиглав) | 📦 | Бүтээгдэхүүний шийдвэр |
+| U27 | 4 | ⏳ | Тайлбар/зөвлөмж текст, gauge | Хэрэгжүүлээгүй — staging module 36209 (chunk 6209/6495) татагдаагүй; API `subContents` + HTML тайлан | 📦 | U41, MANUAL-QA §1 |
 | U28 | 4 | ✅ | #15 `customQuestionAnswers` | React key | — | `responseId`, `testAnswerId` нь бүх хариултад ижил → `questionId` key (F7) |
 | U29 | 4 | ✅ | #15 STARTED/EXPIRED | `assessment` | — | `null` → "дуусгаагүй байна" мессеж |
 | U30 | 4 | ✅ | #16 / prev-next | Дараалал | — | `prevId/nextId` гинжин дараалал = #16-ийн дараалал (10 урилга) |
@@ -44,6 +48,13 @@
 | U35 | endpoints | ⏳ | `recommendTests` | Хариу swagger-ээр `HiringTestPublicDTO[]`; staging апп `{tests, answerIds}` / `{content}`-ийг ч хүлээн авдаг | 📦 ↔ swagger | Гурван хэлбэрийг массив болгож зохицуулсан |
 | U36 | endpoints | ⏳ | `inviteTalent` | Хариу `string` (урилгын id гэж таамаглав); `phoneNumber: null`-ийг сервер хүлээн авах эсэх (staging апп `null` илгээдэг 📦) | 📦 + swagger | Body ✅ mock |
 | U37 | endpoints | ⏳ | `searchTalentByEmail` | Олдоогүй үед 404 эсвэл `data: null` эсэх; `mobileNo` талбар (swagger `TalentEntity`-д байхгүй, bundle уншдаг) | 📦 ↔ swagger | Хоёр тохиолдолд `null` буцаана ✅ mock |
-| U38 | endpoints | ⏳ | `updateDesign("RECRUITMENT", …)`, `uploadDesignLogo`, `removeDesignLogo` | Үнэлгээнд update-ийг staging апп дууддаггүй (зөвхөн survey); upload-ийн хариу `string` (URL?) | swagger / 📦 | GET `designs/RECRUITMENT/{id}` ✅. Multipart proxy засвар: байт бүрэн дамжина ✅ (mock fetch unit test; хуучин proxy 0 байт илгээдэг байсан) |
+| U38 | endpoints | ⏳ | `uploadDesignLogo`, `removeDesignLogo` (`updateDesign`/themes-ийг staging дууддаггүй тул хассан) | Үнэлгээнд update-ийг staging апп дууддаггүй (зөвхөн survey); upload-ийн хариу `string` (URL?) | swagger / 📦 | GET `designs/RECRUITMENT/{id}` ✅. Multipart proxy засвар: байт бүрэн дамжина ✅ (mock fetch unit test; хуучин proxy 0 байт илгээдэг байсан) |
 | U39 | endpoints | ⏳ | `extendInvitation`, `rateInvitation`, `addInvitationNote`, `toggleTalentBookmark` | Хариу (extend → `Talent`, notes → `InvitationNoteView`, rate → `RestResponseVoid`, bookmark → schema-гүй) | swagger | Body ✅ mock; rate 0..5 бүхэл, bookmark бүхэл id-г client шалгана |
-| U40 | endpoints | ✅ | `fetchRecruitmentBrief` `GET /customer/recruitments/status/{id}` | Swagger-т бий, staging апп дууддаггүй | swagger | CREATED/PUBLISHED/CLOSED дээр 200 ✅, `RecruitmentBriefView` хэлбэр |
+| U40 | endpoints | ✅ | `GET /customer/recruitments/status/{id}` | Swagger-т бий, staging апп дууддаггүй | swagger | 200 ✅; UI-д хэрэггүй тул функцийг хассан (алхам 9) |
+| U41 | 5 | ⏳ | `components/role-assessment/result/ResultContent.tsx` | Тестийн accordion-ы бие (module 36209): gauge-ийн дүүргэлт, тайлбар, "Ярилцлагад анхаарч болох зүйлс", "Ажил олгогчид өгөх зөвлөмж"-ийн эх сурвалж (статик контент уу, API уу) | 📦 (chunk татагдаагүй) | Staging-д нэвтэрч chunk-ийг Network-оос авах (MANUAL-QA §1) |
+| U42 | 5 | ⏳ | `CustomQuestionAnswer.questionDescription` | Staging bundle үзүүлдэг; API хариунд ажиглагдаагүй | 📦 | Optional; бодит хариугаар шалгах |
+| U43 | 5 | ✅ | Dashboard тестийн "Дэлгэрэнгүй" | `RecruitmentTest.id` нь каталогийн тестийн id эсэх | — | `GET /customer/role-assessments/tests/{RecruitmentTest.id}` → 200, HTML контент ✅ (локал browser) |
+| U44 | 6 | ⏳ | `components/role-assessment/talents/TalentCard.tsx` | Утас/имэйл/огноо/үзэх icon (module 66212, 66462, 32423, 92598) | ❓ lucide гэж таамаглав | Staging-тэй харьцуулах (MANUAL-QA §1) |
+| U45 | 6 | ⏳ | Rating tooltip "Дундаж оноо" | Radix tooltip `light` variant → base-ui Tooltip, staging-ийн class-аар | 📦 | Харагдацыг харьцуулах |
+| U46 | бүгд | ⏳ | Responsive 1440/1024/390 | Claude-ийн орчинд цонхны resize ажиллаагүй; `main`-ийг 752/390 болгож (desktop media query-тэй) шалгав | — | Бодит viewport-оор (MANUAL-QA §1) |
+| U47 | 5 | ⏳ | `plan_expired` → `/membership` | Staging-ийн зам; энэ аппад хуудас байхгүй | 📦 | Membership модуль хэрэгжих үед |

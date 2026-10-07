@@ -62,4 +62,6 @@ Baseline: source tsc 0 · eslint 0 алдаа / 10 warning · biome 1 (хууч�
 - [x] `/role-assessment` (wizard `/{id}`, `/{id}/preview` sidebar-гүй; `/{id}/dashboard[/{iid}]`), `/invited-talents[/{talentId}]`, `redirects()` (307, query хадгална), `lib/routes.ts`, Sidebar/нүүрийн линк
 
 ## 9. Баримт
-- [ ] README, MANUAL-QA.md, unverified.md, mismatches.md, FINAL тайлан
+- [x] README (RA хэсэг), `MANUAL-QA.md`, `unverified.md` (U41–U47), `mismatches.md` (M1–M29), `status.md`-д хуучирсан тэмдэглэл
+- [x] Цэвэрлэгээ: хуучин dark компонент, ашиглагдаагүй helper/API; responsive засвар (RaScope)
+- [x] Эцсийн шалгалт (tsc/eslint/biome/test/build, dev server) ба FINAL тайлан (chat)
