@@ -162,3 +162,38 @@ export const RECOMMEND_QUESTIONS = [
 
 export type RecommendAnswer =
 	(typeof RECOMMEND_QUESTIONS)[number]["options"][number]["value"];
+
+// --- Статусаас хамаарах үйлдлүүд (staging bundle 📦: жагсаалт, wizard, dashboard) ---
+
+/** Wizard-д засах боломжтой (бусад үед зөвхөн унших горим). */
+export function isRecruitmentEditable(status: string | undefined): boolean {
+	return status === "CREATED";
+}
+
+/** Мөр/нэр дээр дарахад: CREATED → wizard, бусад → dashboard. */
+export function opensWizard(status: string | undefined): boolean {
+	return status === "CREATED";
+}
+
+/** Нэр солих, устгах: зөвхөн CREATED. */
+export function canRenameRecruitment(status: string | undefined): boolean {
+	return status === "CREATED";
+}
+
+export function canDeleteRecruitment(status: string | undefined): boolean {
+	return status === "CREATED";
+}
+
+/** Урих, хаах: зөвхөн PUBLISHED. */
+export function canInviteToRecruitment(status: string | undefined): boolean {
+	return status === "PUBLISHED";
+}
+
+export function canCloseRecruitment(status: string | undefined): boolean {
+	return status === "PUBLISHED";
+}
+
+/** Dashboard "Дахин урих" (сунгах): зөвхөн EXPIRED урилга. */
+export function canExtendInvitation(status: string | undefined): boolean {
+	return status === "EXPIRED";
+}
