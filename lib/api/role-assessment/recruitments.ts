@@ -7,7 +7,7 @@ import {
 	type SpringPage,
 } from "@/lib/api/http";
 import { ApiError } from "@/lib/api-errors";
-import type { RecruitmentBriefView, StrDTO } from "@/lib/types/api";
+import type { StrDTO } from "@/lib/types/api";
 import type {
 	RecruitmentDetail,
 	RecruitmentListItem,
@@ -36,13 +36,6 @@ export function fetchRecruitmentStats() {
 /** GET /customer/recruitments/{id} (#3) */
 export function fetchRecruitmentDetail(id: string) {
 	return apiGetOrThrow<RecruitmentDetail>(`/customer/recruitments/${enc(id)}`);
-}
-
-/** GET /customer/recruitments/status/{id} — swagger-т бий, staging апп дууддаггүй (R1) */
-export function fetchRecruitmentBrief(id: string) {
-	return apiGetOrThrow<RecruitmentBriefView>(
-		`/customer/recruitments/status/${enc(id)}`,
-	);
 }
 
 /** Үүсгэх modal-ын нэрийн дээд урт (staging input maxLength 📦; swagger зөвхөн minLength 1). */

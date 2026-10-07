@@ -6,21 +6,10 @@ import {
 	enc,
 	invalidArgument,
 } from "@/lib/api/role-assessment/shared";
-import type {
-	DesignDTO,
-	DesignOwnerType,
-	IdDTO,
-	ThemeType,
-	UpdateDesign,
-} from "@/lib/types/api";
+import type { DesignDTO, DesignOwnerType, IdDTO } from "@/lib/types/api";
 
 function designPath(ownerType: DesignOwnerType, ownerId: string) {
 	return `/customer/designs/${ownerType}/${enc(ownerId)}`;
-}
-
-/** GET /customer/designs/themes ✅ */
-export function fetchDesignThemes() {
-	return apiGetOrThrow<ThemeType[]>("/customer/designs/themes");
 }
 
 /** GET /customer/designs/{ownerType}/{ownerId} ✅ (`logoUrl` лого байхгүй үед ирэхгүй) */
@@ -28,25 +17,8 @@ export function fetchDesign(ownerType: DesignOwnerType, ownerId: string) {
 	return apiGetOrThrow<DesignDTO>(designPath(ownerType, ownerId));
 }
 
-/**
- * POST /customer/designs/{ownerType}/{ownerId}/update — body UpdateDesign (swagger).
- * Анхаар: хариунд байрлал `imagePosition`, body-д `logoPosition`.
- * Staging апп үнэлгээнд энэ endpoint-ийг дууддаггүй (зөвхөн survey) — U38.
- */
-export function updateDesign(
-	ownerType: DesignOwnerType,
-	ownerId: string,
-	body: UpdateDesign,
-) {
-	return apiPostOrThrow<DesignDTO>(
-		`${designPath(ownerType, ownerId)}/update`,
-		body,
-	);
-}
-
 /** Лого: PNG/JPEG, ≤200KB (staging client-side шалгалт 📦) */
 export const LOGO_MAX_BYTES = 200 * 1024;
-export const LOGO_TYPES = ["image/png", "image/jpeg"] as const;
 
 /**
  * POST …/upload-logo — multipart, талбар `logo` 📦 → 200 string.
