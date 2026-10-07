@@ -7,11 +7,13 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+	addInvitationNote,
 	closeRecruitment,
 	createRecruitment,
 	deleteRecruitment,
 	extendInvitation,
 	inviteTalent,
+	rateInvitation,
 	renameRecruitment,
 } from "@/lib/api/role-assessment";
 import { getErrorMessage } from "@/lib/api-errors";
@@ -136,6 +138,38 @@ export function useExtendInvitation(recruitmentId: string) {
 		},
 		onError: (error) => {
 			toast.error(getErrorMessage(error, "Урилга сунгахад алдаа гарлаа"));
+		},
+	});
+}
+
+// --- Үр дүнгийн хуудас (📦 module 1043 `P`, `V`) ---
+
+/** Од үнэлгээ (1–5) илгээнэ. */
+export function useRateInvitation(invitationId: string) {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: (points: number) => rateInvitation(invitationId, points),
+		onSuccess: () => {
+			toast.success("Үнэлгээ илгээгдлээ.");
+			queryClient.invalidateQueries({ queryKey: raKeys.rate(invitationId) });
+		},
+		onError: (error) => {
+			toast.error(getErrorMessage(error, "Алдаа гарлаа"));
+		},
+	});
+}
+
+/** Тэмдэглэл (≤ NOTE_MAX) нэмнэ. */
+export function useAddInvitationNote(invitationId: string) {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: (note: string) => addInvitationNote(invitationId, note),
+		onSuccess: () => {
+			toast.success("Тэмдэглэл хадгалагдлаа.");
+			queryClient.invalidateQueries({ queryKey: raKeys.notes(invitationId) });
+		},
+		onError: (error) => {
+			toast.error(getErrorMessage(error, "Алдаа гарлаа"));
 		},
 	});
 }
