@@ -159,6 +159,50 @@
 	--radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Талентийн үнэлгээ — staging-ийн өнгө, фонтын токен (app-staging CSS, docs/parity/home.md §9).
+   Нэр нь staging-ийн Tailwind class-тай ижил (text-TextColor-main г.м.) тул class-ийг шууд
+   хуулна. Зөвхөн .ra-scope доторх RA хуудсуудад хэрэглэнэ — бусад модульд хамаарахгүй. */
+@theme {
+	--font-sf: var(--font-manrope), sans-serif;
+	--color-TextColor-main: #10182b;
+	--color-TextColor-secondary: #637389;
+	--color-TextColor-third: #92a3bb;
+	--color-TextColor-disable: #cbd5e1;
+	--color-Stroke-500: #f0f6fc;
+	--color-Stroke-600: #e4e8ef;
+	--color-Stroke-700: #cbd5e1;
+	--color-Stroke-800: #92a3bb;
+	--color-Ghost-50: rgba(146, 163, 187, 0.05);
+	--color-Ghost-150: rgba(146, 163, 187, 0.15);
+	--color-Ghost-200: rgba(146, 163, 187, 0.2);
+	--color-Gray-50: #f8f8f8;
+	--color-Gray-100: #f0f6fc;
+	--color-Gray-200: #e4e8ef;
+	--color-Gray-300: #cbd5e1;
+	--color-Gray-400: #92a3bb;
+	--color-Gray-700: #324155;
+	--color-Gray-800: #1d293d;
+	--color-Gray-900: #10182b;
+	--color-Gray-950: #020617;
+	--color-Gray-white: #ffffff;
+	--color-Primary: #8ca9ff;
+	--color-Primary-hover: #a3baff;
+	--color-Primary-press: #7094ff;
+	--color-Primary-softBg: #f5f7ff;
+	--color-Semantic-success100: #f2ffe0;
+	--color-Semantic-success500: #72bf0f;
+	--color-Semantic-success800: #1c2f04;
+	--color-Semantic-warning100: #fff8e0;
+	--color-Semantic-warning500: #ffd95c;
+	--color-Semantic-warning800: #523f00;
+	--color-Semantic-error100: #ffe5e0;
+	--color-Semantic-error500: #ff775c;
+	--color-Semantic-error800: #661100;
+	--color-Semantic-info100: #e0f2ff;
+	--color-Semantic-info500: #8ccdff;
+	--color-Semantic-info800: #001d33;
+}
+
 @layer base {
 	* {
 		@apply border-border outline-ring/50;
@@ -210,4 +254,41 @@
 
 .table-scroll-container::-webkit-scrollbar-thumb:hover {
 	background: var(--muted-foreground);
+}
+
+/* Талентийн үнэлгээний хуудсууд: staging шиг үргэлж light (shell dark байсан ч).
+   shadcn-ийн хувьсагчийг энэ scope дотор гэрлийн утгаар солино. */
+.ra-scope {
+	color-scheme: light;
+	--background: #ffffff;
+	--foreground: #10182b;
+	--card: #ffffff;
+	--card-foreground: #10182b;
+	--popover: #ffffff;
+	--popover-foreground: #10182b;
+	--primary: #8ca9ff;
+	--primary-foreground: #ffffff;
+	--muted: #f0f6fc;
+	--muted-foreground: #637389;
+	--accent: #f5f7ff;
+	--accent-foreground: #10182b;
+	--border: #e4e8ef;
+	--input: #e4e8ef;
+	--ring: #8ca9ff;
+	background-color: #ffffff;
+	color: #10182b;
+	font-family: var(--font-sf);
+	font-size: 14px;
+	line-height: 1.4;
+	letter-spacing: 0.2px;
+}
+
+/* antd v5 Skeleton (active) — staging ачаалах төлөв */
+@keyframes antd-skeleton {
+	0% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0 50%;
+	}
 }

@@ -1,6 +1,11 @@
 import "@/app/globals.css";
 import type { Metadata } from "next";
-import { Barlow_Condensed, Geist, JetBrains_Mono } from "next/font/google";
+import {
+	Barlow_Condensed,
+	Geist,
+	JetBrains_Mono,
+	Manrope,
+} from "next/font/google";
 import Providers from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
@@ -9,6 +14,12 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const jetbrainsMono = JetBrains_Mono({
 	subsets: ["latin"],
 	variable: "--font-mono",
+});
+// Талентийн үнэлгээний staging фонт (font-sf). Зөвхөн .ra-scope-д хэрэглэгдэнэ; хувьсагч
+// root дээр байх нь modal/drawer-ийн portal-д ч хүрэхэд хэрэгтэй. Кирилл subset заавал.
+const manrope = Manrope({
+	subsets: ["latin", "cyrillic"],
+	variable: "--font-manrope",
 });
 const barlowCondensed = Barlow_Condensed({
 	weight: ["700", "900"],
@@ -35,6 +46,7 @@ export default function RootLayout({
 				geist.variable,
 				jetbrainsMono.variable,
 				barlowCondensed.variable,
+				manrope.variable,
 			)}
 		>
 			<body className="antialiased">
