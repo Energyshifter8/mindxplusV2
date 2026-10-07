@@ -25,6 +25,8 @@ export interface RaModalProps {
 	className?: string;
 	/** Ачаалж/хадгалж байх үед гадуур дарж, Escape-ээр хаахгүй */
 	dismissible?: boolean;
+	/** Staging `containerClassName`-д "gap-y" байх үед: content/footer wrapper-гүй */
+	bare?: boolean;
 }
 
 export function RaModal({
@@ -37,6 +39,7 @@ export function RaModal({
 	width = 400,
 	className,
 	dismissible = true,
+	bare = false,
 }: RaModalProps) {
 	return (
 		<Dialog.Root
@@ -70,8 +73,19 @@ export function RaModal({
 								/>
 							</div>
 						)}
-						{children != null && <div className="mt-[10px]">{children}</div>}
-						{footer != null && <div className="mt-4">{footer}</div>}
+						{bare ? (
+							<>
+								{children}
+								{footer}
+							</>
+						) : (
+							<>
+								{children != null && (
+									<div className="mt-[10px]">{children}</div>
+								)}
+								{footer != null && <div className="mt-4">{footer}</div>}
+							</>
+						)}
 					</div>
 				</Dialog.Popup>
 			</Dialog.Portal>

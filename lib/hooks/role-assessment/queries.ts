@@ -1,16 +1,25 @@
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { fetchDesign } from "@/lib/api/design";
 import {
+	fetchCatalogQuestions,
+	fetchCatalogTests,
 	fetchInvitationNames,
 	fetchInvitationNotes,
 	fetchInvitationRate,
 	fetchInvitationResult,
+	fetchQuestionCategories,
 	fetchRecruitmentDetail,
+	fetchRecruitmentInformation,
 	fetchRecruitmentInvitations,
 	fetchRecruitmentList,
+	fetchRecruitmentQuestionIds,
+	fetchRecruitmentSettings,
 	fetchRecruitmentStats,
+	fetchRecruitmentTestIds,
 	fetchRoleAssessmentTest,
+	fetchTestCategories,
 	fetchTestReportHtml,
 } from "@/lib/api/role-assessment";
 import type { ApiPageParams } from "@/lib/pagination";
@@ -127,5 +136,102 @@ export function useTestReportHtml(
 			fetchTestReportHtml(invitationId as string, answerId as string),
 		enabled: !!invitationId && !!answerId,
 		gcTime: 60 * 1000,
+	});
+}
+
+// --- Wizard (staging: каталог staleTime/gcTime 30 мин, сонголт алхам идэвхтэй үед л) ---
+
+const CATALOG_CACHE = {
+	staleTime: 30 * 60 * 1000,
+	gcTime: 30 * 60 * 1000,
+} as const;
+
+export function useRecruitmentInformation(id: string | undefined) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.information(id ?? ""),
+		queryFn: () => fetchRecruitmentInformation(id as string),
+		enabled: !!id,
+	});
+}
+
+export function useRecruitmentSettings() {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.settings(),
+		queryFn: fetchRecruitmentSettings,
+	});
+}
+
+export function useRecruitmentDesign(id: string | undefined) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.design(id ?? ""),
+		queryFn: () => fetchDesign("RECRUITMENT", id as string),
+		enabled: !!id,
+	});
+}
+
+export function useRecruitmentTestIds(
+	id: string | undefined,
+	enabled: boolean,
+) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.testIds(id ?? ""),
+		queryFn: () => fetchRecruitmentTestIds(id as string),
+		enabled: !!id && enabled,
+	});
+}
+
+export function useRecruitmentQuestionIds(
+	id: string | undefined,
+	enabled: boolean,
+) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.questionIds(id ?? ""),
+		queryFn: () => fetchRecruitmentQuestionIds(id as string),
+		enabled: !!id && enabled,
+	});
+}
+
+export function useTestCategories(enabled: boolean) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		...CATALOG_CACHE,
+		queryKey: raKeys.testCategories(),
+		queryFn: fetchTestCategories,
+		enabled,
+	});
+}
+
+export function useCatalogTests(category: string, enabled: boolean) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		...CATALOG_CACHE,
+		queryKey: raKeys.catalogTests(category),
+		queryFn: () => fetchCatalogTests(category),
+		enabled,
+	});
+}
+
+export function useQuestionCategories(enabled: boolean) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		...CATALOG_CACHE,
+		queryKey: raKeys.questionCategories(),
+		queryFn: fetchQuestionCategories,
+		enabled,
+	});
+}
+
+export function useCatalogQuestions(category: string, enabled: boolean) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		...CATALOG_CACHE,
+		queryKey: raKeys.catalogQuestions(category),
+		queryFn: () => fetchCatalogQuestions(category),
+		enabled,
 	});
 }
