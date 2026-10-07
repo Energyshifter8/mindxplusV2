@@ -18,3 +18,16 @@
 - **Responsive 390:** хуучин shell-ийн sidebar (272px) жижиг дэлгэцэд нуугддаггүй тул main 118px болдог — shell-д хүрэхгүй (дүрэм). RA контентыг main=390px-ээр шалгав; статистик карт <640px дээр босоо (staging `flex`-д "Хязгааргүй" халидаг).
 - **Тестийн орчин:** automation tab `visibility: hidden` тул `requestAnimationFrame` зогсдог → base-ui Menu/Select хулганы mousedown-оор нээгдэхгүй, popup-ын нээх/хаах transition эхлэл/төгсгөлдөө гацдаг (бодит хэрэглэгчид нөлөөгүй). Харилцан үйлдлийг `.click()` / keyboard-аар шалгав.
 - **Create modal:** Enter-ээр илгээнэ (staging-д байхгүй). "Гарчиг оруулна уу" toast staging-тэй ижил.
+- **quill@2.0.3 lockfile:** `pnpm add` нь quill-ийн 7 dependency-оос гадна peer-context metadata (`supports-color` суффикс)-ийг шинэчилсэн — хувилбар өөрчлөгдөөгүй. Нэмсний дараа dev server-т HMR stale module алдаа гарсан, шинэ navigation цэвэр → dev server-ийг дахин асаах хэрэгтэй байж болно.
+- **Wizard унших горим:** CREATED-ээс бусад бүх статус (PUBLISHING/SUSPENDED/CLOSED) унших горим — staging зөвхөн PUBLISHED-ийг шалгадаг ч бусад статуст засвар серверт амжилтгүй болно.
+- **Нийтлэх:** staging шууд нийтэлдэг; буцаагдахгүй үйлдэл тул баталгаажуулах dialog нэмэв (дүрэм D).
+- **Сонголтын дараалал:** серверээс ирсэн id-ийн дарааллаар (staging каталогийн дараалал) — баруун самбар ба дугаарын badge тогтвортой.
+- **<lg өргөн:** баруун самбар контентын доор (staging 1024-д хавчигддаг).
+- **DRY-RUN wizard:** алхам бүрийн хадгалалт stub тул query cache-д `setQueryData`-аар үр дүнг тавьж алхам үргэлжилнэ; `ra_draft_{id}`-аас сэргээх нь зөвхөн DRY-RUN-д (staging wizard сэргээдэггүй). Preview нь staging шиг unload/unmount-д ноорогийг устгана.
+- **Quill хоосон утга:** `<p><br></p>`-ийг `""` гэж үзнэ (staging `getText().trim()` шалгалттай тэнцүү).
+- **document.title:** Next-ийн async metadata title-ийг дарж бичдэг тул `MutationObserver`-тэй hook.
+- **Preview "Эхлэх":** тест/асуулт хоосон бол disabled (staging алдаатай дэлгэц рүү ордог).
+- **Quill CSS:** `quill.core.css` layer-гүй тул Tailwind utility-д `!` (important) хэрэглэв.
+- **"?" тусламжийн widget:** shell-ийн хэсэг тул хийгээгүй.
+- **React compiler lint:** effect доторх setState-ийг React-ийн "render үед state тохируулах" загвараар сольсон (logic өөрчлөгдөөгүй, dry-run-д дахин шалгасан).
+- **A11y:** асуулт = `<label>` + native checkbox (staging `div onClick`); баруун алхмууд = "stretched button" (title доторх button-ий `::after` мөрийг хамарна, "хасах" товч z-10) — button дотор button үүсэхгүй; ангиллын товчнууд `<fieldset>`+sr-only legend.
