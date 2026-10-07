@@ -1,19 +1,10 @@
 import type { SpringPage } from "@/lib/api/http";
-import {
-	type ApiResponse,
-	apiGet,
-	apiPost,
-	buildQuery,
-	httpClient,
-} from "@/lib/api/http";
+import { type ApiResponse, apiGet, apiPost, httpClient } from "@/lib/api/http";
 import { recruitmentListPath } from "@/lib/api/role-assessment/recruitments";
 import type {
 	CompletedInvitation,
 	RecruitmentListItem,
 	RecruitmentListParams,
-	TalentDetail,
-	TalentInvitationPage,
-	TalentListPage,
 } from "@/lib/types/role-assessment";
 
 // HTTP цөм (axios instance, ApiResponse, apiGet/apiPost, *OrThrow, SpringPage):
@@ -21,13 +12,9 @@ import type {
 export * from "@/lib/api/http";
 export type {
 	CompletedInvitation,
-	HiringInvitationItem,
 	RecruitmentListItem,
 	RecruitmentListParams,
 	RecruitmentStats,
-	TalentDetail,
-	TalentInvitationItem,
-	TalentListPage,
 } from "@/lib/types/role-assessment";
 
 // --- Auth endpoint-ууд (staging-ийн ажигласан path; swagger-т байхгүй — docs/swagger/mismatches.md E7, E8) ---
@@ -147,40 +134,6 @@ export function getLatestCompletedInvitations(limit = 5) {
 	const safeLimit = Math.min(10, Math.max(5, Math.trunc(limit) || 5));
 	return apiGet<CompletedInvitation[]>(
 		`/customer/hiring-invitations/latest-completed?limit=${safeLimit}`,
-	);
-}
-
-// --- Урьсан талентууд (app/dashboard/talents) — {success,data} хэлбэр.
-// ФАЗ 6-д lib/api/role-assessment/talents.ts-ийн throw хувилбараар солигдоно.
-
-export function getHiringInvitations(params?: {
-	page?: number;
-	size?: number;
-	/** Хайлт. `name` параметрийг API тоодоггүй, `q` ажилладаг (staging ✅). */
-	q?: string;
-	/** Зөвхөн тэмдэглэсэн талентууд. Staging зөвхөн `true` үед илгээдэг 📦, шүүлт ✅ */
-	marked?: boolean;
-}) {
-	return apiGet<TalentListPage>(
-		`/customer/hiring-invitations/talents${buildQuery({
-			page: params?.page,
-			size: params?.size,
-			q: params?.q?.trim(),
-			marked: params?.marked === true ? true : undefined,
-		})}`,
-	);
-}
-
-export function getTalentDetail(id: string) {
-	return apiGet<TalentDetail>(`/customer/hiring-invitations/talents/${id}`);
-}
-
-export function getTalentInvitations(
-	id: string,
-	params?: { page?: number; size?: number },
-) {
-	return apiGet<TalentInvitationPage>(
-		`/customer/hiring-invitations/talents/${id}/invitations${buildQuery({ ...params })}`,
 	);
 }
 

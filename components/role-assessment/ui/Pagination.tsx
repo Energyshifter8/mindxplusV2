@@ -50,6 +50,7 @@ export function RaPagination({
 	onPageChange,
 	pageSize,
 	onPageSizeChange,
+	pageSizeOptions = PAGE_SIZE_OPTIONS,
 	className,
 }: {
 	currentPage: number;
@@ -57,6 +58,8 @@ export function RaPagination({
 	onPageChange: (page: number) => void;
 	pageSize?: number;
 	onPageSizeChange?: (size: number) => void;
+	/** Staging-ийн урилгын түүх `[10, 12, 20, 50]` */
+	pageSizeOptions?: readonly number[];
 	className?: string;
 }) {
 	const isFirst = currentPage <= 1;
@@ -109,7 +112,7 @@ export function RaPagination({
 					ariaLabel="Хуудасны хэмжээ"
 					value={String(pageSize)}
 					onChange={(v) => onPageSizeChange(Number(v))}
-					options={PAGE_SIZE_OPTIONS.map((n) => ({
+					options={pageSizeOptions.map((n) => ({
 						value: String(n),
 						label: n,
 					}))}

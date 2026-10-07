@@ -19,11 +19,17 @@ import {
 	fetchRecruitmentStats,
 	fetchRecruitmentTestIds,
 	fetchRoleAssessmentTest,
+	fetchTalentDetail,
+	fetchTalentInvitations,
+	fetchTalents,
 	fetchTestCategories,
 	fetchTestReportHtml,
 } from "@/lib/api/role-assessment";
 import type { ApiPageParams } from "@/lib/pagination";
-import type { RecruitmentListParams } from "@/lib/types/role-assessment";
+import type {
+	RecruitmentListParams,
+	TalentListParams,
+} from "@/lib/types/role-assessment";
 import { raKeys } from "./keys";
 
 /**
@@ -233,5 +239,38 @@ export function useCatalogQuestions(category: string, enabled: boolean) {
 		queryKey: raKeys.catalogQuestions(category),
 		queryFn: () => fetchCatalogQuestions(category),
 		enabled,
+	});
+}
+
+// --- Урьсан талентууд (staging 📦: retry:false, focus refetch-гүй) ---
+
+export function useTalentList(params: TalentListParams) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.talents(params),
+		queryFn: () => fetchTalents(params),
+		placeholderData: keepPreviousData,
+	});
+}
+
+export function useTalentDetail(id: string | undefined) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.talent(id ?? ""),
+		queryFn: () => fetchTalentDetail(id as string),
+		enabled: !!id,
+	});
+}
+
+export function useTalentInvitations(
+	id: string | undefined,
+	params: ApiPageParams,
+) {
+	return useQuery({
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.talentInvitations(id ?? "", params),
+		queryFn: () => fetchTalentInvitations(id as string, params),
+		enabled: !!id,
+		placeholderData: keepPreviousData,
 	});
 }
