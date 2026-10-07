@@ -37,3 +37,9 @@
 - **plan_expired modal:** "Багцтай танилцах" → `/membership` (staging). Энэ аппад membership хуудас байхгүй тул 404 — модуль хамрах хүрээнээс гадуур (mismatches).
 - **Хуучин компонент:** `components/recruitments/{RecruitmentDetailDrawer,TestDetailDrawer}` ашиглагдахгүй болсон тул устгав; `TestReportDrawer` алхам 5 хүртэл.
 - **Тестийн орчин (нэмэлт):** hidden tab-д React 19.2-ийн SSR Suspense reveal (rAF) зогсдог тул `div#S:0[hidden]` DOM-д үлддэг (давхар `id`) — бодит хэрэглэгчид нөлөөгүй.
+- **Үр дүнгийн тестийн accordion (module 36209):** staging chunk `6209`, `6495` татагдаагүй (нэр/hash мэдэгдэхгүй, URL таах хориотой) → gauge, тайлбар, "Ярилцлагад анхаарч болох зүйлс", "Ажил олгогчид өгөх зөвлөмж"-ийг хийгээгүй; API-ийн `subContents` (хүчин зүйл, түвшин, оноо) + "Анхаарал төвлөрөл" badge-ийг staging screenshot-ын (07) layout-аар харуулав. Бүрэн текст HTML тайланд. MANUAL-QA: chunk-ийг татаж харьцуулах.
+- **"Дэлгэрэнгүй" (тайлан):** staging шиг HTML-ийг эхлээд татаж (товч "Ачааллаж байна..."), дараа нь drawer нээнэ; `queryClient.fetchQuery` (кэш 60с, PII тул богино).
+- **Sticky толгой:** staging үр дүнгийн хуудасны `overflow-x-hidden` root-ийг scroll container болгодог тул толгой нь наалддаггүй (staging-ийн алдаа) → `overflow-x-clip`. DRY-RUN banner-ыг `h-[37px]` тогтмол болгов (өмнө нь 41px, `--ra-banner-h` 37px-тэй зөрж байв).
+- **Тайлан татах:** GET (бичих биш) тул DRY-RUN хаадаггүй; локал шалгалтад дараагүй (staging-д "ДАРАХГҮЙ" жагсаалтад байсан) → MANUAL-QA.
+- **Од үнэлгээ:** staging-ийн `useEffect(myPoints)`-ийг render үеийн sync-ээр; одны товч `aria-pressed`, `fieldset`+legend.
+- **`questionDescription`:** staging bundle үзүүлдэг ч API-д ажиглагдаагүй → optional талбар (unverified).

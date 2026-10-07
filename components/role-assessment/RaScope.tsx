@@ -10,9 +10,9 @@ export function DryRunBanner() {
 	return (
 		<div
 			role="status"
-			className="sticky top-0 z-[60] flex items-center justify-center gap-2 border-Semantic-warning500 border-b bg-Semantic-warning100 px-4 py-2 text-center font-semibold text-[14px] text-Semantic-warning800 leading-5"
+			className="sticky top-0 z-[60] flex h-[37px] shrink-0 items-center justify-center gap-2 border-Semantic-warning500 border-b bg-Semantic-warning100 px-4 text-center font-semibold text-[14px] text-Semantic-warning800 leading-5"
 		>
-			<span className="rounded bg-Semantic-warning500 px-1.5 py-0.5 font-bold text-[12px]">
+			<span className="rounded bg-Semantic-warning500 px-1.5 py-0.5 font-bold text-[12px] leading-4">
 				DRY-RUN
 			</span>
 			өөрчлөлт staging-д хадгалагдахгүй
@@ -31,7 +31,7 @@ export function RaScope({
 	return (
 		<div
 			className={cn("ra-scope flex min-h-full flex-col", className)}
-			// Sticky толгойнууд (wizard) banner-ын доор байрлана
+			// Sticky толгойнууд banner-ын (h-[37px]) доор байрлана
 			style={
 				{
 					"--ra-banner-h": isRaDryRun() ? "37px" : "0px",

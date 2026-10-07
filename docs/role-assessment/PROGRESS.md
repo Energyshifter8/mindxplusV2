@@ -44,7 +44,10 @@ Baseline: source tsc 0 · eslint 0 алдаа / 10 warning · biome 1 (хууч�
 - [x] Хайлт: API (`list/{id}`) зөвхөн page/size, staging-д ч байхгүй → хийгээгүй (mismatches)
 
 ## 5. Талентын үр дүн
-- [ ] Харагдал, од өгөх, тэмдэглэл нэмэх, "Анхааруулга"
+- [x] Толгой (breadcrumb, avatar, имэйл хуулах, нэрс сонгох, өмнөх/дараах), тест accordion (API өгөгдөл), нэмэлт асуулт
+- [x] HTML тайлан drawer (`sandbox=""`), тайлан татах, анхааруулга + "Санамж" modal, төлөв, явцын хяналт
+- [x] Од үнэлгээ, тэмдэглэл (≤500) — dry-run шалгасан; plan_expired; screenshot `screens/06-result-local.jpg`
+- [x] Unit тест (`result.test.mjs`)
 
 ## 6. Урьсан талентууд
 - [ ] Жагсаалт (q, хуудаслалт URL, marked), bookmark

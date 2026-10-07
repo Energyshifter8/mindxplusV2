@@ -183,6 +183,8 @@ export interface CustomQuestionAnswer {
 	/** Хариулт бүрт давтагдахгүй */
 	questionId: number;
 	questionText: string;
+	/** 📦 staging bundle үзүүлдэг; API хариунд ажиглагдаагүй (unverified) */
+	questionDescription?: string | null;
 	/** Талентын хариулт; хоосон бол "Хариулаагүй" */
 	content: string | null;
 	points: number;
