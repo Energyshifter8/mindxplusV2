@@ -20,12 +20,6 @@ import {
 	ErrorState,
 	InvitationStatusBadge,
 } from "@/components/shared/ListComponents";
-import type {
-	Assessment,
-	CustomQuestionAnswer,
-	InvitationResult,
-	TestResult,
-} from "@/lib/api";
 import { getErrorMessage, isRetryableError } from "@/lib/api-errors";
 import {
 	DATA_QUALITY,
@@ -42,14 +36,20 @@ import {
 	formatPoints,
 	formatSpendingTime,
 } from "@/lib/format";
-import { useDownloadTestReport } from "@/lib/hooks/useDownloadTestReport";
 import {
 	useInvitationNames,
 	useInvitationNotes,
 	useInvitationRate,
 	useInvitationResult,
 	useRecruitmentDetail,
-} from "@/lib/hooks/useRecruitmentQueries";
+} from "@/lib/hooks/role-assessment/queries";
+import { useDownloadTestReport } from "@/lib/hooks/role-assessment/useDownloadTestReport";
+import type {
+	Assessment,
+	CustomQuestionAnswer,
+	InvitationResult,
+	TestResult,
+} from "@/lib/types/role-assessment";
 
 const TestReportDrawer = lazy(
 	() => import("@/components/recruitments/TestReportDrawer"),

@@ -6,14 +6,14 @@ import {
 	RecruitmentStatusBadge,
 	TestCategoryChip,
 } from "@/components/shared/ListComponents";
-import type { RecruitmentDetail, UserRef } from "@/lib/api";
 import { getErrorMessage, isRetryableError } from "@/lib/api-errors";
 import {
 	formatDateTime,
 	formatMinutesRange,
 	formatPersonShort,
 } from "@/lib/format";
-import { useRecruitmentDetail } from "@/lib/hooks/useRecruitmentQueries";
+import { useRecruitmentDetail } from "@/lib/hooks/role-assessment/queries";
+import type { RecruitmentDetail, UserRef } from "@/lib/types/role-assessment";
 
 const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
 

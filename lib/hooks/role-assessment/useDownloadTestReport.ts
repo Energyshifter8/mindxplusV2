@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { downloadTestReport } from "@/lib/api";
+import { downloadTestReport } from "@/lib/api/role-assessment";
 import { getErrorMessage } from "@/lib/api-errors";
 import { parseContentDispositionFilename, saveBlob } from "@/lib/download";
 

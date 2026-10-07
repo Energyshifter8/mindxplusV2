@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Drawer } from "@/components/shared/Drawer";
 import { ErrorState } from "@/components/shared/ListComponents";
 import { getErrorMessage, isRetryableError } from "@/lib/api-errors";
-import { useRoleAssessmentTest } from "@/lib/hooks/useRecruitmentQueries";
+import { useRoleAssessmentTest } from "@/lib/hooks/role-assessment/queries";
 
 interface TestDetailDrawerProps {
 	/** Catalog test id (RecruitmentTest.id, testId биш) */
