@@ -50,8 +50,9 @@ Baseline: source tsc 0 · eslint 0 алдаа / 10 warning · biome 1 (хууч�
 - [x] Unit тест (`result.test.mjs`)
 
 ## 6. Урьсан талентууд
-- [ ] Жагсаалт (q, хуудаслалт URL, marked), bookmark
-- [ ] Дэлгэрэнгүй + түүх, bookmark
+- [x] Жагсаалт (q 350мс, хуудаслалт/q/marked URL-д, хэтэрсэн хуудас засах), bookmark toggle (dry-run), хоосон/алдаа/skeleton
+- [x] Дэлгэрэнгүй + урилгын түүх (state хуудаслалт `[10,12,20,50]`), bookmark төлөв; "Үр дүн" → үр дүнгийн хуудас
+- [x] `lib/api.ts`-ийн түр talents функцуудыг хасав; unit тест (`talents.test.mjs`); screenshot `screens/07-*`, `08-*`
 
 ## 7. Нэр солих / хаах / устгах
 - [x] Жагсаалт, kebab, confirm (ФАЗ 2-т хийгдсэн)

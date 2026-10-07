@@ -15,6 +15,7 @@ import {
 	inviteTalent,
 	rateInvitation,
 	renameRecruitment,
+	toggleTalentBookmark,
 } from "@/lib/api/role-assessment";
 import { getErrorMessage } from "@/lib/api-errors";
 import type { InviteTalentPayload } from "@/lib/types/role-assessment";
@@ -170,6 +171,26 @@ export function useAddInvitationNote(invitationId: string) {
 		},
 		onError: (error) => {
 			toast.error(getErrorMessage(error, "Алдаа гарлаа"));
+		},
+	});
+}
+
+// --- Урьсан талентууд (📦 module 62002) ---
+
+/** Талентыг хадгалах/болиулах (toggle). */
+export function useToggleTalentBookmark() {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: (talentId: number) => toggleTalentBookmark(talentId),
+		onSuccess: (_data, talentId) => {
+			toast.success("Хадгалагдлаа");
+			queryClient.invalidateQueries({ queryKey: raKeys.talentLists() });
+			queryClient.invalidateQueries({
+				queryKey: raKeys.talent(String(talentId)),
+			});
+		},
+		onError: (error) => {
+			toast.error(getErrorMessage(error, "Хадгалахад алдаа гарлаа"));
 		},
 	});
 }

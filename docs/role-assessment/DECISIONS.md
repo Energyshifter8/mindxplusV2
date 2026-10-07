@@ -43,3 +43,8 @@
 - **Тайлан татах:** GET (бичих биш) тул DRY-RUN хаадаггүй; локал шалгалтад дараагүй (staging-д "ДАРАХГҮЙ" жагсаалтад байсан) → MANUAL-QA.
 - **Од үнэлгээ:** staging-ийн `useEffect(myPoints)`-ийг render үеийн sync-ээр; одны товч `aria-pressed`, `fieldset`+legend.
 - **`questionDescription`:** staging bundle үзүүлдэг ч API-д ажиглагдаагүй → optional талбар (unverified).
+- **Талентын карт mapper:** staging `roleTags/skills/traitTags/mobileNo…` зэрэг swagger-т байхгүй талбаруудыг хамгаалалттай уншдаг; бид зөвхөн swagger `Talent` талбар (recruitments → ажлын байрны нэр, давхардалгүй, 2 + "+N")-ыг ашиглав — `any` хэрэглэхгүй.
+- **Талентын icon-ууд:** утас/имэйл/огноо/үзэх icon-ы module (66212, 66462, 32423, 92598) татагдаагүй chunk-д; lucide `Phone, Mail, Calendar, Eye` (bookmark 82929 = lucide "bookmark" баталгаатай) — unverified.
+- **Талентын жагсаалт URL:** staging хайлт/шүүлтийг state-д хадгалдаг; бид `q`, `marked=true`-г URL-д (жагсаалттай нийцтэй, refresh/share). Талентын дэлгэрэнгүйн түүхийн хуудаслалт staging шиг state-д.
+- **Талентын дэлгэрэнгүй bookmark:** staging зөвхөн төлөв (дүүргэсэн icon) харуулдаг, toggle байхгүй → parity; sr-only "Хадгалсан/Хадгалаагүй".
+- **Хоосон зураг:** staging-ийн `/images/invited-talents-empty.svg` (bundle-д заасан статик зам)-ийг татаж шалгав (зөвхөн svg/g/path) → `public/images/role-assessment/`.
