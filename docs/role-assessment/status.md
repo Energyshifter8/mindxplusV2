@@ -1,5 +1,8 @@
 # Role assessment — хэрэгжилтийн төлөв
 
+> ♻️ Хуучирсан (фаз-д суурилсан эхний төлөв). Одоогийн явц: `PROGRESS.md`, шийдвэр:
+> `DECISIONS.md`, зөрүү: `mismatches.md`, гараар шалгах: `MANUAL-QA.md`.
+
 - **Branch:** `feature/role-assessment`
 - **Эх сурвалж:** `docs/role-assessment/report.md` (staging-ийн судалгаа, 2026-10-06)
 - **Батлагдаагүй зүйлс:** `docs/role-assessment/unverified.md`
