@@ -3,7 +3,8 @@
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useCreateRecruitment } from "@/lib/hooks/useCreateRecruitment";
+import { useCreateRecruitment } from "@/lib/hooks/role-assessment/mutations";
+import { raRoutes } from "@/lib/routes";
 
 // bundle-derived, unverified: staging-ийн input maxLength=100
 const MAX_NAME_LENGTH = 100;
@@ -37,18 +38,12 @@ export default function CreateRecruitmentModal({
 
 	function handleCreate() {
 		if (!isFormValid) return;
-		createRecruitmentMutation.mutate(
-			{ name: name.trim() },
-			{
-				onSuccess: (response) => {
-					// Алдаа гарвал modal нээлттэй үлдэж дахин оролдох боломжтой
-					if (!response.success || !response.data) return;
-					onClose();
-					// Wizard ФАЗ 6-д; одоогоор /edit placeholder
-					router.push(`/dashboard/recruitments/${response.data.id}/edit`);
-				},
+		createRecruitmentMutation.mutate(name.trim(), {
+			onSuccess: (id) => {
+				onClose();
+				router.push(raRoutes.wizard(id));
 			},
-		);
+		});
 	}
 
 	return (

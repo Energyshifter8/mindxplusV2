@@ -1,6 +1,38 @@
 import { type NextRequest, NextResponse } from "next/server";
+import {
+	containsDryRunId,
+	isRaWriteRequest,
+	raWritesAllowed,
+} from "@/lib/api/role-assessment/dry-run";
 
 const STAGING_API = process.env.NEXT_PUBLIC_API_URL || "";
+
+/**
+ * Талентийн үнэлгээний DRY-RUN-ий давхар хамгаалалт (docs/role-assessment/DECISIONS.md D4):
+ * client-ийн adapter-ийг ямар нэг замаар тойрсон бичих хүсэлтийг backend руу дамжуулахгүй.
+ */
+function dryRunGuard(method: string, path: string): NextResponse | null {
+	const blocked = containsDryRunId(path)
+		? { status: 404, code: "not_found" }
+		: !raWritesAllowed() && isRaWriteRequest(method, path)
+			? { status: 403, code: "ra_dry_run_blocked" }
+			: null;
+	if (!blocked) return null;
+	return NextResponse.json(
+		{
+			type: "about:blank",
+			title: blocked.status === 404 ? "Not Found" : "Forbidden",
+			status: blocked.status,
+			detail: "DRY-RUN: хүсэлт staging руу дамжуулагдаагүй",
+			instance: path,
+			code: blocked.code,
+		},
+		{
+			status: blocked.status,
+			headers: { "Content-Type": "application/problem+json" },
+		},
+	);
+}
 
 async function proxyRequest(
 	request: NextRequest,
@@ -8,6 +40,8 @@ async function proxyRequest(
 	pathSegments: string[],
 ): Promise<NextResponse> {
 	const targetPath = pathSegments.join("/");
+	const guarded = dryRunGuard(method, `/${targetPath}`);
+	if (guarded) return guarded;
 	const hasTrailingSlash = request.nextUrl.pathname.endsWith("/");
 	const search = request.nextUrl.search;
 	const targetUrl = `${STAGING_API}/${targetPath}${hasTrailingSlash ? "/" : ""}${search}`;

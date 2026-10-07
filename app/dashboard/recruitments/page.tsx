@@ -23,17 +23,20 @@ import {
 	TableSkeleton,
 } from "@/components/shared/ListComponents";
 import { Paginator } from "@/components/shared/Paginator";
-import type { RecruitmentListItem, RecruitmentListParams } from "@/lib/api";
 import { getErrorMessage } from "@/lib/api-errors";
 import type { RecruitmentStatus } from "@/lib/constants/roleAssessment";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
-import { usePageParams } from "@/lib/hooks/usePageParams";
 import {
 	useRecruitmentList,
 	useRecruitmentStats,
-} from "@/lib/hooks/useRecruitmentQueries";
+} from "@/lib/hooks/role-assessment/queries";
+import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
+import { usePageParams } from "@/lib/hooks/usePageParams";
 import { toApiPage } from "@/lib/pagination";
+import type {
+	RecruitmentListItem,
+	RecruitmentListParams,
+} from "@/lib/types/role-assessment";
 
 const CreateRecruitmentModal = lazy(
 	() => import("@/components/recruitments/CreateRecruitmentModal"),

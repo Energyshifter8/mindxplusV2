@@ -137,6 +137,11 @@ export async function toApiErrorFromBlob(error: unknown): Promise<ApiError> {
 }
 
 // --- Монгол алдааны мессеж (code-оор, detail-ээр БИШ) ---
+// Мэдэгдэх бүх code энэ map-д. Эх сурвалж: staging ✅ (not_found, system_error,
+// validation_exception), staging bundle 📦 (plan_expired — bundle-д code-оор шалгадаг
+// цорын ганц утга), client-side (invalid_argument, unexpected_response),
+// proxy-ийн DRY-RUN хамгаалалт (ra_dry_run_blocked). Swagger алдааны code тодорхойлдоггүй.
+// Үл мэдэгдэх code → дуудагчийн fallback (staging-ийн үйлдэл тус бүрийн текст).
 
 const ERROR_MESSAGES: Record<string, string> = {
 	not_found: "Мэдээлэл олдсонгүй",
@@ -149,6 +154,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 	// client-side: хариу хүлээгдсэн хэлбэрт таарсангүй
 	unexpected_response:
 		"Сервер хүлээгдээгүй хариу буцаалаа. Жагсаалтаа шинэчилж шалгана уу",
+	ra_dry_run_blocked: "DRY-RUN: өөрчлөлт staging-д хадгалагдахгүй",
 };
 
 const NETWORK_ERROR_MESSAGE =

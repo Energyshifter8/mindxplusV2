@@ -4,8 +4,8 @@ import { Download } from "lucide-react";
 import { Drawer } from "@/components/shared/Drawer";
 import { ErrorState } from "@/components/shared/ListComponents";
 import { getErrorMessage, isRetryableError } from "@/lib/api-errors";
-import { useDownloadTestReport } from "@/lib/hooks/useDownloadTestReport";
-import { useTestReportHtml } from "@/lib/hooks/useRecruitmentQueries";
+import { useTestReportHtml } from "@/lib/hooks/role-assessment/queries";
+import { useDownloadTestReport } from "@/lib/hooks/role-assessment/useDownloadTestReport";
 
 const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
 

@@ -21,11 +21,6 @@ import {
 	TestCategoryChip,
 } from "@/components/shared/ListComponents";
 import { Paginator } from "@/components/shared/Paginator";
-import type {
-	RecruitmentDetail,
-	RecruitmentInvitation,
-	RecruitmentTest,
-} from "@/lib/api";
 import { getErrorMessage, isRetryableError } from "@/lib/api-errors";
 import { isResultAvailable } from "@/lib/constants/roleAssessment";
 import {
@@ -35,12 +30,17 @@ import {
 	formatPersonShort,
 	sumMinutes,
 } from "@/lib/format";
-import { usePageParams } from "@/lib/hooks/usePageParams";
 import {
 	useRecruitmentDetail,
 	useRecruitmentInvitations,
-} from "@/lib/hooks/useRecruitmentQueries";
+} from "@/lib/hooks/role-assessment/queries";
+import { usePageParams } from "@/lib/hooks/usePageParams";
 import { toApiPage } from "@/lib/pagination";
+import type {
+	RecruitmentDetail,
+	RecruitmentInvitation,
+	RecruitmentTest,
+} from "@/lib/types/role-assessment";
 
 const RecruitmentDetailDrawer = lazy(
 	() => import("@/components/recruitments/RecruitmentDetailDrawer"),

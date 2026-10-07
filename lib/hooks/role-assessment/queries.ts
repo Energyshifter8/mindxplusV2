@@ -12,63 +12,41 @@ import {
 	fetchRecruitmentStats,
 	fetchRoleAssessmentTest,
 	fetchTestReportHtml,
-	type RecruitmentListParams,
-} from "@/lib/api";
+} from "@/lib/api/role-assessment";
 import type { ApiPageParams } from "@/lib/pagination";
+import type { RecruitmentListParams } from "@/lib/types/role-assessment";
+import { raKeys } from "./keys";
 
-// Throw хийдэг fetch* функцуудад зориулсан түлхүүрүүд. Нүүр хуудасны
-// ["recruitmentList"], ["recruitmentStats"] (ApiResponse хэлбэртэй) түлхүүрээс
-// санаатайгаар тусдаа: кэшид өөр хэлбэрийн өгөгдөл холилдохгүй.
-export const recruitmentKeys = {
-	all: ["recruitments"] as const,
-	stats: () => [...recruitmentKeys.all, "stats"] as const,
-	list: (params: RecruitmentListParams) =>
-		[...recruitmentKeys.all, "list", params] as const,
-	detail: (id: string) => [...recruitmentKeys.all, "detail", id] as const,
-	invitations: (id: string, params: ApiPageParams) =>
-		[...recruitmentKeys.all, "invitations", id, params] as const,
-	names: (id: string) => [...recruitmentKeys.all, "names", id] as const,
-};
-
-export const invitationKeys = {
-	all: ["invitations"] as const,
-	result: (recruitmentId: string, invitationId: string) =>
-		[...invitationKeys.all, "result", recruitmentId, invitationId] as const,
-	rate: (invitationId: string) =>
-		[...invitationKeys.all, "rate", invitationId] as const,
-	notes: (invitationId: string) =>
-		[...invitationKeys.all, "notes", invitationId] as const,
-	report: (invitationId: string, answerId: string) =>
-		[...invitationKeys.all, "report", invitationId, answerId] as const,
-};
-
-export const roleAssessmentTestKeys = {
-	detail: (catalogTestId: string) =>
-		["roleAssessmentTests", "detail", catalogTestId] as const,
-};
+/**
+ * Staging-ийн React Query тохиргоо (📦): retry:false, focus refetch-гүй, polling-гүй.
+ * Глобал QueryClient (components/providers.tsx)-д хүрэхгүйн тулд hook бүрт тавина.
+ */
+export const RA_QUERY_OPTIONS = {
+	retry: false,
+	refetchOnWindowFocus: false,
+} as const;
 
 export function useRecruitmentStats() {
 	return useQuery({
-		queryKey: recruitmentKeys.stats(),
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.stats(),
 		queryFn: fetchRecruitmentStats,
-		refetchInterval: 30000,
-		refetchIntervalInBackground: false,
 	});
 }
 
 export function useRecruitmentList(params: RecruitmentListParams) {
 	return useQuery({
-		queryKey: recruitmentKeys.list(params),
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.list(params),
 		queryFn: () => fetchRecruitmentList(params),
 		placeholderData: keepPreviousData,
-		refetchInterval: 30000,
-		refetchIntervalInBackground: false,
 	});
 }
 
 export function useRecruitmentDetail(id: string | undefined) {
 	return useQuery({
-		queryKey: recruitmentKeys.detail(id ?? ""),
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.detail(id ?? ""),
 		queryFn: () => fetchRecruitmentDetail(id as string),
 		enabled: !!id,
 	});
@@ -79,7 +57,8 @@ export function useRecruitmentInvitations(
 	params: ApiPageParams,
 ) {
 	return useQuery({
-		queryKey: recruitmentKeys.invitations(recruitmentId ?? "", params),
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.invitations(recruitmentId ?? "", params),
 		queryFn: () => fetchRecruitmentInvitations(recruitmentId as string, params),
 		enabled: !!recruitmentId,
 		placeholderData: keepPreviousData,
@@ -88,7 +67,8 @@ export function useRecruitmentInvitations(
 
 export function useRoleAssessmentTest(catalogTestId: string | undefined) {
 	return useQuery({
-		queryKey: roleAssessmentTestKeys.detail(catalogTestId ?? ""),
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.catalogTest(catalogTestId ?? ""),
 		queryFn: () => fetchRoleAssessmentTest(catalogTestId as string),
 		enabled: !!catalogTestId,
 		staleTime: 5 * 60 * 1000,
@@ -97,7 +77,8 @@ export function useRoleAssessmentTest(catalogTestId: string | undefined) {
 
 export function useInvitationNames(recruitmentId: string | undefined) {
 	return useQuery({
-		queryKey: recruitmentKeys.names(recruitmentId ?? ""),
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.names(recruitmentId ?? ""),
 		queryFn: () => fetchInvitationNames(recruitmentId as string),
 		enabled: !!recruitmentId,
 	});
@@ -108,7 +89,8 @@ export function useInvitationResult(
 	invitationId: string | undefined,
 ) {
 	return useQuery({
-		queryKey: invitationKeys.result(recruitmentId ?? "", invitationId ?? ""),
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.result(recruitmentId ?? "", invitationId ?? ""),
 		queryFn: () =>
 			fetchInvitationResult(recruitmentId as string, invitationId as string),
 		enabled: !!recruitmentId && !!invitationId,
@@ -117,7 +99,8 @@ export function useInvitationResult(
 
 export function useInvitationRate(invitationId: string | undefined) {
 	return useQuery({
-		queryKey: invitationKeys.rate(invitationId ?? ""),
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.rate(invitationId ?? ""),
 		queryFn: () => fetchInvitationRate(invitationId as string),
 		enabled: !!invitationId,
 	});
@@ -125,7 +108,8 @@ export function useInvitationRate(invitationId: string | undefined) {
 
 export function useInvitationNotes(invitationId: string | undefined) {
 	return useQuery({
-		queryKey: invitationKeys.notes(invitationId ?? ""),
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.notes(invitationId ?? ""),
 		queryFn: () => fetchInvitationNotes(invitationId as string),
 		enabled: !!invitationId,
 	});
@@ -137,7 +121,8 @@ export function useTestReportHtml(
 	answerId: string | undefined,
 ) {
 	return useQuery({
-		queryKey: invitationKeys.report(invitationId ?? "", answerId ?? ""),
+		...RA_QUERY_OPTIONS,
+		queryKey: raKeys.report(invitationId ?? "", answerId ?? ""),
 		queryFn: () =>
 			fetchTestReportHtml(invitationId as string, answerId as string),
 		enabled: !!invitationId && !!answerId,
