@@ -1,8 +1,8 @@
 # Role assessment — хэрэгжилтийн төлөв
 
 - **Branch:** `feature/role-assessment`
-- **Эх сурвалж:** `docs/role-assessment-report.md` (staging-ийн судалгаа, 2026-10-06)
-- **Батлагдаагүй зүйлс:** `docs/role-assessment-unverified.md`
+- **Эх сурвалж:** `docs/role-assessment/report.md` (staging-ийн судалгаа, 2026-10-06)
+- **Батлагдаагүй зүйлс:** `docs/role-assessment/unverified.md`
 
 Төлөв: ✅ Бэлэн · 🟡 Хагас · ❌ Байхгүй · ♻️ Хуучирсан (stale: код байгаа ч staging-ийн contract-тай зөрдөг)
 

@@ -3,7 +3,7 @@
 - **Огноо:** 2026-10-06
 - **Орчин:** `https://app-staging.mindxplus.com` (staging), customer эрхээр нэвтэрсэн (`userProfile.role = OWNER`, `accountInfo.planType = PREMIUM`)
 - **Хамрах хүрээ:** `/role-assessment` болон түүнээс гарах бүх дэд route, мөн sidebar-ийн ижил хэсэгт байгаа `/invited-talents`
-- **Кодонд өөрчлөлт:** хийгээгүй. Энэ файл болон `docs/role-assessment-screenshots/` л нэмэгдсэн.
+- **Кодонд өөрчлөлт:** хийгээгүй. Энэ файл болон `docs/role-assessment/screenshots/` л нэмэгдсэн.
 
 ## 0. Аргачлал, тэмдэглэгээ, аюулгүй байдал
 
@@ -56,7 +56,7 @@ URL-гүй, дотоод төлөвт (state) хадгалагддаг хэсг�
 
 ### 2a. Үнэлгээнүүдийн жагсаалт — `/role-assessment`
 
-![Жагсаалт ба дэлгэрэнгүй drawer](role-assessment-screenshots/01-list-detail-drawer.jpg)
+![Жагсаалт ба дэлгэрэнгүй drawer](screenshots/01-list-detail-drawer.jpg)
 
 **Ачаалах үед:** `GET /customer/recruitments/?page=0&size=10` ✅ болон `GET /customer/recruitments/statistics` ✅
 
@@ -88,7 +88,7 @@ URL-гүй, дотоод төлөвт (state) хадгалагддаг хэсг�
 
 #### Алхам 0 — Үүсгэх modal (жагсаалт дээр)
 
-![Үүсгэх modal](role-assessment-screenshots/02-create-modal.jpg)
+![Үүсгэх modal](screenshots/02-create-modal.jpg)
 
 - Талбар: **"Ажлын байрны нэр"** (заавал, `maxLength=100`, placeholder `Жишээ "Хүний нөөцийн менежер"`). Хоосон үед "Үүсгэх" идэвхгүй, toast "Гарчиг оруулна уу" 📦.
 - "Үүсгэх" дарахад `POST /customer/recruitments/new` body `{"str": "<нэр>"}` явна 📦. Хариу нь **шууд id string** гэж кодоос харагдаж байна (`router.push("/role-assessment/" + response)`) 📦❓. Дараа нь toast "Талентийн үнэлгээ амжилттай үүслээ" гарч wizard руу шилжинэ.
@@ -117,7 +117,7 @@ URL-гүй, дотоод төлөвт (state) хадгалагддаг хэсг�
 
 #### Алхам 2 — Тест сонгох ✅
 
-![Алхам 2 — тест сонгох](role-assessment-screenshots/03-wizard-step2-tests.jpg)
+![Алхам 2 — тест сонгох](screenshots/03-wizard-step2-tests.jpg)
 
 - Хүсэлтүүд ✅: `GET /customer/role-assessments/categories`, `GET /customer/role-assessments/tests?category=` (Бүгд үед хоосон) / `?category=hiring_soft_skill`, `GET /customer/recruitment-setup/{id}/tests` (→ сонгосон **catalog `id`**-уудын массив, `testId` биш ✅).
 - Ангиллын tab: **Бүгд · Зөөлөн ур чадвар (`hiring_soft_skill`, YELLOW) · Бие хүний онцлог (`hiring_individual`, GREEN)**
@@ -138,7 +138,7 @@ URL-гүй, дотоод төлөвт (state) хадгалагддаг хэсг�
 
 #### Алхам 4 — Баталгаажуулах (эцсийн товчны өмнөх төлөв) ✅
 
-![Алхам 4 — баталгаажуулах](role-assessment-screenshots/04-wizard-step4-confirm.jpg)
+![Алхам 4 — баталгаажуулах](screenshots/04-wizard-step4-confirm.jpg)
 
 - Нэгтгэсэн мэдээлэл: Сонгосон тестийн тоо, Нэмэлт асуултын тоо, Нийт зарцуулах хугацаа (тестүүдийн min/max нийлбэр). Мөн "Сонгонсон тестүүд" (нэр, тайлбар, асуултын тоо, хугацаа) болон "Сонгосон нэмэлт асуултууд".
 - **"Нийтлэх"** → `POST /customer/recruitment-setup/publish {str: id}` 📦. Амжилттай бол modal "Хүсэлт амжилттай илгээгдлээ." / "Таны талентийн үнэлгээ амжилттай үүслээ. Одоо талентүүдэд урилга илгээж…" / "Талентийн үнэлгээ рүү очих" → `/dashboard`.
@@ -148,7 +148,7 @@ URL-гүй, дотоод төлөвт (state) хадгалагддаг хэсг�
 
 ### 2c. Нэг үнэлгээний дэлгэрэнгүй (dashboard) — `/role-assessment/{id}/dashboard`
 
-![Dashboard](role-assessment-screenshots/05-dashboard.jpg)
+![Dashboard](screenshots/05-dashboard.jpg)
 
 **Ачаалах үед** ✅: `GET /customer/recruitments/{id}` ба `GET /customer/hiring-invitations/list/{recruitmentId}?page=0&size=10`
 
@@ -165,7 +165,7 @@ URL-гүй, дотоод төлөвт (state) хадгалагддаг хэсг�
 
 **Урих modal** (Урих / Дахин урих)
 
-![Урих modal](role-assessment-screenshots/06-invite-modal.jpg)
+![Урих modal](screenshots/06-invite-modal.jpg)
 
 | Талбар | Body key | Заавал | Validation (📦) |
 |---|---|---|---|
@@ -181,7 +181,7 @@ URL-гүй, дотоод төлөвт (state) хадгалагддаг хэсг�
 
 ### 2e. Оролцогчийн үр дүн — `/role-assessment/{id}/dashboard/{invitationId}`
 
-![Талентын үр дүн](role-assessment-screenshots/07-talent-result.jpg)
+![Талентын үр дүн](screenshots/07-talent-result.jpg)
 
 **Ачаалах үед** ✅: `GET /customer/hiring-invitations/{recruitmentId}/{invitationId}`, `GET /customer/recruitments/{id}`, `GET /customer/hiring-invitations/names/{recruitmentId}`, `GET /customer/hiring-invitations/{invitationId}/rate`, `GET /customer/hiring-invitations/{invitationId}/notes`
 
@@ -200,7 +200,7 @@ URL-гүй, дотоод төлөвт (state) хадгалагддаг хэсг�
 
 **HTML тайлан** (`report/{invitationId}/{answerId}`)
 
-![HTML тайлан](role-assessment-screenshots/08-html-report.jpg)
+![HTML тайлан](screenshots/08-html-report.jpg)
 
 Бүтэц ✅: толгой (Тестийн нэр, Овог, Нэр, Утас, Имэйл, Огноо) → Анхааруулга → 1. "… гэж юу вэ?" → Үр дүн → 2. Боломж → 3. Сорилт → 4. Ажлын орчинд хэрхэн илэрч болох вэ? → 5. Ажил олгогчид өгөх зөвлөмж → 6. Ярилцлагад анхаарч болох зүйлс. ⚠ Тайланд хувийн мэдээлэл (нэр, имэйл, утас) бий.
 
@@ -453,7 +453,7 @@ Endpoint бүрт дараах 4 зүйл хэрэгтэй: **(a)** Request body
 
 ---
 
-## Хавсралт: Screenshot-ууд (`docs/role-assessment-screenshots/`)
+## Хавсралт: Screenshot-ууд (`docs/role-assessment/screenshots/`)
 1. `01-list-detail-drawer.jpg` — Жагсаалт ба "Дэлгэрэнгүй" drawer
 2. `02-create-modal.jpg` — Үүсгэх modal (эцсийн "Үүсгэх" товчны өмнө)
 3. `03-wizard-step2-tests.jpg` — Wizard алхам 2 (CREATED ноорог)
