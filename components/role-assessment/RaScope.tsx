@@ -29,7 +29,15 @@ export function RaScope({
 	className?: string;
 }) {
 	return (
-		<div className={cn("ra-scope flex min-h-full flex-col", className)}>
+		<div
+			className={cn("ra-scope flex min-h-full flex-col", className)}
+			// Sticky толгойнууд (wizard) banner-ын доор байрлана
+			style={
+				{
+					"--ra-banner-h": isRaDryRun() ? "37px" : "0px",
+				} as React.CSSProperties
+			}
+		>
 			<DryRunBanner />
 			{children}
 		</div>

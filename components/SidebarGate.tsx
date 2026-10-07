@@ -15,7 +15,10 @@ export default function SidebarGate({
 	warningMessage,
 }: SidebarGateProps) {
 	const pathname = usePathname();
-	const isEditorPage = /^\/dashboard\/surveys\/[^/]+\/edit/.test(pathname);
+	// Survey editor ба талентийн үнэлгээний wizard/preview (staging `(editor)` бүлэг) sidebar-гүй
+	const isEditorPage =
+		/^\/dashboard\/surveys\/[^/]+\/edit/.test(pathname) ||
+		/^\/dashboard\/recruitments\/[^/]+\/(edit|preview)(\/|$)/.test(pathname);
 
 	return (
 		<div className="flex h-screen overflow-hidden bg-background">

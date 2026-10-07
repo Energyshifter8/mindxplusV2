@@ -43,6 +43,10 @@ import {
 	useRecruitmentList,
 	useRecruitmentStats,
 } from "@/lib/hooks/role-assessment/queries";
+import {
+	RA_TITLES,
+	useDocumentTitle,
+} from "@/lib/hooks/role-assessment/useDocumentTitle";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { usePageParams } from "@/lib/hooks/usePageParams";
 import { toApiPage } from "@/lib/pagination";
@@ -90,6 +94,7 @@ function PageLoading() {
 type Target = { id: string; name: string };
 
 function RecruitmentsContent() {
+	useDocumentTitle(RA_TITLES.list);
 	const router = useRouter();
 	const { page, size, searchParams, setPage, setSize, updateParams } =
 		usePageParams();
