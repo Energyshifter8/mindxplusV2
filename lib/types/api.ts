@@ -1,7 +1,6 @@
-// Backend-ийн төрлүүд — swagger (docs/swagger/openapi.json, springdoc).
+// Backend-ийн төрлүүд — swagger (springdoc).
 // Swagger-ийн response schema-д `required`/`nullable` ихэвчлэн тодорхойлогдоогүй тул
 // талбарууд optional. Staging дээр `null` ирж буйг ажигласан талбарт `| null` нэмсэн.
-// Зөрүү: docs/swagger/mismatches.md
 
 // --- Enum-ууд (swagger) ---
 

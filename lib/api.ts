@@ -17,7 +17,7 @@ export type {
 	RecruitmentStats,
 } from "@/lib/types/role-assessment";
 
-// --- Auth endpoint-ууд (staging-ийн ажигласан path; swagger-т байхгүй — docs/swagger/mismatches.md E7, E8) ---
+// --- Auth endpoint-ууд (staging-ийн ажигласан path; swagger-т байхгүй) ---
 
 /** POST /user/refresh `{}` (refresh cookie + Authorization) → `{token}` */
 export async function refreshTokenRequest(): Promise<string> {

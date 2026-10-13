@@ -24,7 +24,7 @@ Baseline: source tsc 0 · eslint 0 алдаа / 10 warning · biome 1 (хууч�
 
 ## 2. Жагсаалт `/role-assessment`
 - [x] Tab, хайлт, хуудаслалт, статистик, хүснэгт/grid, badge, kebab, drawer, үүсгэх/нэр солих/устгах/хаах modal, урих modal (dry-run шалгасан)
-- [x] Төлөв: loading/empty/error; GET матриц (list → statistics, staging-ийн дараалал); staging screenshot-той харьцуулсан (`screens/01-list-local.jpg`); live extract diff — staging session дууссан (DECISIONS)
+- [x] Төлөв: loading/empty/error; GET матриц (list → statistics, staging-ийн дараалал); live extract diff — staging session дууссан (DECISIONS)
 
 ## 3. Wizard — `768a5081` (quill), `7407e985` (wizard), preview
 - [x] Layout (sidebar-гүй), header, stepper, баруун карт
@@ -35,24 +35,24 @@ Baseline: source tsc 0 · eslint 0 алдаа / 10 warning · biome 1 (хууч�
 - [x] Алхам 4 + нийтлэх (confirm)
 - [x] Унших горим (PUBLISHED/CLOSED)
 - [x] `/preview`
-- [x] Unit тест (`wizard.test.mjs`), screenshot (`screens/03-*`, `04-*`), dry-run e2e
+- [x] Unit тест (`wizard.test.mjs`), dry-run e2e
 
 ## 4. Dashboard
 - [x] Хүснэгт (badge, од, огноо, урьсан, хуудаслалт URL), тест (drawer), асуулт, 3 хуурамч карт хассан
 - [x] Урих modal (зөвхөн PUBLISHED), дахин урих/сунгах (EXPIRED), plan_expired modal
-- [x] Хаах (confirm, dry-run шалгасан), "Дэлгэрэнгүй" drawer; screenshot `screens/05-dashboard-local.jpg`
+- [x] Хаах (confirm, dry-run шалгасан), "Дэлгэрэнгүй" drawer
 - [x] Хайлт: API (`list/{id}`) зөвхөн page/size, staging-д ч байхгүй → хийгээгүй (mismatches)
 
 ## 5. Талентын үр дүн
 - [x] Толгой (breadcrumb, avatar, имэйл хуулах, нэрс сонгох, өмнөх/дараах), тест accordion (API өгөгдөл), нэмэлт асуулт
 - [x] HTML тайлан drawer (`sandbox=""`), тайлан татах, анхааруулга + "Санамж" modal, төлөв, явцын хяналт
-- [x] Од үнэлгээ, тэмдэглэл (≤500) — dry-run шалгасан; plan_expired; screenshot `screens/06-result-local.jpg`
+- [x] Од үнэлгээ, тэмдэглэл (≤500) — dry-run шалгасан; plan_expired
 - [x] Unit тест (`result.test.mjs`)
 
 ## 6. Урьсан талентууд
 - [x] Жагсаалт (q 350мс, хуудаслалт/q/marked URL-д, хэтэрсэн хуудас засах), bookmark toggle (dry-run), хоосон/алдаа/skeleton
 - [x] Дэлгэрэнгүй + урилгын түүх (state хуудаслалт `[10,12,20,50]`), bookmark төлөв; "Үр дүн" → үр дүнгийн хуудас
-- [x] `lib/api.ts`-ийн түр talents функцуудыг хасав; unit тест (`talents.test.mjs`); screenshot `screens/07-*`, `08-*`
+- [x] `lib/api.ts`-ийн түр talents функцуудыг хасав; unit тест (`talents.test.mjs`)
 
 ## 7. Нэр солих / хаах / устгах
 - [x] Жагсаалт, kebab, confirm (ФАЗ 2-т хийгдсэн)

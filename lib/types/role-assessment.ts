@@ -1,5 +1,5 @@
 // Талентийн үнэлгээний төрлүүд. Эх сурвалж: staging ажиглалт (docs/role-assessment/report.md
-// §3.2, verification.md) + swagger (docs/swagger/openapi.json). Swagger-ийн DTO-нууд
+// §3.2, verification.md) + swagger. Swagger-ийн DTO-нууд
 // (RecruitmentInfo, Talent г.м.) lib/types/api.ts-д.
 
 import type { SpringPage } from "@/lib/api/http";
