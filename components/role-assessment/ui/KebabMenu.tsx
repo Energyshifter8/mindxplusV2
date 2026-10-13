@@ -4,8 +4,6 @@ import { Menu } from "@base-ui/react/menu";
 import { EllipsisVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Staging "⋮" цэс (📦 module 98935) — base-ui Menu (keyboard, role=menu).
-
 export interface RaMenuAction {
 	key: string;
 	label: string;

@@ -15,8 +15,6 @@ import type {
 } from "@/lib/role-assessment/wizard";
 import { cn } from "@/lib/utils";
 
-// Staging баруун самбарын хэсгүүд (📦 `$`, `X`, `U`, `J`, `Y`, алхмын гарчиг).
-
 export function RightStepTitle({
 	title,
 	count,
@@ -24,7 +22,6 @@ export function RightStepTitle({
 	badge,
 }: {
 	title: string;
-	/** Алхам 2, 3: "R/max" */
 	count?: string;
 	current: boolean;
 	badge: StepView["badge"];
@@ -202,7 +199,6 @@ function SummaryRow({
 	);
 }
 
-/** Алхам 2 (`U`), 3 (`J`), 4 (`Y`)-ын нэгтгэл. */
 export function StepSummary({
 	step,
 	testCount,
@@ -214,7 +210,6 @@ export function StepSummary({
 	testCount: number;
 	totalQuestions: number;
 	questionCount: number;
-	/** Алхам 2-т асуултгүй, 3–4-т асуултын хугацаа нэмэгдсэн */
 	duration: { min: number; max: number };
 }) {
 	return (

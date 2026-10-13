@@ -57,12 +57,8 @@ import type {
 } from "@/lib/types/role-assessment";
 import { cn } from "@/lib/utils";
 
-// Staging /role-assessment (📦 app/(dashboard)/role-assessment/page). Зөрүү (mismatches.md):
-// tab/хайлт URL-д (`status`, `name`) — нэг replace-ээр page=1 болгож давхар хүсэлтгүй;
-// хайлт 350мс debounce; алдааг хоосон төлөвтэй андуурахгүй, "Дахин оролдох"-той.
-
 const SEARCH_DEBOUNCE_MS = 350;
-const SEARCH_MAX_LENGTH = 100; // swagger: name maxLength 100
+const SEARCH_MAX_LENGTH = 100;
 
 type Tab = "ALL" | "CREATED" | "PUBLISHED";
 const TABS: { key: Tab; label: string }[] = [
@@ -117,7 +113,6 @@ function RecruitmentsContent() {
 		}),
 		[page, size, tab, urlName],
 	);
-	// Staging: жагсаалтын query statistics-ээс өмнө зарлагдсан (GET дараалал)
 	const list = useRecruitmentList(listParams);
 	const stats = useRecruitmentStats();
 	const rows = list.data?.content ?? [];
@@ -129,12 +124,10 @@ function RecruitmentsContent() {
 			)
 		: 1;
 
-	// Staging: хуудас нийт хуудаснаас хэтэрвэл сүүлийн хуудас руу
 	useEffect(() => {
 		if (list.data && !list.isFetching && page > totalPages) setPage(totalPages);
 	}, [list.data, list.isFetching, page, totalPages, setPage]);
 
-	// Staging: жагсаалтын алдаанд toast
 	useEffect(() => {
 		if (list.errorUpdatedAt) {
 			toast.error("Талентийн үнэлгээний жагсаалт авахад алдаа гарлаа");
@@ -187,7 +180,6 @@ function RecruitmentsContent() {
 				<span className="ml-2">/</span>
 			</p>
 			<div className="mx-auto space-y-6 px-4 md:px-6">
-				{/* staging `flex gap-4`; <640px дээр босоо (390px-д "Хязгааргүй" картаас халидаг) */}
 				<div className="flex flex-col gap-4 sm:flex-row">
 					{stats.isFetching ? (
 						<AntdSkeleton rows={2} />

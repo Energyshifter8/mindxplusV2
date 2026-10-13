@@ -226,7 +226,6 @@ export default function SurveyResultsPage() {
 	return (
 		<div className="min-h-full w-full">
 			<div className="p-6 lg:p-10">
-				{/* Breadcrumb */}
 				<div
 					className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2"
 					style={{ fontFamily: "'JetBrains Mono', monospace" }}
@@ -250,7 +249,6 @@ export default function SurveyResultsPage() {
 					<span className="text-foreground">Үр дүн</span>
 				</div>
 
-				{/* Header */}
 				<div className="flex items-center gap-4 mb-8">
 					<button
 						type="button"
@@ -278,7 +276,6 @@ export default function SurveyResultsPage() {
 					</div>
 				</div>
 
-				{/* Statistics */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
 					{isLoadingInsight ? (
 						<>
@@ -334,7 +331,6 @@ export default function SurveyResultsPage() {
 					)}
 				</div>
 
-				{/* Question Summaries */}
 				{isLoadingSummaries ? (
 					<div className="space-y-4">
 						<QuestionCardSkeleton />
@@ -352,8 +348,6 @@ export default function SurveyResultsPage() {
 						/>
 					</div>
 				) : summariesData?.content && summariesData.content.length > 0 ? (
-					// Simplified: fetches up to 50 questions in one call without pagination UI.
-					// Add pagination controls if surveys ever exceed 50 questions.
 					<div className="space-y-4">
 						{summariesData?.content.map((question) => (
 							<QuestionCard key={question.questionId} question={question} />

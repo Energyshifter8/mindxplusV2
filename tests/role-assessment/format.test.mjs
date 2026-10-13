@@ -1,4 +1,3 @@
-// Цэвэр функцүүдийн unit тест: `pnpm test` (node --test, Node ≥ 22.6 type stripping).
 process.env.TZ = "Asia/Ulaanbaatar";
 
 import assert from "node:assert/strict";

@@ -1,10 +1,3 @@
-// Файл татах helper-ууд.
-
-/**
- * `Content-Disposition`-оос файлын нэр уншина (RFC 6266).
- * `filename*=UTF-8''…` (RFC 5987)-г `filename=`-ээс түрүүлж авна.
- * Staging #20: `attachment; filename="….pdf"` (ASCII) ✅.
- */
 export function parseContentDispositionFilename(
 	header: string | null | undefined,
 ): string | null {
@@ -17,9 +10,7 @@ export function parseContentDispositionFilename(
 				extended[2].trim().replace(/^"|"$/g, ""),
 			);
 			if (value) return sanitizeFilename(value);
-		} catch {
-			// буруу percent-encoding → энгийн filename-ээр үргэлжлүүлнэ
-		}
+		} catch {}
 	}
 
 	const plain = header.match(/filename\s*=\s*("((?:\\.|[^"\\])*)"|[^;]+)/i);
@@ -30,7 +21,6 @@ export function parseContentDispositionFilename(
 	return null;
 }
 
-/** Зам (`/`, `\`) болон удирдах тэмдэгтийг хасна. */
 function sanitizeFilename(name: string): string {
 	return (
 		name
@@ -40,7 +30,6 @@ function sanitizeFilename(name: string): string {
 	);
 }
 
-/** Blob-ийг browser-ийн татах үйлдлээр хадгална. */
 export function saveBlob(blob: Blob, filename: string): void {
 	const url = URL.createObjectURL(blob);
 	const anchor = document.createElement("a");

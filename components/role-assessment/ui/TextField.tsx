@@ -3,8 +3,6 @@
 import { forwardRef, useId } from "react";
 import { cn } from "@/lib/utils";
 
-// Staging "CustomInput" (📦 module 37593) text/textarea хувилбар + Input (9955).
-
 const INPUT_BASE =
 	"flex h-10 w-full rounded-lg border border-Stroke-700 bg-transparent px-3 py-2 font-sf text-[16px] text-TextColor-main transition-colors placeholder:text-TextColor-third focus-visible:border-Primary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 read-only:cursor-default";
 
@@ -21,9 +19,7 @@ interface TextFieldProps
 	prefixIcon?: React.ReactNode;
 	suffix?: React.ReactNode;
 	status?: "error" | "warning";
-	/** Тоолуур "n/max" (maxLength-тэй үед) */
 	showCounter?: boolean;
-	/** Талбарын доорх алдааны мессеж */
 	errorText?: string;
 }
 
@@ -79,7 +75,6 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 						{label}
 					</label>
 				) : (
-					// staging CustomInput label-гүй үед ч хоосон <p class="mb-1"> зурдаг (4px)
 					<span aria-hidden className="mb-1" />
 				)}
 				{hasAdornment ? (

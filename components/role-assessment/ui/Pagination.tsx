@@ -8,8 +8,6 @@ import { PAGE_SIZE_OPTIONS } from "@/lib/pagination";
 import { cn } from "@/lib/utils";
 import { RaSelect } from "./Select";
 
-// Staging хуудаслалт (📦 module 51960): "Хуудас X / Y", « ‹ › », хуудасны хэмжээ.
-
 function PageButton({
 	label,
 	disabled,
@@ -58,7 +56,6 @@ export function RaPagination({
 	onPageChange: (page: number) => void;
 	pageSize?: number;
 	onPageSizeChange?: (size: number) => void;
-	/** Staging-ийн урилгын түүх `[10, 12, 20, 50]` */
 	pageSizeOptions?: readonly number[];
 	className?: string;
 }) {

@@ -191,14 +191,12 @@ export default function SurveyEditPage() {
 
 	const [questions, setQuestions] = useState<QuestionItem[]>([]);
 	const [isDirty, setIsDirty] = useState(false);
-	// local flag to prevent duplicate save requests from rapid clicks
 	const [localSaving, setLocalSaving] = useState(false);
 
 	const sidebarRef = useRef<EditorSidebarHandle>(null);
 	const isAnimatingRef = useRef(false);
 	const initializedRef = useRef(false);
 
-	// Hydrate local state from server data once on load.
 	useEffect(() => {
 		if (!surveyData || initializedRef.current) return;
 		initializedRef.current = true;
@@ -621,7 +619,6 @@ export default function SurveyEditPage() {
 		async (payload: CreateQuestionPayload) => {
 			const result = await createQuestionMutation.mutateAsync(payload);
 			if (result.success && result.data?.id) {
-				// optimistic insert so the selected type appears immediately
 				const newQ: QuestionItem = {
 					id: result.data.id,
 					title: payload.content,
@@ -649,10 +646,9 @@ export default function SurveyEditPage() {
 	);
 
 	const handleSave = useCallback(async () => {
-		if (localSaving) return; // prevent duplicate saves
+		if (localSaving) return;
 		setLocalSaving(true);
 
-		// Validate
 		const hasEmptyTitle = questions.some((q) => !q.title.trim());
 		const hasEmptyOption = questions.some((q) =>
 			q.options.some((opt) => !opt.content.trim()),
@@ -666,10 +662,8 @@ export default function SurveyEditPage() {
 		toast.loading(TOAST.SAVE_LOADING, { id: "save-survey" });
 
 		try {
-			// Build all operations upfront, then run in parallel
 			const operations: Promise<unknown>[] = [];
 
-			// Page updates
 			if (startPage) {
 				operations.push(
 					updateSurveyPage(surveyId, {
@@ -697,7 +691,6 @@ export default function SurveyEditPage() {
 				);
 			}
 
-			// Build a lookup of original server questions for change detection
 			const serverQuestionsMap = new Map<
 				string,
 				{
@@ -742,14 +735,12 @@ export default function SurveyEditPage() {
 				return false;
 			}
 
-			// Question operations — only for changed questions, all in parallel
 			for (const q of questions) {
 				if (q.section === "PRIMARY_QUESTION") continue;
 
 				const serverQ = serverQuestionsMap.get(q.id);
 				const isExisting = !!serverQ;
 
-				// Skip unchanged existing questions
 				if (isExisting && !hasQuestionChanged(q, serverQ)) continue;
 
 				const payload: CreateQuestionPayload = {
@@ -781,7 +772,6 @@ export default function SurveyEditPage() {
 								`Failed to save question: ${createResult.error || "Unknown error"}`,
 							);
 						}
-						// Only delete if this was an existing server question
 						if (isExisting) {
 							const delRes = await deleteQuestion(surveyId, { id: q.id });
 							if (!delRes.success) {
@@ -794,10 +784,8 @@ export default function SurveyEditPage() {
 				);
 			}
 
-			// Promise.all aborts all on first error
 			await Promise.all(operations);
 
-			// invalidate once at end
 			queryClient.invalidateQueries({ queryKey: ["surveyDetail", surveyId] });
 
 			toast.dismiss("save-survey");

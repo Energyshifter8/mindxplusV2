@@ -1,5 +1,3 @@
-// my-talent-controller (урьсан талентууд)
-
 import { apiGetOrThrow, apiPostOrThrow, buildQuery } from "@/lib/api/http";
 import type { ApiPageParams } from "@/lib/pagination";
 import type { IdDTO } from "@/lib/types/api";
@@ -11,7 +9,6 @@ import type {
 } from "@/lib/types/role-assessment";
 import { enc, invalidArgument } from "./shared";
 
-/** GET /customer/hiring-invitations/talents (#21) — `q` хайлт, `marked` зөвхөн true үед */
 export function fetchTalents(params: TalentListParams) {
 	return apiGetOrThrow<TalentListPage>(
 		`/customer/hiring-invitations/talents${buildQuery({
@@ -23,14 +20,12 @@ export function fetchTalents(params: TalentListParams) {
 	);
 }
 
-/** GET /customer/hiring-invitations/talents/{id} (#22) */
 export function fetchTalentDetail(id: string | number) {
 	return apiGetOrThrow<TalentDetail>(
 		`/customer/hiring-invitations/talents/${enc(id)}`,
 	);
 }
 
-/** GET /customer/hiring-invitations/talents/{id}/invitations (#23) */
 export function fetchTalentInvitations(
 	id: string | number,
 	params: ApiPageParams,
@@ -40,7 +35,6 @@ export function fetchTalentInvitations(
 	);
 }
 
-/** POST /customer/hiring-invitations/talents/bookmark `{id: int64}` 📦 — toggle, body-гүй хариу */
 export async function toggleTalentBookmark(talentId: number | string) {
 	const id =
 		typeof talentId === "number"

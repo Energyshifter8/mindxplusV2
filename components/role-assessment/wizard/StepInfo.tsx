@@ -22,8 +22,6 @@ import { raRoutes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { RichTextEditor } from "./RichTextEditor";
 
-// Staging алхам 1 (📦 `S`) + лого (📦 `_`, GET designs/RECRUITMENT/{id}).
-
 const LABEL = "block text-[14px] text-TextColor-main leading-[140%]";
 
 export function StepInfo({
@@ -142,7 +140,6 @@ export function StepInfo({
 	);
 }
 
-/** Staging лого (📦 `_`): PNG/JPEG ≤200KB, сонгомогц upload, устгах. */
 function LogoUploader({
 	recruitmentId,
 	readOnly,

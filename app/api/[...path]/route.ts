@@ -7,10 +7,6 @@ import {
 
 const STAGING_API = process.env.NEXT_PUBLIC_API_URL || "";
 
-/**
- * Талентийн үнэлгээний DRY-RUN-ий давхар хамгаалалт (docs/role-assessment/DECISIONS.md D4):
- * client-ийн adapter-ийг ямар нэг замаар тойрсон бичих хүсэлтийг backend руу дамжуулахгүй.
- */
 function dryRunGuard(method: string, path: string): NextResponse | null {
 	const blocked = containsDryRunId(path)
 		? { status: 404, code: "not_found" }
@@ -46,8 +42,6 @@ async function proxyRequest(
 	const search = request.nextUrl.search;
 	const targetUrl = `${STAGING_API}/${targetPath}${hasTrailingSlash ? "/" : ""}${search}`;
 
-	// Allowlist: browser-ийн host/origin/sec-* гэх мэт header-ийг backend руу
-	// дамжуулахгүйн тулд шинэ Headers-ээс эхэлнэ.
 	const headers = new Headers();
 	const authorization = request.headers.get("authorization");
 	if (authorization) headers.set("Authorization", authorization);
@@ -55,8 +49,6 @@ async function proxyRequest(
 	if (cookie) headers.set("Cookie", cookie);
 	const accept = request.headers.get("accept");
 	if (accept) headers.set("Accept", accept);
-	// Staging апп бүх хүсэлтэд mn-MN илгээдэг; үгүй бол ProblemDetail.detail нь
-	// "validation.recruitmentNotFound" гэх мэт орчуулаагүй түлхүүр болж ирдэг.
 	headers.set("Accept-Language", "mn-MN");
 
 	const fetchInit: RequestInit = { method, headers };
@@ -77,8 +69,6 @@ async function proxyRequest(
 				}
 			}
 		} else {
-			// multipart (лого upload г.м.) binary агуулдаг: text() UTF-8 болгож
-			// эвддэг тул байтаар нь, boundary-тай Content-Type-тай нь дамжуулна.
 			const bodyBytes = await request.arrayBuffer();
 			if (bodyBytes.byteLength > 0) {
 				if (contentType) headers.set("Content-Type", contentType);
@@ -92,12 +82,10 @@ async function proxyRequest(
 	const responseHeaders = new Headers();
 	const respContentType = targetResponse.headers.get("content-type");
 	if (respContentType) responseHeaders.set("Content-Type", respContentType);
-	// "Тайлан татах" (#20): файлын нэрийг Content-Disposition-оос уншина
 	const contentDisposition = targetResponse.headers.get("content-disposition");
 	if (contentDisposition)
 		responseHeaders.set("Content-Disposition", contentDisposition);
 
-	// Forward Set-Cookie headers from backend to browser
 	const setCookies: string[] =
 		targetResponse.headers.getSetCookie?.() ??
 		(() => {
@@ -116,11 +104,8 @@ async function proxyRequest(
 		for (const sc of setCookies) {
 			let cleaned = sc;
 
-			// 1. Backend-ээс ирсэн Path=/user эсвэл бусад хязгаарлагдмал Path-ийг Path=/ болгож өөрчилнө.
-			// Ингэснээр браузер /api/... зам руу хүсэлт явуулахад cookie-гээ хавсаргаж явуулна.
 			cleaned = cleaned.replace(/Path=\/[^;]*/gi, "Path=/");
 
-			// 2. Localhost орчинд Secure болон Domain атрибутуудыг цэвэрлэнэ
 			if (isLocalhost) {
 				cleaned = cleaned.replace(/;\s*Secure/gi, "");
 				cleaned = cleaned.replace(/;\s*Domain=[^;]*/gi, "");

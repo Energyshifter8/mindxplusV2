@@ -11,8 +11,6 @@ import {
 } from "@/lib/constants/roleAssessment";
 import { cn } from "@/lib/utils";
 
-// Staging урилгын төлөвийн badge (📦 module 28396): дугуй хүрээ, icon + текст.
-
 const TONE: Record<string, string> = {
 	COMPLETED: "text-Semantic-success500",
 	STARTED: "text-Primary",

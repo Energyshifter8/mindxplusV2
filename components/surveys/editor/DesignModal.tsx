@@ -82,7 +82,6 @@ export default function DesignModal({
 					Дизайн
 				</h2>
 
-				{/* Зураг section */}
 				<div className="mb-6">
 					{/* biome-ignore lint/a11y/noLabelWithoutControl: decorative label */}
 					<label
@@ -144,7 +143,6 @@ export default function DesignModal({
 					</div>
 				</div>
 
-				{/* Загварууд section */}
 				<div className="mb-6">
 					{/* biome-ignore lint/a11y/noLabelWithoutControl: decorative label */}
 					<label
@@ -227,7 +225,6 @@ export default function DesignModal({
 					</div>
 				</div>
 
-				{/* mindX+ лого section */}
 				<div className="flex items-center justify-between py-3 border-t border-border">
 					<span
 						className="text-[10px] uppercase tracking-widest text-muted-foreground"

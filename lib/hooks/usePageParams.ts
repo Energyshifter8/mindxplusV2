@@ -6,18 +6,12 @@ import { parsePageParams } from "@/lib/pagination";
 
 type ParamValue = string | number | null | undefined;
 
-/**
- * URL-ийн `?page=N&size=M` (page 1-ээс) болон бусад жагсаалтын параметрийг
- * уншиж/бичнэ. API руу явуулахдаа `toApiPage()`-ээр хөрвүүлнэ.
- * useSearchParams ашигладаг тул дуудаж буй хуудсыг <Suspense>-д ороох хэрэгтэй.
- */
 export function usePageParams() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const pathname = usePathname();
 	const { page, size } = parsePageParams(searchParams);
 
-	/** null/undefined/"" утгатай түлхүүрийг URL-аас хасна. */
 	const updateParams = useCallback(
 		(updates: Record<string, ParamValue>) => {
 			const next = new URLSearchParams(searchParams.toString());

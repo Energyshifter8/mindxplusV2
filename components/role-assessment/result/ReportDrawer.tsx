@@ -5,11 +5,6 @@ import { DownloadIcon } from "@/components/icons/role-assessment";
 import { RaButton } from "@/components/role-assessment/ui/Button";
 import { cn } from "@/lib/utils";
 
-// Staging тестийн HTML тайлангийн drawer (📦 module 1043 `H`): antd Drawer 700px,
-// `p-5`, iframe + хөл ("Тайлан татах", "Хаах"). Staging `sandbox="allow-same-origin"`
-// — бид `sandbox=""` (D3: script ч, апп-ын origin ч байхгүй). Серверийн HTML бүтэн
-// баримт тул srcDoc-д шууд.
-
 const ANTD_DRAWER_SHADOW =
 	"shadow-[-6px_0_16px_0_rgba(0,0,0,0.08),-3px_0_6px_-4px_rgba(0,0,0,0.12),-9px_0_28px_8px_rgba(0,0,0,0.05)]";
 
@@ -24,7 +19,6 @@ export function ReportDrawer({
 }: {
 	open: boolean;
 	onClose: () => void;
-	/** null — тайлан олдсонгүй/алдаа */
 	html: string | null;
 	title: string | null;
 	canDownload: boolean;

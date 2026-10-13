@@ -47,11 +47,6 @@ import {
 } from "./DashboardTables";
 import { PlanExpiredModal } from "./PlanExpiredModal";
 
-// Staging /role-assessment/{id}/dashboard (📦 module 34795). GET: detail
-// (/customer/recruitments/{id}) ба урилгууд (/customer/hiring-invitations/list/{id}).
-// Зөрүү (mismatches.md): хуудаслалт URL-д; хайлт API-д байхгүй тул байхгүй; урих/хаах
-// товч зөвхөн PUBLISHED үед идэвхтэй; ачаалал/алдааны төлөв тусдаа.
-
 const SECTION_TITLE =
 	"mb-5 font-medium text-base text-TextColor-main leading-5";
 const CHIP = "rounded-lg bg-Gray-50 px-3 py-1 font-medium";
@@ -76,7 +71,6 @@ export function RecruitmentDashboard({
 	const invitations = useRecruitmentInvitations(id, toApiPage({ page, size }));
 	const closeMutation = useCloseRecruitment();
 
-	// Staging: plan_expired → modal, бусад алдаа → toast
 	const planExpired = isApiErrorCode(detail.error, "plan_expired");
 	useEffect(() => {
 		const error = detail.error;

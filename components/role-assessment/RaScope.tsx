@@ -1,10 +1,6 @@
 import { isRaDryRun } from "@/lib/api/role-assessment/dry-run";
 import { cn } from "@/lib/utils";
 
-/**
- * Бичих хүсэлт сүлжээнд гарахгүй үед (NEXT_PUBLIC_RA_ALLOW_WRITES ≠ "1") үргэлж харагдана
- * (docs/role-assessment/DECISIONS.md D4).
- */
 export function DryRunBanner() {
 	if (!isRaDryRun()) return null;
 	return (
@@ -20,7 +16,6 @@ export function DryRunBanner() {
 	);
 }
 
-/** Талентийн үнэлгээний хуудсуудын light/staging scope (shell dark байсан ч). */
 export function RaScope({
 	children,
 	className,
@@ -31,13 +26,9 @@ export function RaScope({
 	return (
 		<div
 			className={cn(
-				// Хуудасны root нь flex item: staging-ийн `mx-auto` flex-col-д stretch-ийг унтрааж
-				// өргөнийг хүснэгтийн min-content (1100px) болгодог тул `w-full min-w-0` —
-				// хүснэгт өөрийн overflow-auto дотроо гүйлгэгдэнэ
 				"ra-scope flex min-h-full min-w-0 flex-col [&>*]:w-full [&>*]:min-w-0",
 				className,
 			)}
-			// Sticky толгойнууд banner-ын (h-[37px]) доор байрлана
 			style={
 				{
 					"--ra-banner-h": isRaDryRun() ? "37px" : "0px",

@@ -19,10 +19,6 @@ import type { UpdateRecruitmentInfoPayload } from "@/lib/types/role-assessment";
 import { raKeys } from "./keys";
 import { invalidateRecruitmentLists } from "./mutations";
 
-// Wizard-ийн хадгалалт (📦 staging `ei`): toast текст staging-ийнх. DRY-RUN үед сервер
-// өөрчлөгдөхгүй тул refetch хийхийн оронд хадгалсан утгыг cache-д бичиж wizard-ийг
-// үргэлжлүүлнэ (DECISIONS.md D4).
-
 export function useUpdateInformation(id: string) {
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -88,14 +84,12 @@ export function useSetQuestions(id: string) {
 	});
 }
 
-/** "Нийтлэх" — амжилттай бол дуудагч амжилтын modal-ыг нээнэ (staging). */
 export function usePublishRecruitment(id: string) {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: () => publishRecruitment(id),
 		onSuccess: () => {
 			invalidateRecruitmentLists(queryClient);
-			// DRY-RUN: сервер өөрчлөгдөөгүй тул refetch хийвэл формын утга хуучирна
 			if (isRaDryRun()) return;
 			queryClient.invalidateQueries({ queryKey: raKeys.information(id) });
 			queryClient.invalidateQueries({ queryKey: raKeys.detail(id) });
@@ -106,7 +100,6 @@ export function usePublishRecruitment(id: string) {
 	});
 }
 
-/** "Санал болгох" — dry-run-д хоосон жагсаалт (D5), UI гараар үргэлжилнэ. */
 export function useRecommendTests() {
 	return useMutation({
 		mutationFn: (answers: RecommendAnswer[]) => recommendTests(answers),

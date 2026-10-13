@@ -6,10 +6,6 @@ import { CloseIcon } from "@/components/icons/role-assessment";
 import { RaButton } from "@/components/role-assessment/ui/Button";
 import { RaModal, RaModalTitle } from "@/components/role-assessment/ui/Modal";
 
-// Staging "Багцын хугацаа дууссан" modal (📦 module 13939): dashboard-ын detail
-// GET `plan_expired` code-оор унавал нээгдэнэ. "Багцтай танилцах" → `/membership`
-// (энэ аппад membership модуль байхгүй — mismatches.md).
-
 export function PlanExpiredModal({
 	open,
 	onClose,

@@ -10,10 +10,6 @@ import {
 	setQuillHtml,
 } from "./quillShared";
 
-// Quill 2.0.3 (staging-тэй ижил хувилбар) wrapper. `next/dynamic`-ээр зөвхөн client-д,
-// зөвхөн wizard-д ачаалагдана (RichTextEditor.tsx). StrictMode-ийн давхар effect-д
-// host-ийг цэвэрлээд шинээр үүсгэдэг тул хоёр editor/toolbar үүсэхгүй.
-
 export interface QuillEditorProps {
 	value: string;
 	onChange: (html: string) => void;
@@ -80,7 +76,6 @@ export default function QuillEditor({
 		};
 	}, []);
 
-	// Гаднаас (серверийн мэдээлэл ирэх г.м.) утга өөрчлөгдвөл editor-ийг шинэчилнэ
 	useEffect(() => {
 		const quill = quillRef.current;
 		if (!quill || value === lastHtml.current) return;

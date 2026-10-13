@@ -1,14 +1,3 @@
-// Талентийн үнэлгээний DRY-RUN хамгаалалт (docs/role-assessment/DECISIONS.md D4).
-//
-// Дүрэм (бүх орчинд нэг): RA-ийн бичих хүсэлт (GET/HEAD-ээс бусад) зөвхөн
-// NEXT_PUBLIC_RA_ALLOW_WRITES === "1" үед сүлжээнд гарна. Үгүй бол axios adapter
-// (lib/api/http.ts) энэ файлын stub-ийг буцаана; proxy (app/api/[...path]/route.ts)
-// нь мөн ижил дүрмээр хаана. Dry-run-д үүссэн fake id руу хэзээ ч сүлжээний хүсэлт
-// явуулахгүй (flag-аас үл хамаарна).
-//
-// Цэвэр модуль: зөвхөн `import type`, alias-гүй — `node --test`-ээр шууд тестлэгдэнэ.
-
-/** `NEXT_PUBLIC_*` нь build/dev server асах үед inline болно (утга өөрчлөхөд дахин асаана). */
 export function raWritesAllowed(): boolean {
 	return process.env.NEXT_PUBLIC_RA_ALLOW_WRITES === "1";
 }
@@ -29,7 +18,6 @@ const RA_WRITE_PATHS = [
 
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
-/** axios `config.url` / proxy path → `/customer/...` (query-гүй, `/api` угтваргүй). */
 export function requestPathOf(url: string | undefined): string {
 	const path = `/${(url ?? "").split("?")[0].replace(/^\/+/, "")}`;
 	return path.replace(/^\/api(?=\/)/, "");
@@ -39,8 +27,6 @@ export function isRaWriteRequest(method: string, path: string): boolean {
 	if (READ_METHODS.has(method.toUpperCase())) return false;
 	return RA_WRITE_PATHS.some((re) => re.test(path));
 }
-
-// --- Fake id: UUID хэлбэртэй, тогтмол угтвартай (staging-ийн v4 id-тай давхцахгүй) ---
 
 export const DRY_RUN_ID_PREFIX = "00000000-0000-4000-8000-";
 
@@ -61,13 +47,10 @@ export function containsDryRunId(path: string): boolean {
 	return path.includes(DRY_RUN_ID_PREFIX);
 }
 
-/** Энэ хүсэлтийг сүлжээнд гаргахгүй, stub буцаах эсэх. */
 export function shouldDryRun(method: string, path: string): boolean {
 	if (containsDryRunId(path)) return true;
 	return isRaDryRun() && isRaWriteRequest(method, path);
 }
-
-// --- Fake ноорогийн нэр (sessionStorage — зөвхөн нэр, хувийн мэдээлэлгүй) ---
 
 const NAMES_KEY = "ra_dry_run_names";
 
@@ -89,12 +72,8 @@ function rememberName(id: string, name: string): void {
 			NAMES_KEY,
 			JSON.stringify({ ...readNames(), [id]: name }),
 		);
-	} catch {
-		// sessionStorage байхгүй (SSR, private горим) — нэр "DRY-RUN" болно
-	}
+	} catch {}
 }
-
-// --- Stub ---
 
 export interface DryRunResponse {
 	status: number;
@@ -107,7 +86,6 @@ const DRY_RUN_USER = {
 	lastName: "DRY-RUN",
 };
 
-/** swagger RestResponseVoid (хэрэглэгчийн заасан хэлбэр: data "ok"). */
 const REST_OK = { message: "", status: 200, success: true, data: "ok" };
 
 function field(body: unknown, key: string): unknown {
@@ -144,7 +122,6 @@ function emptyPage(): Record<string, unknown> {
 	};
 }
 
-/** Dry-run id-тай GET (ноорог сервер дээр байхгүй) → wizard-ийн анхны төлөв. */
 function readStub(path: string): DryRunResponse {
 	const id = path.match(/[0-9a-f-]{36}/)?.[0] ?? "";
 	const name = readNames()[id] ?? "DRY-RUN";
@@ -171,7 +148,6 @@ function readStub(path: string): DryRunResponse {
 		};
 	}
 	if (/\/information$/.test(path)) {
-		// bundle-derived, unverified: шинэ ноорогийн мэдээлэл (staging CREATED дээр jobDescription null ✅)
 		return {
 			status: 200,
 			data: {
@@ -186,7 +162,6 @@ function readStub(path: string): DryRunResponse {
 		return { status: 200, data: [] };
 	}
 	if (/^\/customer\/designs\/RECRUITMENT\/[^/]+$/.test(path)) {
-		// staging ✅ ажигласан утга (PURPLE / TOP_LEFT); showAppLogo — unverified
 		return {
 			status: 200,
 			data: {
@@ -209,7 +184,6 @@ function readStub(path: string): DryRunResponse {
 	return notFound(path);
 }
 
-/** Бичих хүсэлтийн stub — openapi-ийн 200 хариуны хэлбэрээр. */
 function writeStub(path: string, body: unknown): DryRunResponse {
 	if (path === "/customer/recruitments/new") {
 		const id = makeDryRunId();
@@ -237,7 +211,6 @@ function writeStub(path: string, body: unknown): DryRunResponse {
 		return { status: 200, data: [] };
 	}
 	if (path === "/customer/hiring-invitations/search-by-email") {
-		// "олдсонгүй" — RestResponseTalentEntity, data: null
 		return { status: 200, data: { ...REST_OK, data: null } };
 	}
 	if (path === "/customer/hiring-invitations/invite") {
@@ -247,7 +220,6 @@ function writeStub(path: string, body: unknown): DryRunResponse {
 		/^\/customer\/hiring-invitations\/([^/]+)\/extend$/,
 	);
 	if (extend) {
-		// swagger Talent-ийн дэд хэсэг: хариуг UI ашигладаггүй (📦)
 		return {
 			status: 200,
 			data: { id: extend[1], dueDate: field(body, "value"), status: "PENDING" },
@@ -264,7 +236,6 @@ function writeStub(path: string, body: unknown): DryRunResponse {
 			},
 		};
 	}
-	// rename/close/delete/bookmark/upload-logo: 200, body-гүй (string)
 	return { status: 200, data: "" };
 }
 
@@ -277,8 +248,6 @@ export function buildDryRunResponse(
 		? readStub(path)
 		: writeStub(path, body);
 }
-
-// --- Log (хувийн мэдээллийг маскална) ---
 
 const EMAIL = /^[^\s@]+@[^\s@]+$/;
 const PERSONAL_KEYS = new Set([

@@ -1,6 +1,3 @@
-// Талентийн үнэлгээний staging SVG icon-ууд (app-staging bundle-аас хуулсан, hotlink биш).
-// Хэмжээ, stroke staging-тэй ижил; өнгө нь ихэвчлэн currentColor.
-
 import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -16,7 +13,6 @@ const stroke = {
 	strokeLinejoin: "round",
 } as const;
 
-/** module 95537 — "+" (24) */
 export function PlusIcon(props: IconProps) {
 	return (
 		<svg
@@ -33,7 +29,6 @@ export function PlusIcon(props: IconProps) {
 	);
 }
 
-/** module 2252 — хаах "×" (24) */
 export function CloseIcon(props: IconProps) {
 	return (
 		<svg
@@ -58,7 +53,6 @@ export function CloseIcon(props: IconProps) {
 	);
 }
 
-/** module 99508 — нэр солих харандаа (14) */
 export function RenamePenIcon(props: IconProps) {
 	return (
 		<svg
@@ -87,7 +81,6 @@ export function RenamePenIcon(props: IconProps) {
 	);
 }
 
-/** module 40150 — засах (16) */
 export function EditIcon(props: IconProps) {
 	return (
 		<svg
@@ -107,7 +100,6 @@ export function EditIcon(props: IconProps) {
 	);
 }
 
-/** module 63342 — тохиргоо/засах (kebab, 16) */
 export function GearIcon(props: IconProps) {
 	return (
 		<svg
@@ -134,7 +126,6 @@ export function GearIcon(props: IconProps) {
 	);
 }
 
-/** module 13202 — устгах (16, улаан) */
 export function TrashIcon(props: IconProps) {
 	return (
 		<svg
@@ -156,7 +147,6 @@ export function TrashIcon(props: IconProps) {
 	);
 }
 
-/** Жагсаалтын "Урих" (user-plus, 16) */
 export function InviteIcon(props: IconProps) {
 	return (
 		<svg
@@ -178,7 +168,6 @@ export function InviteIcon(props: IconProps) {
 	);
 }
 
-/** module 39302 — үр дүн (16) */
 export function ResultsIcon(props: IconProps) {
 	return (
 		<svg
@@ -200,7 +189,6 @@ export function ResultsIcon(props: IconProps) {
 	);
 }
 
-/** module 12559 — дэлгэрэнгүй (16) */
 export function DetailIcon(props: IconProps) {
 	return (
 		<svg
@@ -222,7 +210,6 @@ export function DetailIcon(props: IconProps) {
 	);
 }
 
-/** module 93091 — "Талентийн үнэлгээ хаах" (16) */
 export function CloseSmallIcon(props: IconProps) {
 	return (
 		<svg
@@ -243,7 +230,6 @@ export function CloseSmallIcon(props: IconProps) {
 	);
 }
 
-/** module 68504 — хайх (24) */
 export function SearchIcon(props: IconProps) {
 	return (
 		<svg
@@ -264,7 +250,6 @@ export function SearchIcon(props: IconProps) {
 	);
 }
 
-/** module 92589 — grid харагдац (16) */
 export function GridViewIcon(props: IconProps) {
 	const d = [
 		"M1.33398 1.99967C1.33398 1.63148 1.63246 1.33301 2.00065 1.33301H6.66732C7.03551 1.33301 7.33398 1.63148 7.33398 1.99967V6.66634C7.33398 7.03453 7.03551 7.33301 6.66732 7.33301H2.00065C1.63246 7.33301 1.33398 7.03453 1.33398 6.66634V1.99967ZM2.66732 2.66634V5.99967H6.00065V2.66634H2.66732Z",
@@ -294,7 +279,6 @@ export function GridViewIcon(props: IconProps) {
 	);
 }
 
-/** module 38381 — жагсаалт харагдац (16) */
 export function ListViewIcon(props: IconProps) {
 	const d = [
 		"M4.66602 3.99967C4.66602 3.63148 4.96449 3.33301 5.33268 3.33301H13.9993C14.3675 3.33301 14.666 3.63148 14.666 3.99967C14.666 4.36786 14.3675 4.66634 13.9993 4.66634H5.33268C4.96449 4.66634 4.66602 4.36786 4.66602 3.99967Z",
@@ -326,7 +310,6 @@ export function ListViewIcon(props: IconProps) {
 	);
 }
 
-/** module 10965 `Ws` — "Нийт урьсан талент" (16, #637389) */
 export function StatInvitedIcon(props: IconProps) {
 	return (
 		<svg
@@ -348,7 +331,6 @@ export function StatInvitedIcon(props: IconProps) {
 	);
 }
 
-/** module 10965 `V1` — "Нийт үнэлгээнд оролцсон талент" (15, #92A3BB) */
 export function StatCompletedIcon(props: IconProps) {
 	return (
 		<svg
@@ -370,7 +352,6 @@ export function StatCompletedIcon(props: IconProps) {
 	);
 }
 
-/** module 10965 `eX` — "Үлдсэн урилгын эрх" (15, #92A3BB) */
 export function StatBalanceIcon(props: IconProps) {
 	return (
 		<svg
@@ -392,7 +373,6 @@ export function StatBalanceIcon(props: IconProps) {
 	);
 }
 
-/** Статус "Хаагдсан" ✓ */
 export function StatusClosedCheckIcon(props: IconProps) {
 	return (
 		<svg
@@ -412,7 +392,6 @@ export function StatusClosedCheckIcon(props: IconProps) {
 	);
 }
 
-/** Хуудаслалт: эхний / өмнөх (16). `rotate-180` → дараах / сүүлийн. */
 export function PageFirstIcon(props: IconProps) {
 	return (
 		<svg
@@ -449,7 +428,6 @@ export function PagePrevIcon(props: IconProps) {
 	);
 }
 
-/** module 46018 — илгээх (16) */
 export function SendIcon(props: IconProps) {
 	return (
 		<svg
@@ -469,7 +447,6 @@ export function SendIcon(props: IconProps) {
 	);
 }
 
-/** module 62118 — календарь (20) */
 export function CalendarIcon(props: IconProps) {
 	return (
 		<svg
@@ -492,7 +469,6 @@ export function CalendarIcon(props: IconProps) {
 	);
 }
 
-/** module 45990 — дүүрсэн chevron (24, доош) */
 export function ChevronFilledIcon(props: IconProps) {
 	return (
 		<svg
@@ -511,7 +487,6 @@ export function ChevronFilledIcon(props: IconProps) {
 	);
 }
 
-/** module 25273 — "‹ Гарах" (20) */
 export function ArrowLeftIcon(props: IconProps) {
 	return (
 		<svg
@@ -527,7 +502,6 @@ export function ArrowLeftIcon(props: IconProps) {
 	);
 }
 
-/** module 3832 — "Үргэлжлүүлэх ›" (20) */
 export function ArrowRightIcon(props: IconProps) {
 	return (
 		<svg
@@ -543,7 +517,6 @@ export function ArrowRightIcon(props: IconProps) {
 	);
 }
 
-/** module 33364 — баруун самбарын chevron (16) */
 export function ChevronSmallIcon(props: IconProps) {
 	return (
 		<svg
@@ -562,7 +535,6 @@ export function ChevronSmallIcon(props: IconProps) {
 	);
 }
 
-/** module 56286 — checkbox (24) */
 export function CheckboxIcon(props: IconProps) {
 	return (
 		<svg
@@ -581,7 +553,6 @@ export function CheckboxIcon(props: IconProps) {
 	);
 }
 
-/** module 95241 — сонгосон checkbox (24) */
 export function CheckboxCheckedIcon(props: IconProps) {
 	return (
 		<svg
@@ -600,7 +571,6 @@ export function CheckboxCheckedIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Алхам 'Хийж байна' (12) */
 export function StepDoingIcon(props: IconProps) {
 	return (
 		<svg
@@ -619,7 +589,6 @@ export function StepDoingIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Алхам 'Болсон' (12) */
 export function StepDoneIcon(props: IconProps) {
 	return (
 		<svg
@@ -638,7 +607,6 @@ export function StepDoneIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Санал болгох (24) */
 export function LightbulbIcon(props: IconProps) {
 	return (
 		<svg
@@ -657,7 +625,6 @@ export function LightbulbIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Санал болгосон тест (16) */
 export function SparkleSmallIcon(props: IconProps) {
 	return (
 		<svg
@@ -702,7 +669,6 @@ export function SparkleSmallIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Асуултын тоо (16) */
 export function QuestionCircleIcon(props: IconProps) {
 	return (
 		<svg
@@ -721,7 +687,6 @@ export function QuestionCircleIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Сонгосон тестийн тоо (24) */
 export function ClipboardIcon(props: IconProps) {
 	return (
 		<svg
@@ -740,7 +705,6 @@ export function ClipboardIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Нэмэлт асуултын тоо (24) */
 export function ChatQuestionIcon(props: IconProps) {
 	return (
 		<svg
@@ -759,7 +723,6 @@ export function ChatQuestionIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Нийт хугацаа (24) */
 export function TimerIcon(props: IconProps) {
 	return (
 		<svg
@@ -778,7 +741,6 @@ export function TimerIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Тест санал болгох (20) */
 export function SparkleIcon(props: IconProps) {
 	return (
 		<svg
@@ -828,7 +790,6 @@ export function SparkleIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Санал болгох товч (24) */
 export function SparkleLargeIcon(props: IconProps) {
 	return (
 		<svg
@@ -878,7 +839,6 @@ export function SparkleLargeIcon(props: IconProps) {
 	);
 }
 
-/** wizard — Сонгосон зүйл (20) */
 export function CircleCheckIcon(props: IconProps) {
 	return (
 		<svg
@@ -907,7 +867,6 @@ export function CircleCheckIcon(props: IconProps) {
 	);
 }
 
-/** module 36863 — "Харагдац" (24) */
 export function EyeIcon(props: IconProps) {
 	return (
 		<svg
@@ -926,7 +885,6 @@ export function EyeIcon(props: IconProps) {
 	);
 }
 
-/** module 28822 — хугацаа (16) */
 export function ClockIcon(props: IconProps) {
 	return (
 		<svg
@@ -945,7 +903,6 @@ export function ClockIcon(props: IconProps) {
 	);
 }
 
-/** preview — PreviewTestsIcon (40) */
 export function PreviewTestsIcon(props: IconProps) {
 	return (
 		<svg
@@ -968,7 +925,6 @@ export function PreviewTestsIcon(props: IconProps) {
 	);
 }
 
-/** preview — PreviewQuestionsIcon (40) */
 export function PreviewQuestionsIcon(props: IconProps) {
 	return (
 		<svg
@@ -991,7 +947,6 @@ export function PreviewQuestionsIcon(props: IconProps) {
 	);
 }
 
-/** preview — PreviewTimeIcon (40) */
 export function PreviewTimeIcon(props: IconProps) {
 	return (
 		<svg
@@ -1014,7 +969,6 @@ export function PreviewTimeIcon(props: IconProps) {
 	);
 }
 
-/** mindX logo (100×24, staging module 63390) */
 export function MindXLogo(props: IconProps) {
 	return (
 		<svg
@@ -1062,7 +1016,6 @@ export function MindXLogo(props: IconProps) {
 	);
 }
 
-/** preview — асуултын тоо (20, #CBD5E1) */
 export function PreviewHelpIcon(props: IconProps) {
 	return (
 		<svg
@@ -1081,7 +1034,6 @@ export function PreviewHelpIcon(props: IconProps) {
 	);
 }
 
-/** preview — хугацаа (20, #CBD5E1) */
 export function PreviewClockIcon(props: IconProps) {
 	return (
 		<svg
@@ -1100,7 +1052,6 @@ export function PreviewClockIcon(props: IconProps) {
 	);
 }
 
-/** dashboard — нийтэлсэн огноо (16, #92A3BB) */
 export function CalendarSmallIcon(props: IconProps) {
 	return (
 		<svg
@@ -1122,7 +1073,6 @@ export function CalendarSmallIcon(props: IconProps) {
 	);
 }
 
-/** module 28396 — урилга "Дууссан" (16) */
 export function InvitationCompletedIcon(props: IconProps) {
 	return (
 		<svg
@@ -1144,7 +1094,6 @@ export function InvitationCompletedIcon(props: IconProps) {
 	);
 }
 
-/** module 28396 — урилга "Эхэлсэн" (16) */
 export function InvitationStartedIcon(props: IconProps) {
 	return (
 		<svg
@@ -1174,7 +1123,6 @@ export function InvitationStartedIcon(props: IconProps) {
 	);
 }
 
-/** module 28396 — урилга "Уригдсан" (16) */
 export function InvitationPendingIcon(props: IconProps) {
 	return (
 		<svg
@@ -1199,7 +1147,6 @@ export function InvitationPendingIcon(props: IconProps) {
 	);
 }
 
-/** module 28396 — урилга "Хугацаа дууссан" (16) */
 export function InvitationExpiredIcon(props: IconProps) {
 	return (
 		<svg
@@ -1221,7 +1168,6 @@ export function InvitationExpiredIcon(props: IconProps) {
 	);
 }
 
-/** module 51267 — имэйл хуулах (20×21) */
 export function CopyIcon(props: IconProps) {
 	return (
 		<svg
@@ -1246,7 +1192,6 @@ export function CopyIcon(props: IconProps) {
 	);
 }
 
-/** result — "Анхааруулга" (24, #FF775C) */
 export function WarningTriangleIcon(props: IconProps) {
 	return (
 		<svg
@@ -1268,7 +1213,6 @@ export function WarningTriangleIcon(props: IconProps) {
 const BADGE_CHECK_PATH =
 	"M9 12L11 14L15.5 9.5M7.33377 3.8187C8.1376 3.75455 8.90071 3.43846 9.51447 2.91542C10.9467 1.69486 13.0533 1.69486 14.4855 2.91542C15.0993 3.43846 15.8624 3.75455 16.6662 3.8187C18.5421 3.96839 20.0316 5.45794 20.1813 7.33377C20.2455 8.1376 20.5615 8.90071 21.0846 9.51447C22.3051 10.9467 22.3051 13.0533 21.0846 14.4855C20.5615 15.0993 20.2455 15.8624 20.1813 16.6662C20.0316 18.5421 18.5421 20.0316 16.6662 20.1813C15.8624 20.2455 15.0993 20.5615 14.4855 21.0846C13.0533 22.3051 10.9467 22.3051 9.51447 21.0846C8.90071 20.5615 8.1376 20.2455 7.33377 20.1813C5.45794 20.0316 3.96839 18.5421 3.8187 16.6662C3.75455 15.8624 3.43846 15.0993 2.91542 14.4855C1.69486 13.0533 1.69486 10.9467 2.91542 9.51447C3.43846 8.90071 3.75455 8.1376 3.8187 7.33377C3.96839 5.45794 5.45794 3.96839 7.33377 3.8187Z";
 
-/** result — "Явцын хяналт" (24, ногоон) */
 export function BadgeCheckIcon(props: IconProps) {
 	return (
 		<svg
@@ -1305,7 +1249,6 @@ const EVENT_STROKE_BOLD = {
 	strokeLinejoin: "round",
 } as const;
 
-/** Явцын хяналт — Fullscreen exits */
 export function EventFullscreenIcon(props: IconProps) {
 	return (
 		<svg
@@ -1324,7 +1267,6 @@ export function EventFullscreenIcon(props: IconProps) {
 	);
 }
 
-/** Явцын хяналт — Tab switches */
 export function EventTabSwitchIcon(props: IconProps) {
 	return (
 		<svg
@@ -1347,7 +1289,6 @@ export function EventTabSwitchIcon(props: IconProps) {
 	);
 }
 
-/** Явцын хяналт — Window focus lost */
 export function EventWindowFocusIcon(props: IconProps) {
 	return (
 		<svg
@@ -1368,7 +1309,6 @@ export function EventWindowFocusIcon(props: IconProps) {
 	);
 }
 
-/** Явцын хяналт — Copy event */
 export function EventCopyIcon(props: IconProps) {
 	return (
 		<svg
@@ -1391,7 +1331,6 @@ export function EventCopyIcon(props: IconProps) {
 	);
 }
 
-/** Явцын хяналт — Paste event */
 export function EventPasteIcon(props: IconProps) {
 	return (
 		<svg
@@ -1414,7 +1353,6 @@ export function EventPasteIcon(props: IconProps) {
 	);
 }
 
-/** module 1043 `S` — од (fill = currentColor эсвэл хоосон) */
 export function RatingStarIcon({
 	filled,
 	...props
@@ -1432,7 +1370,6 @@ export function RatingStarIcon({
 	);
 }
 
-/** result — "Дэлгэрэнгүй" (16) */
 export function DocumentIcon(props: IconProps) {
 	return (
 		<svg
@@ -1452,7 +1389,6 @@ export function DocumentIcon(props: IconProps) {
 	);
 }
 
-/** result — "Тайлан татах" (20) */
 export function DownloadIcon(props: IconProps) {
 	return (
 		<svg

@@ -4,8 +4,6 @@ import { Select } from "@base-ui/react/select";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Staging shadcn/radix Select (📦 module 50745)-ийн харагдал, base-ui Select дээр.
-
 export interface RaSelectOption<V extends string> {
 	value: V;
 	label: React.ReactNode;

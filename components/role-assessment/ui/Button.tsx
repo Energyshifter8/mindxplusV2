@@ -3,9 +3,6 @@
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
-// Staging "NewCustomButton" (📦 module 83443) — variant/size-ийн класс ижил.
-// Нэмэлт: keyboard focus-visible ring (a11y, staging-д байхгүй — mismatches.md).
-
 export type RaButtonVariant =
 	| "primary"
 	| "accent"
@@ -25,7 +22,6 @@ export interface RaButtonProps {
 	prefixIcon?: React.ReactNode;
 	suffixIcon?: React.ReactNode;
 	ariaLabel?: string;
-	/** Disabled үед шалтгаан (tooltip) */
 	disabledReason?: string;
 	"aria-pressed"?: boolean;
 }

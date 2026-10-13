@@ -1,6 +1,3 @@
-// Талентийн үнэлгээний route-ууд (staging: /role-assessment…, /invited-talents…).
-// Бүх дотоод линк эндээс — route шилжүүлэхэд зөвхөн энэ файл өөрчлөгдөнө.
-
 export const raRoutes = {
 	list: () => "/role-assessment",
 	wizard: (id: string) => `/role-assessment/${id}`,

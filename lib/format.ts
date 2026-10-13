@@ -1,6 +1,3 @@
-// Талентийн үнэлгээний дэлгэцүүдийн нийтлэг формат.
-// Staging огноог `+08:00` offset-той ISO-8601-ээр илгээдэг.
-
 function toDate(value: string | null | undefined): Date | null {
 	if (!value) return null;
 	const d = new Date(value);
@@ -17,7 +14,6 @@ export function formatDate(value: string | null | undefined): string {
 	});
 }
 
-/** Staging `E6`: "Ж. Дорж" — овгийн эхний үсэг (том) + нэр; хоосон бол "" (bundle ✅). */
 export function formatPersonShort(
 	person:
 		| { firstName?: string | null; lastName?: string | null }
@@ -30,20 +26,13 @@ export function formatPersonShort(
 	return `${initial}${first}`.trim();
 }
 
-/** Оноо: бүхэл бол тэр чигээр, бутархай бол 1 орон (staging ✅). */
 export function formatPoints(points: number | null | undefined): string {
 	if (points == null || !Number.isFinite(points)) return "—";
 	return Number.isInteger(points) ? String(points) : points.toFixed(1);
 }
 
-// --- Staging-ийн formatter-ууд (📦 bundle, module 39378) ---
-
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
-/**
- * Staging `r6`: "YYYY-MM-DD • HH:mm" (browser-ийн цагийн бүсээр). Цаг 00:00 бол
- * зөвхөн огноо, `YYYY-MM-DD` оролт тэр чигээрээ, хоосон/буруу бол "---".
- */
 export function formatDateBullet(value: string | null | undefined): string {
 	if (!value) return "---";
 	const text = value.trim();
@@ -58,10 +47,6 @@ export function formatDateBullet(value: string | null | undefined): string {
 
 const ISO_DATE_TIME = /^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})/;
 
-/**
- * Staging `AC`: ISO мөрөөс огноо, цагийг ХӨРВҮҮЛЭЛГҮЙ салгана (серверийн +08:00 цаг).
- * Хоосон бол `{date: "-", time: ""}`.
- */
 export function splitDateTime(value: string | null | undefined): {
 	date: string;
 	time: string;
@@ -79,7 +64,6 @@ export function splitDateTime(value: string | null | undefined): {
 	};
 }
 
-/** Staging `Yq`: "YYYY-MM-DD" эсвэл `withTime` үед "YYYY-MM-DD HH:mm" (локал), буруу бол "". */
 export function formatYmd(
 	value: string | null | undefined,
 	withTime = false,
@@ -93,10 +77,6 @@ export function formatYmd(
 		: date;
 }
 
-/**
- * Staging (нүүр хуудас 📦): <60мин "N минутын өмнө", <24ц "N цагийн өмнө",
- * 1 өдөр "Өдрийн өмнө", бусад "N өдрийн өмнө"; хоосон/буруу бол "-".
- */
 export function formatRelative(
 	value: string | null | undefined,
 	now: number = Date.now(),
@@ -112,7 +92,6 @@ export function formatRelative(
 	return days === 1 ? "Өдрийн өмнө" : `${days} өдрийн өмнө`;
 }
 
-/** Staging статистик карт (module 94621): ≥ 10000 → "Хязгааргүй", null → 0. */
 export const UNLIMITED_THRESHOLD = 10_000;
 
 export function formatStatCount(value: number | null | undefined): string {
@@ -121,40 +100,32 @@ export function formatStatCount(value: number | null | undefined): string {
 	return String(value ?? 0);
 }
 
-/** Staging `l1`: кирилл үсэг, зай, "-"-ээс бусдыг хасна (урих формын овог/нэр). */
 export function keepCyrillic(value: string): string {
 	return value.replace(/[^\u0400-\u04FF\s-]/g, "");
 }
 
-/** Staging `sf`: хоосон биш, зөвхөн кирилл/зай/"-". */
 export function isCyrillicName(value: string): boolean {
 	const text = value.trim();
 	return text.length > 0 && /^[\u0400-\u04FF\s-]+$/.test(text);
 }
 
-/** Локал огноо + `days` хоног → "YYYY-MM-DD" (staging `dayjs().add(n,"days")`). */
 export function addDaysYmd(days: number, now: Date = new Date()): string {
 	const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + days);
 	return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
-/** "YYYY-MM-DD" → "YYYY/MM/DD" (огноо сонгогчийн харагдац). */
 export function formatSlashDate(value: string | null | undefined): string {
 	return value && /^\d{4}-\d{2}-\d{2}$/.test(value)
 		? value.replace(/-/g, "/")
 		: "";
 }
 
-/** Утасны дугаар: зөвхөн цифр, ≤ 8 (staging урих форм). */
 export function digitsOnly(value: string | null | undefined, max = 8): string {
 	return String(value ?? "")
 		.replace(/\D/g, "")
 		.slice(0, max);
 }
 
-// --- Явц, хугацааны label (📦 module 87100) ---
-
-/** Жагсаалтын "Явц": CREATED → "--/--", бусад "completed/total". */
 export function listProgressLabel(row: {
 	status?: string;
 	completedInvitationCount?: number | null;
@@ -164,7 +135,6 @@ export function listProgressLabel(row: {
 	return `${row.completedInvitationCount ?? 0}/${row.totalInvitationCount ?? 0}`;
 }
 
-/** Дэлгэрэнгүйн "Явц": CREATED → "--/--", бусад count.completed/count.total. */
 export function detailProgressLabel(detail: {
 	status?: string;
 	count?: { completed?: number | null; total?: number | null } | null;
@@ -173,7 +143,6 @@ export function detailProgressLabel(detail: {
 	return `${detail.count?.completed ?? 0}/${detail.count?.total ?? 0}`;
 }
 
-/** Тест/асуултын хугацаа: "min-max Мин" эсвэл "N Мин". */
 export function minutesLabel(item: {
 	minMinutes?: number | null;
 	maxMinutes?: number | null;
@@ -183,10 +152,6 @@ export function minutesLabel(item: {
 		: `${item.maxMinutes || item.minMinutes || 0} Мин`;
 }
 
-/**
- * Staging dashboard (📦 module 34795): "min-max Мин" / "max Мин" / "min Мин" / "---".
- * Тестийн нийт хугацаанд `unit = "мин"` (жижиг үсэг).
- */
 export function minutesRangeOrDash(
 	min: number | null | undefined,
 	max: number | null | undefined,

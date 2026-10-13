@@ -25,11 +25,9 @@ export function useUpdateSurveyPage({
 		mutationFn: (payload: UpdateSurveyPagePayload) =>
 			updateSurveyPage(surveyId, payload),
 		onMutate: () => {
-			// show/update a single loading toast with a stable id so duplicates are avoided
 			toast.loading(TOAST.SAVE_LOADING, { id: "save-survey" });
 		},
 		onSuccess: (response: ApiResponse<UpdateSurveyPageResponse>) => {
-			// update the same toast to success (no explicit dismiss) to ensure only one notification
 			if (!response.success) {
 				toast.error(response.error || TOAST.SAVE_ERROR, { id: "save-survey" });
 				return;
@@ -40,7 +38,6 @@ export function useUpdateSurveyPage({
 			onSuccess?.();
 		},
 		onError: (error: Error) => {
-			// update the same toast to an error state
 			toast.error(error.message || TOAST.SAVE_ERROR, { id: "save-survey" });
 		},
 	});

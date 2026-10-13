@@ -1,10 +1,3 @@
-// Backend-ийн төрлүүд — swagger (springdoc).
-// Swagger-ийн response schema-д `required`/`nullable` ихэвчлэн тодорхойлогдоогүй тул
-// талбарууд optional. Staging дээр `null` ирж буйг ажигласан талбарт `| null` нэмсэн.
-
-// --- Enum-ууд (swagger) ---
-
-/** swagger: RecruitmentListView.status, MySurveyView.status, RecruitmentDetail.status */
 export type PublishStatus =
 	| "CREATED"
 	| "PUBLISHING"
@@ -12,23 +5,18 @@ export type PublishStatus =
 	| "CLOSED"
 	| "SUSPENDED";
 
-/** swagger: InvitationProjection.status, CustomerInvitationView.status */
 export type InvitationStatusDto =
 	| "PENDING"
 	| "EXPIRED"
 	| "STARTED"
 	| "COMPLETED";
 
-/** swagger: UserInfo.role */
 export type UserRole = "OWNER" | "MANAGER" | "VIEWER";
 
-/** swagger: AccountDTO.planType */
 export type PlanType = "FREE" | "BASIC" | "STANDARD" | "PREMIUM" | "CUSTOM";
 
-/** swagger: AccountDTO.months */
 export type PlanMonths = "QUARTER" | "YEAR";
 
-/** swagger: HiringTestPublicDTO.color */
 export type HiringTestColor =
 	| "CLAY"
 	| "TEAL"
@@ -39,7 +27,6 @@ export type HiringTestColor =
 	| "GREEN"
 	| "YELLOW";
 
-/** swagger: PersonalReport.assessorType */
 export type AssessorType =
 	| "NO_ASSESSMENT"
 	| "TOTAL_SCORE"
@@ -50,16 +37,12 @@ export type AssessorType =
 	| "SUB_SCALE_WITH_AVG_INTERVAL"
 	| "MBTI";
 
-// --- Нийтлэг ---
-
-/** swagger: SortObject */
 export interface SortObject {
 	empty?: boolean;
 	sorted?: boolean;
 	unsorted?: boolean;
 }
 
-/** swagger: PageableObject */
 export interface PageableObject {
 	offset?: number;
 	sort?: SortObject;
@@ -69,7 +52,6 @@ export interface PageableObject {
 	unpaged?: boolean;
 }
 
-/** swagger: Page* (Spring Data) */
 export interface Page<T> {
 	totalElements?: number;
 	totalPages?: number;
@@ -84,26 +66,16 @@ export interface Page<T> {
 	empty?: boolean;
 }
 
-/** swagger: TokenDTO */
 export interface TokenDTO {
 	token?: string;
 }
 
-// --- GET /customer/profile ---
-
-/** swagger: Company */
 export interface Company {
 	id?: number;
-	/** required, 5–100 */
 	name: string;
-	/** 6–7 */
 	regnum?: string;
 }
 
-/**
- * swagger: UserInfo. Staging хариунд нэмэлт `createdAt`, `customerId`, `inactiveAt`
- * ирдэг (swagger-т байхгүй) — optional-оор нэмсэн.
- */
 export interface UserInfo {
 	id?: number;
 	email?: string;
@@ -118,27 +90,19 @@ export interface UserInfo {
 	inactiveAt?: string | null;
 }
 
-// --- GET /customer/account ---
-
-/** swagger: AccountDTO */
 export interface AccountDTO {
 	planType?: PlanType;
 	employeeLimit?: number;
 	planName?: string;
 	months?: PlanMonths;
 	paidAmount?: number;
-	/** date (YYYY-MM-DD) */
 	startDate?: string;
-	/** date (YYYY-MM-DD) */
 	dueDate?: string;
 	dataAccess?: boolean;
 	hasTrialSurvey?: boolean;
 	expired?: boolean;
 }
 
-// --- GET /customer/surveys ---
-
-/** swagger: MySurveyView */
 export interface MySurveyView {
 	name?: string;
 	id?: string;
@@ -149,7 +113,6 @@ export interface MySurveyView {
 	publishedAt?: string | null;
 	qr?: string;
 	link?: string;
-	/** date */
 	expireDate?: string | null;
 	passcodeProtected?: boolean;
 	trial?: boolean;
@@ -161,18 +124,12 @@ export interface MySurveyView {
 	receivedResponseCount?: number;
 }
 
-// --- GET /customer/surveys-home/statistics ---
-
-/** swagger: SurveyHomeStatistics */
 export interface SurveyHomeStatistics {
 	totalPublishedSurveyCount?: number;
 	totalRespondentCount?: number;
 	surveyBalance?: number;
 }
 
-// --- GET /customer/recruitments/ ---
-
-/** swagger: RecruitmentListView (staging дээр `publishedAt/closedAt: null` ✅) */
 export interface RecruitmentListView {
 	name?: string;
 	id?: string;
@@ -184,18 +141,12 @@ export interface RecruitmentListView {
 	totalInvitationCount?: number;
 }
 
-// --- GET /customer/recruitments/statistics ---
-
-/** swagger: HiringHomeStatistics */
 export interface HiringHomeStatistics {
 	totalInvitationCount?: number;
 	totalCompletedCount?: number;
 	invitationBalance?: number;
 }
 
-// --- GET /customer/hiring-invitations/latest-completed ---
-
-/** swagger: InvitationProjection (`phoneNumber`, `ratingPoints` null ирдэг ✅) */
 export interface InvitationProjection {
 	createdBy?: string;
 	completedAt?: string;
@@ -204,7 +155,6 @@ export interface InvitationProjection {
 	recruitmentName?: string;
 	id?: string;
 	status?: InvitationStatusDto;
-	/** date */
 	dueDate?: string;
 	email?: string;
 	firstName?: string;
@@ -214,10 +164,6 @@ export interface InvitationProjection {
 	phoneNumber?: string | null;
 }
 
-// --- Customer recruitments: setup / catalog / invitations / design ---
-// Swagger schema + staging дээр GET-ээр ✅ ажигласан хэлбэр (2026-10-06).
-
-/** swagger: RecruitmentBriefView — GET /customer/recruitments/status/{id} ✅ */
 export interface RecruitmentBriefView {
 	id?: string;
 	name?: string;
@@ -227,68 +173,46 @@ export interface RecruitmentBriefView {
 	status?: PublishStatus;
 }
 
-/** swagger: RecruitmentSettings — staging ✅ `{maxTestCount: 4, maxQuestionCount: 3}` */
 export interface RecruitmentSettings {
 	maxTestCount?: number;
 	maxQuestionCount?: number;
 }
 
-/**
- * swagger: RecruitmentInfo (request-д `jobTitle`, `jobDescription`, `companyName` required).
- * Шинэ (CREATED) үнэлгээнд `jobDescription: null` ирдэг ✅.
- */
 export interface RecruitmentInfo {
-	/** 0–100 */
 	jobTitle: string;
-	/** minLength 1. Staging: rich text (HTML) */
 	jobDescription: string | null;
-	/** 0–100 */
 	companyName: string;
-	/** Staging: rich text (HTML) */
 	companyDescription?: string | null;
 }
 
-/**
- * swagger: CategoryWithCount. `id` нь шүүлтүүрийн түлхүүр (`hiring_soft_skill`,
- * `q_background` …), харин тест дээрх `category` нь `name` (label) байдаг ✅.
- * `count` staging дээр 0 ирдэг ✅ — тоо гэж бүү ашигла.
- */
 export interface CategoryWithCount {
 	id?: string;
 	name?: string;
 	count?: number;
 }
 
-/** swagger: HiringTestPublicDTO.roleLevels */
 export type RoleLevel = "ENTRY" | "SENIOR" | "MANAGER";
 
-/** swagger: Email — search-by-email body */
 export interface EmailDTO {
-	/** minLength 5 */
 	value: string;
 }
 
-/** swagger: DateDTO — `value` нь date (YYYY-MM-DD) */
 export interface DateDTO {
 	value?: string;
 }
 
-/** swagger: Rating — `points` int 0..5 */
 export interface Rating {
 	points: number;
 }
 
-/** swagger: IdDTO */
 export interface IdDTO {
 	id: number;
 }
 
-/** swagger: StrDTO — `str` minLength 1 */
 export interface StrDTO {
 	str: string;
 }
 
-/** swagger: RestResponse* */
 export interface RestResponse<T> {
 	message?: string;
 	status?: number;
@@ -296,16 +220,11 @@ export interface RestResponse<T> {
 	data?: T;
 }
 
-/** swagger: FullName */
 export interface FullName {
 	firstName: string;
 	lastName: string;
 }
 
-/**
- * swagger: Talent — POST invite-ийн body, POST {id}/extend-ийн хариу.
- * Нэр: 2–20, `^\p{L}[\p{L}'\-\s]*$`; email 5–50.
- */
 export interface Talent {
 	id?: string;
 	recruitmentId: string;
@@ -313,14 +232,12 @@ export interface Talent {
 	lastName: string;
 	firstName: string;
 	phoneNumber?: string | null;
-	/** date (YYYY-MM-DD) */
 	dueDate?: string;
 	status?: InvitationStatusDto;
 	fullName?: string;
 	fullNameObject?: FullName;
 }
 
-/** swagger: InvitationEntity */
 export interface InvitationEntity {
 	createdAt?: string;
 	updatedAt?: string;
@@ -330,7 +247,6 @@ export interface InvitationEntity {
 	talentId: number;
 	recruitmentId: string;
 	customerId: number;
-	/** date */
 	dueDate?: string;
 	completedAt?: string | null;
 	token: string;
@@ -339,7 +255,6 @@ export interface InvitationEntity {
 	expired?: boolean;
 }
 
-/** swagger: TalentEntity — search-by-email-ийн `data` */
 export interface TalentEntity {
 	createdAt?: string;
 	updatedAt?: string;
@@ -355,24 +270,16 @@ export interface TalentEntity {
 	invitations?: InvitationEntity[];
 }
 
-/** swagger: DesignDTO.designOwnerType. Path-д staging RECRUITMENT (том үсэг) илгээдэг 📦 */
 export type DesignOwnerType =
 	| "SURVEY"
 	| "SURVEY_TEMPLATE"
 	| "HIRING_TEST"
 	| "RECRUITMENT";
 
-/** swagger: GET /customer/designs/themes ✅ */
 export type ThemeType = "LIGHT" | "YALE" | "DARK" | "MIRAGE" | "PURPLE";
 
-/** swagger: UpdateDesign.logoPosition / DesignDTO.imagePosition */
 export type LogoPosition = "TOP_LEFT" | "TOP_MIDDLE" | "TOP_RIGHT";
 
-/**
- * swagger: DesignDTO — GET /customer/designs/RECRUITMENT/{id} ✅.
- * Лого байхгүй үед `logoUrl` огт ирэхгүй ✅. Байрлал хариунд `imagePosition`,
- * харин update-ийн body-д `logoPosition` гэж нэрлэгддэг.
- */
 export interface DesignDTO {
 	id?: number;
 	designOwnerId?: string;
@@ -384,7 +291,6 @@ export interface DesignDTO {
 	logoUrl?: string;
 }
 
-/** swagger: UpdateDesign (бүгд required) */
 export interface UpdateDesign {
 	themeType: ThemeType;
 	logoPosition: LogoPosition;

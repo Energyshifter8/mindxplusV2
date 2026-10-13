@@ -31,10 +31,6 @@ import type {
 } from "@/lib/types/role-assessment";
 import { raKeys } from "./keys";
 
-/**
- * Staging-ийн React Query тохиргоо (📦): retry:false, focus refetch-гүй, polling-гүй.
- * Глобал QueryClient (components/providers.tsx)-д хүрэхгүйн тулд hook бүрт тавина.
- */
 export const RA_QUERY_OPTIONS = {
 	retry: false,
 	refetchOnWindowFocus: false,
@@ -128,8 +124,6 @@ export function useInvitationNotes(invitationId: string | undefined) {
 		enabled: !!invitationId,
 	});
 }
-
-// --- Wizard (staging: каталог staleTime/gcTime 30 мин, сонголт алхам идэвхтэй үед л) ---
 
 const CATALOG_CACHE = {
 	staleTime: 30 * 60 * 1000,
@@ -225,8 +219,6 @@ export function useCatalogQuestions(category: string, enabled: boolean) {
 		enabled,
 	});
 }
-
-// --- Урьсан талентууд (staging 📦: retry:false, focus refetch-гүй) ---
 
 export function useTalentList(params: TalentListParams) {
 	return useQuery({

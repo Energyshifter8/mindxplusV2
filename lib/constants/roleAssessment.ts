@@ -1,9 +1,5 @@
 import type { HiringTestColor, PublishStatus } from "@/lib/types/api";
 
-// Талентийн үнэлгээ (role assessment)-ийн enum ба Монгол label.
-// Эх сурвалж: docs/role-assessment-report.md §4 (staging ✅).
-
-// swagger: RecruitmentListView.status / RecruitmentDetail.status / MySurveyView.status
 export const RECRUITMENT_STATUSES = [
 	"CREATED",
 	"PUBLISHING",
@@ -14,11 +10,9 @@ export const RECRUITMENT_STATUSES = [
 export type RecruitmentStatus = (typeof RECRUITMENT_STATUSES)[number] &
 	PublishStatus;
 
-// Label: staging UI (bundle 📦). PUBLISHING-ийг staging орчуулаагүй, түүхий текстээр харуулдаг.
 export const RECRUITMENT_STATUS_LABELS: Record<RecruitmentStatus, string> = {
 	CREATED: "Үүссэн",
 	PUBLISHING: "PUBLISHING",
-	// санал: өмнө нь "Нийтэлсэн" байсан; staging "Идэвхтэй" гэж харуулдаг
 	PUBLISHED: "Идэвхтэй",
 	CLOSED: "Хаагдсан",
 	SUSPENDED: "Саатсан",
@@ -32,8 +26,6 @@ export const INVITATION_STATUSES = [
 ] as const;
 export type InvitationStatus = (typeof INVITATION_STATUSES)[number];
 
-// санал: staging UI-ийн label (тайлан §2c), баталгаажуулах шаардлагатай.
-// Өмнө нь PENDING = "Хүлээгдэж байна", STARTED байгаагүй.
 export const INVITATION_STATUS_LABELS: Record<InvitationStatus, string> = {
 	PENDING: "Уригдсан",
 	STARTED: "Эхэлсэн",
@@ -41,19 +33,16 @@ export const INVITATION_STATUS_LABELS: Record<InvitationStatus, string> = {
 	EXPIRED: "Хугацаа дууссан",
 };
 
-// Тестийн өнгө — swagger: HiringTestPublicDTO.color (staging каталогт GREEN, YELLOW ✅)
 export type TestColor = HiringTestColor;
 
 export function isInvitationStatus(value: unknown): value is InvitationStatus {
 	return (INVITATION_STATUSES as readonly unknown[]).includes(value);
 }
 
-/** Staging dashboard: "Үр дүн" товч зөвхөн COMPLETED/STARTED үед идэвхтэй (bundle ✅). */
 export function isResultAvailable(status: string): boolean {
 	return status === "COMPLETED" || status === "STARTED";
 }
 
-// Анхаарал төвлөрөл (TestResult.dataQuality) — staging bundle-ийн mapping ✅
 export type DataQualityTone =
 	| "success"
 	| "info"
@@ -76,8 +65,6 @@ export const DATA_QUALITY_UNKNOWN = {
 	tone: "neutral" as DataQualityTone,
 };
 
-// Явцын хяналт (assessment.eventSummary) — staging bundle-ийн жагсаалт, дараалал ✅.
-// CUT ирдэг ч staging харуулдаггүй. PAGE_VISIBILITY_HIDDEN байхгүй бол TAB_SWITCH-ийг уншина.
 export const PROCTORING_EVENTS: {
 	key: string;
 	fallbackKey?: string;
@@ -118,8 +105,6 @@ export const PROCTORING_EVENTS: {
 	},
 ];
 
-// POST /customer/role-assessments/recommend — body нь асуулт бүрт сонгосон
-// хариултын `value`, асуултын дарааллаар (string[]). Асуулт, утга: staging bundle 📦.
 export const RECOMMEND_QUESTIONS = [
 	{
 		id: "question1",
@@ -157,19 +142,14 @@ export const RECOMMEND_QUESTIONS = [
 export type RecommendAnswer =
 	(typeof RECOMMEND_QUESTIONS)[number]["options"][number]["value"];
 
-// --- Статусаас хамаарах үйлдлүүд (staging bundle 📦: жагсаалт, wizard, dashboard) ---
-
-/** Wizard-д засах боломжтой (бусад үед зөвхөн унших горим). */
 export function isRecruitmentEditable(status: string | undefined): boolean {
 	return status === "CREATED";
 }
 
-/** Мөр/нэр дээр дарахад: CREATED → wizard, бусад → dashboard. */
 export function opensWizard(status: string | undefined): boolean {
 	return status === "CREATED";
 }
 
-/** Нэр солих, устгах: зөвхөн CREATED. */
 export function canRenameRecruitment(status: string | undefined): boolean {
 	return status === "CREATED";
 }
@@ -178,7 +158,6 @@ export function canDeleteRecruitment(status: string | undefined): boolean {
 	return status === "CREATED";
 }
 
-/** Урих, хаах: зөвхөн PUBLISHED. */
 export function canInviteToRecruitment(status: string | undefined): boolean {
 	return status === "PUBLISHED";
 }
@@ -187,7 +166,6 @@ export function canCloseRecruitment(status: string | undefined): boolean {
 	return status === "PUBLISHED";
 }
 
-/** Dashboard "Дахин урих" (сунгах): зөвхөн EXPIRED урилга. */
 export function canExtendInvitation(status: string | undefined): boolean {
 	return status === "EXPIRED";
 }

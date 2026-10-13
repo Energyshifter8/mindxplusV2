@@ -1,12 +1,3 @@
-// Серверийн HTML (тестийн `content`, Quill-ийн HTML)-ийг `<iframe sandbox="" srcDoc>`-д
-// харуулахад бэлтгэнэ. Sanitizer биш: iframe sandbox (script, same-origin хоёулаа хаалттай)
-// хамгаална (DECISIONS.md D3). Цэвэр функц — alias-гүй.
-
-/**
- * Staging тестийн drawer-ийн regex цэвэрлэгээ (📦 module 29241): `&nbsp;`, хоосон
- * `<p><br></p>`, Quill-ийн `ql-ui` span-ийг хасаж, Quill 2-ын `<ol><li data-list>`-ийг
- * `<ul>`/`<ol>` болгоно.
- */
 export function normalizeQuillHtml(html: string): string {
 	return html
 		.replace(/&nbsp;/g, " ")
@@ -19,10 +10,6 @@ export function normalizeQuillHtml(html: string): string {
 		);
 }
 
-/**
- * Staging-ийн `text-[14px] leading-[22px] [&_*]:!text-TextColor-main [&_p]:mb-3 …`
- * класстай ижил харагдах srcDoc (цагаан "цаас", light).
- */
 export function buildContentDoc(html: string): string {
 	return `<!doctype html><html><head><meta charset="utf-8"><style>
 :root{color-scheme:light}

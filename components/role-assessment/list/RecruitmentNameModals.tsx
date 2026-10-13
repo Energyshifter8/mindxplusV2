@@ -8,8 +8,6 @@ import { RaModal, RaModalTitle } from "@/components/role-assessment/ui/Modal";
 import { TextField } from "@/components/role-assessment/ui/TextField";
 import { RECRUITMENT_NAME_MAX } from "@/lib/api/role-assessment";
 
-// Staging үүсгэх (600px) ба нэр солих (600px) modal (📦 жагсаалтын хуудас).
-
 export function CreateRecruitmentModal({
 	open,
 	onClose,

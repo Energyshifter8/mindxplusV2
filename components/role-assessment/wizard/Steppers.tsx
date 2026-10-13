@@ -4,17 +4,12 @@ import { Check } from "lucide-react";
 import type { StepStatus, WizardStep } from "@/lib/role-assessment/wizard";
 import { cn } from "@/lib/utils";
 
-// antd Steps + staging-ийн `.top_menu_steps` / `.right_menu_steps` override (📦 CSS).
-// Геометр antd v5-ийнх: label-vertical — content 112px, icon margin-inline-start 40px,
-// tail margin-inline-start 56px, padding 0 24px.
-
 export interface TopStepItem {
 	number: WizardStep;
 	label: string;
 	status: StepStatus;
 }
 
-/** Дээд stepper ("АЛХАМ 1–4"), labelPlacement vertical. */
 export function TopStepper({
 	items,
 	current,
@@ -97,12 +92,10 @@ export interface RightStepItem {
 	status: StepStatus;
 	title: React.ReactNode;
 	description?: React.ReactNode;
-	/** Дарахад (stepNavigation) */
 	onSelect: () => void;
 	label: string;
 }
 
-/** Баруун самбарын босоо алхмууд. */
 export function RightSteps({
 	items,
 	current,
@@ -150,8 +143,6 @@ export function RightSteps({
 								active && "rounded-lg border border-[#72bf0f]",
 							)}
 						>
-							{/* stretched button: ::after нь мөрийг бүхэлд нь хамарна, тайлбар доторх
-							    "хасах" товчнууд z-10-оор дээр нь гарна (button дотор button үүсэхгүй) */}
 							<button
 								type="button"
 								aria-label={item.label}

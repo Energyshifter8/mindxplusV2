@@ -10,8 +10,6 @@ import {
 import type { RaMenuAction } from "@/components/role-assessment/ui/KebabMenu";
 import type { RecruitmentListItem } from "@/lib/types/role-assessment";
 
-// Жагсаалтын мөрийн үйлдэл — статусаас хамаарна (📦 staging жагсаалтын хуудас).
-
 export interface RecruitmentRowHandlers {
 	onDetail: (row: RecruitmentListItem) => void;
 	onInvite: (id: string) => void;
@@ -22,7 +20,6 @@ export interface RecruitmentRowHandlers {
 	goDashboard: (id: string) => void;
 }
 
-/** Мөрийн inline товч: CREATED → Засах, CLOSED → Үр дүн, бусад → Урих. */
 export function primaryRowAction(
 	row: RecruitmentListItem,
 	h: RecruitmentRowHandlers,
@@ -49,7 +46,6 @@ export function primaryRowAction(
 	}
 }
 
-/** "⋮" цэс. */
 export function rowMenuActions(
 	row: RecruitmentListItem,
 	h: RecruitmentRowHandlers,

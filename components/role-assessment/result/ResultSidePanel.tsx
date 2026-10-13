@@ -39,12 +39,7 @@ import type {
 } from "@/lib/types/role-assessment";
 import { cn } from "@/lib/utils";
 
-// Staging үр дүнгийн баруун багана (📦 module 1043): анхааруулга, төлөв, явцын хяналт,
-// од үнэлгээ (`P`), тэмдэглэл (`V`), "Санамж" modal (`M`).
-
 const CARD = "rounded-2xl border border-Stroke-700 p-4 sm:p-6";
-
-// --- Анхааруулга + Санамж ---
 
 const REMINDER_SECTIONS: { title: string; items: string[] }[] = [
 	{
@@ -158,12 +153,9 @@ export function WarningCard() {
 	);
 }
 
-// --- Төлөв ---
-
 const STATUS_PILL =
 	"inline-flex items-center gap-2 rounded-full border border-Gray-300 px-3 py-1 font-medium text-[14px] text-Gray-900 leading-[1.4]";
 
-/** Staging `f`: үр дүнгийн хуудасны төлөвийн pill (dashboard-ынхаас өөр). */
 function ResultStatusPill({ status }: { status?: string | null }) {
 	switch (status) {
 		case "COMPLETED":
@@ -294,8 +286,6 @@ export function StatusCard({ result }: { result: InvitationResult }) {
 	);
 }
 
-// --- Явцын хяналт ---
-
 const EVENT_ICONS: Record<string, ReactNode> = {
 	FULLSCREEN_EXIT: <EventFullscreenIcon />,
 	PAGE_VISIBILITY_HIDDEN: <EventTabSwitchIcon />,
@@ -351,15 +341,12 @@ export function ProctoringCard({ result }: { result: InvitationResult }) {
 	);
 }
 
-// --- Од үнэлгээ ---
-
 const STARS = [1, 2, 3, 4, 5] as const;
 
 export function RatingCard({ invitationId }: { invitationId: string }) {
 	const rate = useInvitationRate(invitationId);
 	const mutation = useRateInvitation(invitationId);
 	const myPoints = rate.data?.myPoints ?? 0;
-	// Сервер утга ирэх/шинэчлэгдэхэд сонголтыг дагуулна (staging useEffect-тэй ижил)
 	const [synced, setSynced] = useState(myPoints);
 	const [selected, setSelected] = useState(myPoints);
 	if (synced !== myPoints) {
@@ -449,8 +436,6 @@ export function RatingCard({ invitationId }: { invitationId: string }) {
 		</div>
 	);
 }
-
-// --- Тэмдэглэл ---
 
 function NoteItem({ note }: { note: InvitationNote }) {
 	return (

@@ -1,6 +1,3 @@
-// Урьсан талентуудын цэвэр логик (staging 📦 module 62002, 34355).
-// Тестэд relative import-оор ашиглагдана — "@/..." alias хэрэглэхгүй.
-
 export interface TalentLike {
 	id: number | string;
 	firstName?: string | null;
@@ -18,15 +15,12 @@ export interface TalentCardModel {
 	displayName: string;
 	phone: string;
 	email: string;
-	/** null — оноо ирээгүй (staging: од нуугдана) */
 	rating: number | null;
 	marked: boolean;
 	createdAt: string | null;
-	/** Уригдсан ажлын байрны нэрс (давхардалгүй) */
 	roles: string[];
 }
 
-/** "Овог Нэр" — хоосон бол "—" (staging талентын хуудсууд em dash). */
 export function talentDisplayName(
 	t: Pick<TalentLike, "firstName" | "lastName"> | null | undefined,
 ): string {
@@ -35,7 +29,6 @@ export function talentDisplayName(
 	);
 }
 
-/** Staging `L` mapper — зөвхөн API-ийн (swagger Talent) талбаруудаар. */
 export function toTalentCard(t: TalentLike): TalentCardModel {
 	const rating =
 		typeof t.avgStarPoint === "number" && !Number.isNaN(t.avgStarPoint)
@@ -56,7 +49,6 @@ export function toTalentCard(t: TalentLike): TalentCardModel {
 	};
 }
 
-/** Staging: эхний 2 tag харагдаж, үлдсэн нь "+N". */
 export function visibleTags(
 	tags: readonly string[],
 	max = 2,
@@ -67,10 +59,6 @@ export function visibleTags(
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
-/**
- * Staging картын огноо: browser-ийн цагийн бүсээр `{date, time}`; 00:00 бол цаггүй,
- * `YYYY-MM-DD` тэр чигээр, хоосон/буруу бол `{date: "—"}`.
- */
 export function splitLocalDateTime(value: string | null | undefined): {
 	date: string;
 	time: string;
@@ -87,7 +75,6 @@ export function splitLocalDateTime(value: string | null | undefined): {
 	return { date, time: `${pad2(h)}:${pad2(m)}` };
 }
 
-/** Staging: хуудас нийт хуудаснаас их бол сүүлийн хуудас руу. */
 export function clampPage(page: number, totalPages: number): number {
 	return Math.min(Math.max(1, page), Math.max(1, totalPages));
 }

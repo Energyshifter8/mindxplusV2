@@ -1,6 +1,5 @@
 import SidebarGate from "@/components/SidebarGate";
 
-/** Sidebar-тай апп-ын shell: /dashboard, /role-assessment, /invited-talents. */
 export function DashboardShell({ children }: { children: React.ReactNode }) {
 	return (
 		<SidebarGate

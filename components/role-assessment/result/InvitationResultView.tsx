@@ -47,11 +47,6 @@ import {
 	WarningCard,
 } from "./ResultSidePanel";
 
-// Staging /role-assessment/{id}/dashboard/{invitationId} (📦 module 1043). GET: үр дүн,
-// recruitment detail (нэр), урилгын нэрс; баруун багана: rate, notes. Зөрүү
-// (mismatches.md): алдааны төлөв тусдаа; HTML тайлан `sandbox=""`; тестийн accordion-ы
-// бие API өгөгдлөөр (module 36209 байхгүй).
-
 interface ReportState {
 	html: string | null;
 	title: string | null;
@@ -101,7 +96,6 @@ export function InvitationResultView({
 		[names.data, data],
 	);
 
-	// Staging: эхний ачаалалтад бүх тест нээлттэй
 	const expandedTests = useMemo(() => {
 		const map: Record<string, boolean> = {};
 		tests.forEach((t, i) => {

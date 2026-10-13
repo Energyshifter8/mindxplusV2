@@ -126,9 +126,7 @@ The UI follows a dark, grid-textured design language:
 
 ## Talent Assessment (Role Assessment)
 
-Staging-parity implementation of the "Талентийн үнэлгээ" module. Docs live in
-[`docs/role-assessment/`](docs/role-assessment/) — progress, decisions, deliberate
-mismatches, unverified items and the manual QA checklist.
+Staging-parity implementation of the "Талентийн үнэлгээ" module.
 
 ### Routes
 

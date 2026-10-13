@@ -11,8 +11,6 @@ import { RaButton } from "@/components/role-assessment/ui/Button";
 import { RaModal, RaModalTitle } from "@/components/role-assessment/ui/Modal";
 import { RECOMMEND_QUESTIONS } from "@/lib/constants/roleAssessment";
 
-// Staging "Тест санал болгох" modal (📦 `O`, antd Radio) ба нийтлэсний дараах modal.
-
 export function RecommendModal({
 	open,
 	onClose,

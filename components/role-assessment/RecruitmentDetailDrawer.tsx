@@ -27,10 +27,6 @@ import type {
 	RecruitmentTest,
 } from "@/lib/types/role-assessment";
 
-// Staging "Дэлгэрэнгүй" drawer (📦 module 2387): GET /customer/recruitments/{id} зөвхөн
-// нээгдсэн үед. Staging ачаалах/алдааны үед хоосон харагдана — бид skeleton ба
-// алдааны мессеж харуулна (mismatches.md).
-
 function TestList({ tests }: { tests: RecruitmentTest[] }) {
 	if (tests.length === 0)
 		return <DrawerEmpty description="Та тест сонгоогүй байна." />;
@@ -102,7 +98,6 @@ export function RecruitmentDetailDrawer({
 	recruitment,
 	onClose,
 }: {
-	/** Нээгдсэн мөр (нэр нь ачаалж байх үед гарчиг болно) */
 	recruitment: { id: string; name: string } | null;
 	onClose: () => void;
 }) {

@@ -1,9 +1,5 @@
 import axios from "axios";
 
-// --- ProblemDetail (RFC 7807) ---
-// Staging-ийн бүх алдааны хариу: `application/problem+json`
-// {type, title, status, detail, instance, code} — ✅ ажиглагдсан.
-
 export interface ProblemDetail {
 	type?: string;
 	title?: string;
@@ -11,21 +7,14 @@ export interface ProblemDetail {
 	detail?: string;
 	instance?: string;
 	code?: string;
-	/** Validation алдаанд (code=VALIDATION_EXCEPTION) ирнэ — staging ✅ */
 	errors?: ProblemFieldError[];
 }
 
-/** `value` нь талбарын Монгол алдааны мессеж (Accept-Language: mn-MN үед). */
 export interface ProblemFieldError {
 	field: string;
 	value: string;
 }
 
-/**
- * Throw хийдэг helper-уудын (apiGetOrThrow/apiPostOrThrow) алдаа.
- * `status` undefined бол сүлжээний алдаа (хариу ирээгүй).
- * `code` нь normalizeErrorCode-оор жижиг үсэг болгосон утга.
- */
 export class ApiError extends Error {
 	readonly status: number | undefined;
 	readonly code: string | undefined;
@@ -43,11 +32,6 @@ export class ApiError extends Error {
 	}
 }
 
-/**
- * Staging-ийн `code` том/жижиг үсэг холимог ирдэг:
- * `NOT_FOUND`, `SYSTEM_ERROR` (framework) ба `not_found`, `plan_expired` (domain).
- * Бүгдийг жижиг үсэг + `_` болгож нэг хэлбэрт оруулна.
- */
 export function normalizeErrorCode(code: unknown): string | undefined {
 	if (typeof code !== "string") return undefined;
 	const normalized = code
@@ -82,7 +66,6 @@ export function toProblemDetail(data: unknown): ProblemDetail | undefined {
 	};
 }
 
-/** Хариуны body-оос хүнд уншигдах текст (ApiResponse.error-д ашиглагддаг хуучин дүрэм). */
 export function extractErrorText(data: unknown): string {
 	if (typeof data === "object" && data !== null) {
 		const d = data as Record<string, unknown>;
@@ -113,7 +96,6 @@ export function toApiError(error: unknown): ApiError {
 	return new ApiError(error instanceof Error ? error.message : "Network error");
 }
 
-/** `responseType: "blob"` хүсэлтийн алдааны body Blob болж ирдэг тул JSON болгож уншина. */
 export async function toApiErrorFromBlob(error: unknown): Promise<ApiError> {
 	if (
 		axios.isAxiosError(error) &&
@@ -136,22 +118,12 @@ export async function toApiErrorFromBlob(error: unknown): Promise<ApiError> {
 	return toApiError(error);
 }
 
-// --- Монгол алдааны мессеж (code-оор, detail-ээр БИШ) ---
-// Мэдэгдэх бүх code энэ map-д. Эх сурвалж: staging ✅ (not_found, system_error,
-// validation_exception), staging bundle 📦 (plan_expired — bundle-д code-оор шалгадаг
-// цорын ганц утга), client-side (invalid_argument, unexpected_response),
-// proxy-ийн DRY-RUN хамгаалалт (ra_dry_run_blocked). Swagger алдааны code тодорхойлдоггүй.
-// Үл мэдэгдэх code → дуудагчийн fallback (staging-ийн үйлдэл тус бүрийн текст).
-
 const ERROR_MESSAGES: Record<string, string> = {
 	not_found: "Мэдээлэл олдсонгүй",
 	system_error: "Системийн алдаа гарлаа. Түр хүлээгээд дахин оролдоно уу",
 	validation_exception: "Оруулсан мэдээлэл буруу байна",
-	// bundle-derived, unverified: plan_expired code бодит хүсэлтээр ажиглагдаагүй
 	plan_expired: "Таны багцын хугацаа дууссан байна",
-	// client-side: хүсэлт илгээхээс өмнө илэрсэн буруу аргумент (lib/api.ts)
 	invalid_argument: "Оруулсан мэдээлэл буруу байна",
-	// client-side: хариу хүлээгдсэн хэлбэрт таарсангүй
 	unexpected_response:
 		"Сервер хүлээгдээгүй хариу буцаалаа. Жагсаалтаа шинэчилж шалгана уу",
 	ra_dry_run_blocked: "DRY-RUN: өөрчлөлт staging-д хадгалагдахгүй",
@@ -161,11 +133,6 @@ const NETWORK_ERROR_MESSAGE =
 	"Сервертэй холбогдож чадсангүй. Интернэт холболтоо шалгана уу";
 const GENERIC_ERROR_MESSAGE = "Алдаа гарлаа. Дахин оролдоно уу";
 
-/**
- * Алдааны эх сурвалжаас (ApiError, эсвэл ApiResponse-ийн {status, code})
- * хэрэглэгчид харуулах Монгол мессеж гаргана.
- * Мэдэгдэхгүй code-д `fallback` (байхгүй бол ерөнхий мессеж) буцаана.
- */
 export function getErrorMessage(source: unknown, fallback?: string): string {
 	if (typeof source === "object" && source !== null) {
 		const s = source as { status?: unknown; code?: unknown };
@@ -178,7 +145,6 @@ export function getErrorMessage(source: unknown, fallback?: string): string {
 	return fallback ?? GENERIC_ERROR_MESSAGE;
 }
 
-/** 4xx (олдсонгүй, эрхгүй, багц дууссан г.м.) дахин оролдоход засрахгүй. */
 export function isRetryableError(error: unknown): boolean {
 	if (!(error instanceof ApiError)) return true;
 	if (error.code === "invalid_argument") return false;
@@ -186,7 +152,6 @@ export function isRetryableError(error: unknown): boolean {
 	return error.status >= 500;
 }
 
-/** Validation алдааны талбар бүрийн мессеж: { limit: "10-аас бага ..." } */
 export function getFieldErrors(error: unknown): Record<string, string> {
 	const problem =
 		error instanceof ApiError

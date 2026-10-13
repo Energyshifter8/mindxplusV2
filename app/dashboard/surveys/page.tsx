@@ -69,7 +69,6 @@ function getSurveyKebabItems(
 			icon: <Trash2 size={11} />,
 			onClick: () => {
 				if (window.confirm("Энэ шинжилгээг устгах уу?")) {
-					// TODO: use deleteMutation
 				}
 			},
 			variant: "destructive",
@@ -81,7 +80,6 @@ function getSurveyKebabItems(
 			onClick: () => onShare(row.id),
 		});
 	} else {
-		// CLOSED
 		items.push({
 			label: "Үр дүн",
 			icon: <BarChart3 size={11} />,
@@ -164,7 +162,6 @@ export default function SurveysPage() {
 		<>
 			<div className="min-h-full w-full">
 				<div className="p-6 lg:p-10">
-					{/* Header */}
 					<div className="flex items-center justify-between mb-8">
 						<div>
 							<div
@@ -199,7 +196,6 @@ export default function SurveysPage() {
 						</button>
 					</div>
 
-					{/* Stat Cards */}
 					<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
 						<MiniStatCard
 							label="Нийтэлсэн шинжилгээний тоо"
@@ -224,7 +220,6 @@ export default function SurveysPage() {
 						/>
 					</div>
 
-					{/* Filter Tabs + Search + View Toggle */}
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
 						<div className="flex items-center gap-1 border-2 border-border p-1">
 							{FILTER_TABS.map((tab) => (
@@ -286,7 +281,6 @@ export default function SurveysPage() {
 						</div>
 					</div>
 
-					{/* Table / Grid */}
 					<div className="border-2 border-border bg-card overflow-hidden">
 						{listLoading ? (
 							<TableSkeleton columnCount={8} />
@@ -431,7 +425,6 @@ export default function SurveysPage() {
 								</table>
 							</div>
 						) : (
-							/* Grid view */
 							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-5">
 								{surveyRows.map((row) => (
 									<div

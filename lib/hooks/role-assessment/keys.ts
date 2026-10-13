@@ -4,10 +4,6 @@ import type {
 	TalentListParams,
 } from "@/lib/types/role-assessment";
 
-// Талентийн үнэлгээний query key factory. Нүүр хуудасны (components/Dashboard.tsx)
-// ["recruitmentList"], ["recruitmentStats"] нь ApiResponse хэлбэртэй тул тусдаа —
-// өөрчлөлтийн дараа HOME_RECRUITMENT_KEYS-ийг ч invalidate хийнэ.
-
 const all = ["role-assessment"] as const;
 
 export const raKeys = {
@@ -46,7 +42,6 @@ export const raKeys = {
 		[...all, "talent-invitations", id, params] as const,
 };
 
-/** components/Dashboard.tsx-ийн түлхүүрүүд */
 export const HOME_RECRUITMENT_KEYS = [
 	["recruitmentList"],
 	["recruitmentStats"],

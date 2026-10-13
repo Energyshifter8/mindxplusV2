@@ -15,10 +15,6 @@ import { RaDatePicker } from "./ui/DatePicker";
 import { RaConfirmDialog, RaModal, RaModalTitle } from "./ui/Modal";
 import { TextField } from "./ui/TextField";
 
-// Staging "Талент урих / Дахин урих" modal (📦 module 4089). Нэг удаад нэг имэйл;
-// амжилттай урьсны дараа форм цэвэрлэгдээд modal нээлттэй үлдэнэ (staging-тэй ижил).
-// Урих нь ЖИНХЭНЭ имэйл илгээдэг — dry-run хамгаалалттай (DECISIONS.md D4).
-
 export interface ReinviteTarget {
 	invitationId: string;
 	email: string;
@@ -63,7 +59,6 @@ export function InviteTalentModal({
 	recruitmentId: string;
 	reinvite?: ReinviteTarget | null;
 }) {
-	// `key` нь reinvite/open солигдоход форм шинээр эхлэх (staging useEffect-тэй ижил)
 	return (
 		<InviteTalentForm
 			key={`${open}-${reinvite?.invitationId ?? "new"}`}
@@ -106,7 +101,6 @@ function InviteTalentForm({
 		onClose();
 	};
 
-	/** Имэйлээр өмнө уригдсан талентыг олж бөглөнө (onBlur, 📦). */
 	const lookup = async () => {
 		if (isReinvite) return;
 		const email = trim(form.email);
@@ -314,7 +308,6 @@ function InviteTalentForm({
 							урилга автоматаар хаагдана.
 						</p>
 					</div>
-					{/* Enter-ээр илгээх (staging-д байхгүй, a11y) */}
 					<button type="submit" hidden aria-hidden tabIndex={-1} />
 				</form>
 			</RaModal>

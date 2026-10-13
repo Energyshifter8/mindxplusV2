@@ -18,8 +18,6 @@ import {
 	toProblemDetail,
 } from "@/lib/api-errors";
 
-// --- Axios instance ---
-
 function getBaseUrl(): string {
 	if (typeof window !== "undefined") {
 		return "/api";
@@ -27,13 +25,11 @@ function getBaseUrl(): string {
 	return process.env.NEXT_PUBLIC_API_URL || "";
 }
 
-// Staging апп-ын axios тохиргоотой ижил: timeout 30с, withCredentials (refresh cookie).
 export const httpClient = axios.create({
 	withCredentials: true,
 	timeout: 30000,
 });
 
-// Staging: эдгээр endpoint-оос Authorization header-ийг хасна (📦 bundle)
 const UNAUTHENTICATED_PATHS = [
 	"/user/login",
 	"/user/signup",
@@ -45,10 +41,6 @@ function currentToken(): string | null {
 	return typeof window !== "undefined" ? localStorage.getItem("token") : null;
 }
 
-/**
- * Талентийн үнэлгээний бичих хүсэлтийг (docs/role-assessment/DECISIONS.md D4)
- * сүлжээнд гаргахгүй, openapi-д нийцсэн stub буцаана.
- */
 const raDryRunAdapter: AxiosAdapter = async (config) => {
 	const method = (config.method ?? "get").toUpperCase();
 	const path = requestPathOf(config.url);
@@ -56,9 +48,7 @@ const raDryRunAdapter: AxiosAdapter = async (config) => {
 	if (typeof body === "string") {
 		try {
 			body = JSON.parse(body);
-		} catch {
-			// JSON биш бол тэр чигээр нь
-		}
+		} catch {}
 	}
 	// biome-ignore lint/suspicious/noConsole: DRY-RUN log нь шаардлага (docs/role-assessment/DECISIONS.md D4)
 	console.info(formatDryRunLog(method, path, body));
@@ -95,23 +85,15 @@ httpClient.interceptors.request.use((config) => {
 	if (shouldDryRun((config.method ?? "get").toUpperCase(), path)) {
 		config.adapter = raDryRunAdapter;
 	}
-	// Accept-Language: mn-MN-ийг proxy (app/api/[...path]/route.ts) тавина.
 	return config;
 });
-
-// Staging-д 401 үед автоматаар refresh + давтах interceptor байхгүй (📦 bundle):
-// хугацаа дууссан token-ийг lib/auth.ts-ийн scheduler ба layout-ын шалгалт барина.
-
-// --- API helpers ---
 
 export interface ApiResponse<T> {
 	success: boolean;
 	data?: T;
 	message?: string;
 	error?: string;
-	/** HTTP status (алдааны үед). Сүлжээний алдаанд undefined. */
 	status?: number;
-	/** ProblemDetail.code, normalizeErrorCode-оор жижиг үсэг болгосон. */
 	code?: string;
 	problem?: ProblemDetail;
 }
@@ -156,9 +138,6 @@ export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 	}
 }
 
-// React Query hook-уудад зориулсан хувилбар: алдаа гарвал ApiError throw хийнэ
-// (isError ажиллана). apiGet/apiPost-ийн {success,data,error} зан төлөв өөрчлөгдөөгүй.
-
 export async function apiGetOrThrow<T>(
 	endpoint: string,
 	config?: Omit<AxiosRequestConfig, "headers">,
@@ -183,7 +162,6 @@ export async function apiPostOrThrow<T>(
 	}
 }
 
-/** undefined/null/хоосон утгыг алгасаж query string үүсгэнэ ("status=undefined" гарахгүй). */
 export function buildQuery(
 	params: Record<string, string | number | boolean | null | undefined>,
 ): string {
@@ -196,13 +174,10 @@ export function buildQuery(
 	return qs ? `?${qs}` : "";
 }
 
-// --- Spring Data Page (staging ✅) ---
-
 export interface SpringPage<T> {
 	content: T[];
 	totalElements: number;
 	totalPages: number;
-	/** Одоогийн хуудас, 0-ээс эхэлнэ. UI-д lib/pagination-оор хөрвүүлнэ. */
 	number: number;
 	size: number;
 	first: boolean;

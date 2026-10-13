@@ -23,8 +23,6 @@ import {
 	rowMenuActions,
 } from "./rowActions";
 
-// Staging жагсаалтын хүснэгт (📦 `E`, shadcn table): min-w 1080, мөр 56px, header 64px.
-
 const TH =
 	"h-10 text-left align-middle font-medium text-sm text-TextColor-main leading-[1.4] tracking-[0.2px]";
 

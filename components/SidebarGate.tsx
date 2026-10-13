@@ -15,7 +15,6 @@ export default function SidebarGate({
 	warningMessage,
 }: SidebarGateProps) {
 	const pathname = usePathname();
-	// Survey editor ба талентийн үнэлгээний wizard/preview (staging `(editor)` бүлэг) sidebar-гүй
 	const isEditorPage =
 		/^\/dashboard\/surveys\/[^/]+\/edit/.test(pathname) ||
 		/^\/role-assessment\/[^/]+(\/preview)?\/?$/.test(pathname);

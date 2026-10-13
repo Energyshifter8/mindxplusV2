@@ -16,10 +16,6 @@ import {
 } from "./RightPanel";
 import { RightSteps } from "./Steppers";
 
-// Staging баруун sticky карт (📦 `ei`-ийн "right_menu_steps"): алхам бүрийн төлөв,
-// тоолуур ("R/maxTestCount", "Q/maxQuestionCount"), идэвхтэй алхамд сонголтын жагсаалт,
-// доор нэгтгэл.
-
 const fmtMax = (n: number, max: number) =>
 	Number.isFinite(max) ? `${n}/${max}` : String(n);
 

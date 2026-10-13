@@ -30,10 +30,6 @@ import { raRoutes } from "@/lib/routes";
 import type { TalentInvitationItem } from "@/lib/types/role-assessment";
 import { cn } from "@/lib/utils";
 
-// Staging /invited-talents/{talentId} (📦 module 34355). GET: профайл
-// (/customer/hiring-invitations/talents/{id}), урилгын түүх (…/{id}/invitations).
-// Хуудаслалт staging шиг state-д (`[10, 12, 20, 50]`). Bookmark зөвхөн төлөв харуулна.
-
 const TITLE = "Миний урьсан талент";
 const HISTORY_PAGE_SIZES = [10, 12, 20, 50] as const;
 
@@ -42,7 +38,6 @@ const TH =
 const CELL =
 	"font-medium text-[14px] text-TextColor-secondary leading-[1.4] tracking-[0.2px]";
 
-/** Staging module 75584: үнэлсэн бол од + оноо, эс бол "---". */
 function RatingCell({
 	rated,
 	points,
@@ -211,7 +206,6 @@ export function TalentDetailView({ talentId }: { talentId: string }) {
 		size,
 	});
 
-	// Staging: алдаа бүрт toast
 	useEffect(() => {
 		if (profile.errorUpdatedAt)
 			toast.error(

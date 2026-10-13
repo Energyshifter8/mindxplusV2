@@ -1,6 +1,3 @@
-// Wizard-ийн алхам шилжих, төлөв харуулах дүрэм — staging `app/(editor)/role-assessment/[id]`
-// (📦 bundle, `ei` component) -ийг шууд хөрвүүлсэн цэвэр функцүүд. alias-гүй (node --test).
-
 export type WizardStep = 1 | 2 | 3 | 4;
 
 export const WIZARD_STEPS: readonly {
@@ -30,14 +27,12 @@ export interface ServerInfo {
 
 const t = (v: string | null | undefined) => (v ?? "").trim();
 
-/** `eR`: сервер дээрх мэдээлэл (нэр, тайлбар, компанийн нэр) бөглөгдсөн эсэх. */
 export function isInfoComplete(info: ServerInfo | null | undefined): boolean {
 	return Boolean(
 		info && t(info.jobTitle) && t(info.jobDescription) && t(info.companyName),
 	);
 }
 
-/** `eO`: бөглөгдсөн мэдээллийг формд өөрчилсөн эсэх (хадгалаагүй өөрчлөлт). */
 export function isInfoDirty(
 	form: InfoForm,
 	info: ServerInfo | null | undefined,
@@ -51,7 +46,6 @@ export function isInfoDirty(
 	);
 }
 
-/** `eJ`/`eX`: сонголт серверийнхээс өөр эсэх. */
 export function isSelectionDirty<T>(
 	selected: readonly T[],
 	server: readonly T[] | undefined,
@@ -65,7 +59,6 @@ export function isSelectionDirty<T>(
 	return selected.length > 0;
 }
 
-/** Алхам 1-ийн "Үргэлжлүүлэх" идэвхжих нөхцөл (staging: гурвуулаа хоосон биш). */
 export function isInfoFormFilled(form: InfoForm): boolean {
 	return Boolean(
 		t(form.jobTitle) && t(form.jobDescription) && t(form.companyName),
@@ -74,18 +67,14 @@ export function isInfoFormFilled(form: InfoForm): boolean {
 
 export interface WizardState {
 	step: WizardStep;
-	/** PUBLISHED (staging `eH`) — бид CREATED-ээс бусад бүх статусыг унших горимд оруулна */
 	readOnly: boolean;
-	/** CREATED (`eB`) */
 	isCreated: boolean;
 	infoComplete: boolean;
 	infoDirty: boolean;
 	testsDirty: boolean;
 	questionsDirty: boolean;
-	/** Сонгосон тестүүд (`R`) ба тэдгээрийн өгөгдөл ачаалагдсан эсэх (`eV`) */
 	selectedTestCount: number;
 	hasSelectedTestData: boolean;
-	/** `eF` */
 	hasSelectedQuestionData: boolean;
 	serverTestCount: number;
 	serverQuestionCount: number;
@@ -96,7 +85,6 @@ export type StepNavResult =
 	| { kind: "warn"; message: string }
 	| { kind: "stay" };
 
-/** Баруун самбарын алхам дээр дарахад (staging Steps onChange). */
 export function stepNavigation(
 	target: WizardStep,
 	s: WizardState,
@@ -129,11 +117,9 @@ export type StepStatus = "finish" | "process" | "wait";
 
 export interface StepView {
 	status: StepStatus;
-	/** "Болсон" (ногоон) | "Хийж байна" | null */
 	badge: "done" | "doing" | null;
 }
 
-/** Баруун самбарын алхмын харагдац (staging `o`, `a` тооцоо). */
 export function rightStepView(number: WizardStep, s: WizardState): StepView {
 	const current = s.step === number;
 	const completed = s.step > number;
@@ -173,7 +159,6 @@ export function rightStepView(number: WizardStep, s: WizardState): StepView {
 	return { status, badge };
 }
 
-/** Дээд stepper: дууссан (одоогийнхоос бусад) → finish, одоогийн → process. */
 export function topStepStatus(
 	number: WizardStep,
 	step: WizardStep,
@@ -182,7 +167,6 @@ export function topStepStatus(
 	return step === number ? "process" : "wait";
 }
 
-/** "Үргэлжлүүлэх" / "Нийтлэх" disabled эсэх. */
 export function continueDisabled(s: {
 	step: WizardStep;
 	readOnly: boolean;
@@ -198,7 +182,6 @@ export function continueDisabled(s: {
 	);
 }
 
-/** Тестийн "min-max" хугацааны нийлбэр (staging `tm`: "a-b" эсвэл "a"). */
 export function sumDurations(durations: readonly string[]): {
 	min: number;
 	max: number;
@@ -215,7 +198,6 @@ export function sumDurations(durations: readonly string[]): {
 	);
 }
 
-/** Нэмэлт асуулт бүрт 2–5 мин нэмнэ (staging алхам 3, 4). */
 export function withQuestionTime(
 	total: { min: number; max: number },
 	questionCount: number,
@@ -226,7 +208,6 @@ export function withQuestionTime(
 	};
 }
 
-/** Каталогийн "min-max" хугацаа (staging: тест "", асуулт "1-2" анхдагч). */
 export function durationLabel(
 	minMinutes: number | null | undefined,
 	maxMinutes: number | null | undefined,
@@ -238,7 +219,6 @@ export function durationLabel(
 	return fallback;
 }
 
-/** Сонголтыг toggle хийх (хязгаартай). Буцаах утга нь шинэ жагсаалт эсвэл "limit". */
 export function toggleSelection<T>(
 	selected: readonly T[],
 	id: T,
@@ -249,14 +229,11 @@ export function toggleSelection<T>(
 	return [...selected, id];
 }
 
-// --- Каталогийн view model (staging `select` хөрвүүлэлт) ---
-
 export interface CategoryOption {
 	key: string;
 	label: string;
 }
 
-/** `[{key:"", label:"Бүгд"}, ...]` — staging ангиллын tab. */
 export function toCategoryOptions(
 	categories: readonly { id?: string; name?: string }[] | undefined,
 ): CategoryOption[] {
@@ -271,7 +248,6 @@ export function toCategoryOptions(
 
 export interface WizardTest {
 	id: string;
-	/** Ангиллын key (label-аар хайж олно) */
 	category: string;
 	categoryLabel: string;
 	title: string;
@@ -337,7 +313,6 @@ export function toWizardQuestion(
 	};
 }
 
-/** id-аар давхардлыг хасна (эхнийхийг үлдээнэ). */
 export function uniqueById<T extends { id: string | number }>(
 	items: readonly T[],
 ): T[] {
@@ -351,7 +326,6 @@ export function uniqueById<T extends { id: string | number }>(
 	return result;
 }
 
-/** Сонголтын дарааллаар өгөгдлийг эрэмбэлнэ (олдоогүйг хасна). */
 export function orderByIds<T extends { id: string | number }>(
 	ids: readonly (string | number)[],
 	pool: readonly T[],

@@ -10,10 +10,6 @@ import {
 } from "@/lib/role-assessment/talents";
 import { cn } from "@/lib/utils";
 
-// Staging урьсан талентын карт (📦 module 62002 `C`). Утас/имэйл/огноо/үзэх icon нь
-// татагдаагүй chunk-д (lucide) — нэрээр нь таамаглав (unverified.md). "Засах" товч
-// staging-д onEdit дамжуулагддаггүй тул харагддаггүй → хийгээгүй.
-
 const META =
 	"font-medium text-[14px] text-TextColor-secondary leading-[1.4] tracking-[0.2px]";
 const LABEL =
@@ -21,7 +17,6 @@ const LABEL =
 const TAG =
 	"inline-flex items-center overflow-hidden rounded-full bg-[#f0f6fc] px-3 py-1 font-medium text-[14px] leading-[1.4] tracking-[0.2px]";
 
-/** Staging `y`: од + оноо, "Дундаж оноо" tooltip (light). */
 function RatingBadge({ rating }: { rating: number }) {
 	return (
 		<Tooltip.Root>

@@ -2,11 +2,6 @@
 
 import { useEffect } from "react";
 
-/**
- * Staging (📦 module 28797/46075): `document.title`-ийг хуудас бүр тавина. Next-ийн
- * async metadata (root layout-ын "System") дараа нь дарж бичдэг тул `<head>`-ийг ажиглаж
- * mount байх хугацаанд гарчгийг хадгална.
- */
 export function useDocumentTitle(title: string) {
 	useEffect(() => {
 		const wanted = title.trim();
@@ -24,7 +19,6 @@ export function useDocumentTitle(title: string) {
 	}, [title]);
 }
 
-/** Staging-ийн хуудасны гарчиг (📦 module 27694 / 46075). */
 export const RA_TITLES = {
 	list: "Талентийн үнэлгээ",
 	wizard: (step: string) => `Талентийн үнэлгээ - ${step}`,

@@ -8,7 +8,6 @@ import { parseContentDispositionFilename, saveBlob } from "@/lib/download";
 
 const FALLBACK_FILENAME = "report.pdf";
 
-/** "Тайлан татах" (#20): PDF-ийг татаж browser-оор хадгална. */
 export function useDownloadTestReport() {
 	return useMutation({
 		mutationFn: async (vars: { invitationId: string; answerId: string }) => {

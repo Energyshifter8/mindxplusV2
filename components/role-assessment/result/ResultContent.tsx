@@ -20,16 +20,9 @@ import type {
 } from "@/lib/types/role-assessment";
 import { cn } from "@/lib/utils";
 
-// Staging "Сонгосон тестүүд" (📦 `y` + module 36209) ба "Нэмэлт асуулт" (`b`).
-// Module 36209 (тестийн accordion-ы бие: gauge, тайлбар, "Ярилцлагад анхаарч болох
-// зүйлс", "Ажил олгогчид өгөх зөвлөмж") татагдаагүй chunk-д байгаа тул API-ийн
-// өгөгдлийг (хүчин зүйл, түвшин, оноо) харуулна; бүрэн текст "Дэлгэрэнгүй" HTML
-// тайланд байна (mismatches.md).
-
 const SPINNER =
 	"size-4 animate-spin rounded-full border-2 border-current border-t-transparent";
 
-/** Toggle chevron: staging `o.A` (20px "<") rotate-90 (нээлттэй) / -rotate-90 */
 function ToggleChevron({ open }: { open: boolean }) {
 	return (
 		<ArrowLeftIcon
@@ -180,7 +173,6 @@ export function TestResultsList({
 	);
 }
 
-/** Staging-ийн түлхүүр: `${responseId ?? testAnswerId}-${questionId ?? index}` */
 function answerKey(answer: CustomQuestionAnswer, index: number): string {
 	return `${answer.responseId ?? answer.testAnswerId}-${answer.questionId ?? index}`;
 }

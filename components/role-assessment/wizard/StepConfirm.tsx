@@ -9,8 +9,6 @@ import {
 } from "@/components/icons/role-assessment";
 import type { WizardQuestion, WizardTest } from "@/lib/role-assessment/wizard";
 
-// Staging алхам 4 (📦 `G`). "Худалдааны зөвлөх" нь staging-ийн нэргүй үеийн fallback.
-
 export function StepConfirm({
 	jobTitle,
 	tests,
@@ -20,7 +18,6 @@ export function StepConfirm({
 	jobTitle: string;
 	tests: WizardTest[];
 	questions: WizardQuestion[];
-	/** Асуултын хугацаа нэмэгдсэн нийт хугацаа */
 	totalDuration: { min: number; max: number };
 }) {
 	const stats = [

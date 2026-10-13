@@ -21,11 +21,6 @@ import { getErrorMessage } from "@/lib/api-errors";
 import type { InviteTalentPayload } from "@/lib/types/role-assessment";
 import { HOME_RECRUITMENT_KEYS, raKeys } from "./keys";
 
-// Toast-ын текст: staging жагсаалтын хуудас (📦 bundle). Алдааны мессежийг staging
-// `error.message` (= detail)-ээс авдаг; бид ProblemDetail.code-оор map хийж, үл
-// мэдэгдэх code-д staging-ийн fallback текстийг харуулна.
-
-/** Жагсаалт, статистик, нүүр хуудсыг шинэчилнэ. */
 export function invalidateRecruitmentLists(queryClient: QueryClient) {
 	queryClient.invalidateQueries({ queryKey: raKeys.lists() });
 	queryClient.invalidateQueries({ queryKey: raKeys.stats() });
@@ -46,7 +41,6 @@ export function useCreateRecruitment() {
 				getErrorMessage(error, "Талентийн үнэлгээ үүсгэхэд алдаа гарлаа"),
 			);
 		},
-		// Хариу уншигдаагүй ч ноорог үүссэн байж болох тул ямар ч үед шинэчилнэ
 		onSettled: () => invalidateRecruitmentLists(queryClient),
 	});
 }
@@ -100,9 +94,6 @@ export function useRenameRecruitment() {
 	});
 }
 
-// --- Урих / дахин урих (📦 module 4089) ---
-
-/** "Урилга илгээх" — ЖИНХЭНЭ имэйл илгээдэг тул dry-run-д хамгаалагдсан. */
 export function useInviteTalent() {
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -124,7 +115,6 @@ export function useInviteTalent() {
 	});
 }
 
-/** "Дахин урих" — EXPIRED урилгын хугацааг сунгана. */
 export function useExtendInvitation(recruitmentId: string) {
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -143,9 +133,6 @@ export function useExtendInvitation(recruitmentId: string) {
 	});
 }
 
-// --- Үр дүнгийн хуудас (📦 module 1043 `P`, `V`) ---
-
-/** Од үнэлгээ (1–5) илгээнэ. */
 export function useRateInvitation(invitationId: string) {
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -160,7 +147,6 @@ export function useRateInvitation(invitationId: string) {
 	});
 }
 
-/** Тэмдэглэл (≤ NOTE_MAX) нэмнэ. */
 export function useAddInvitationNote(invitationId: string) {
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -175,9 +161,6 @@ export function useAddInvitationNote(invitationId: string) {
 	});
 }
 
-// --- Урьсан талентууд (📦 module 62002) ---
-
-/** Талентыг хадгалах/болиулах (toggle). */
 export function useToggleTalentBookmark() {
 	const queryClient = useQueryClient();
 	return useMutation({

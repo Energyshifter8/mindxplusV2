@@ -236,7 +236,6 @@ function statusBadge(status: string): {
 	color: "green" | "amber";
 } {
 	const map: Record<string, { label: string; color: "green" | "amber" }> = {
-		// санал: "Нийтэлсэн" → "Идэвхтэй" (staging болон SurveyStatusBadge-тэй нэгтгэв)
 		PUBLISHED: { label: "Идэвхтэй", color: "green" },
 		CLOSED: { label: "Хаагдсан", color: "green" },
 		CREATED: { label: "Үүссэн", color: "amber" },
@@ -468,7 +467,6 @@ export default function Dashboard() {
 				</div>
 
 				<div className="flex flex-col lg:flex-row gap-6">
-					{/* Panel 1 — Миний шинжилгээ */}
 					<div className="w-full lg:w-[55%] min-w-0">
 						<PanelCard
 							title="Миний шинжилгээ"
@@ -519,7 +517,6 @@ export default function Dashboard() {
 						</PanelCard>
 					</div>
 
-					{/* Panel 2 — Талентийн үнэлгээ */}
 					<div className="w-full lg:w-[45%] min-w-0">
 						<PanelCard
 							title="Талентийн үнэлгээ"

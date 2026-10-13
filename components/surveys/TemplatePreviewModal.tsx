@@ -83,7 +83,6 @@ export default function TemplatePreviewModal({
 					</div>
 				) : detail ? (
 					<div className="space-y-5">
-						{/* Image */}
 						{detail.image && (
 							<div className="flex items-center justify-center border-2 border-border bg-input-field-bg p-4">
 								<Image
@@ -97,7 +96,6 @@ export default function TemplatePreviewModal({
 							</div>
 						)}
 
-						{/* Stats row */}
 						<div
 							className="flex items-center gap-4 text-[10px] uppercase tracking-widest text-muted-foreground"
 							style={{ fontFamily: "'JetBrains Mono', monospace" }}
@@ -116,7 +114,6 @@ export default function TemplatePreviewModal({
 							</span>
 						</div>
 
-						{/* Name */}
 						<h2
 							className="text-lg font-bold uppercase leading-tight text-foreground"
 							style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
@@ -124,7 +121,6 @@ export default function TemplatePreviewModal({
 							{detail.name}
 						</h2>
 
-						{/* Description */}
 						<p
 							className="text-xs leading-relaxed text-muted-foreground"
 							style={{ fontFamily: "'JetBrains Mono', monospace" }}
@@ -132,7 +128,6 @@ export default function TemplatePreviewModal({
 							{detail.description}
 						</p>
 
-						{/* Importance */}
 						{detail.importance && (
 							<div>
 								<h3
@@ -151,7 +146,6 @@ export default function TemplatePreviewModal({
 							</div>
 						)}
 
-						{/* When suitable */}
 						{detail.whenSuitable && (
 							<div>
 								<h3
@@ -170,7 +164,6 @@ export default function TemplatePreviewModal({
 							</div>
 						)}
 
-						{/* Author */}
 						{detail.author && (
 							<div>
 								<h3

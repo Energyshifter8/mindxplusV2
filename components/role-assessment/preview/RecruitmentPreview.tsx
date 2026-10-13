@@ -29,11 +29,6 @@ import {
 import { clearDraft, readDraft } from "@/lib/role-assessment/draft";
 import { orderByIds, sumDurations } from "@/lib/role-assessment/wizard";
 
-// Staging /role-assessment/{id}/preview (📦 app/(editor)/…/preview): оролцогчид харагдах
-// эхлэх урсгал. GET: design (алдааг үл тоомсорлоно), information, tests, questions
-// зэрэг; тест байвал каталог. Ноорог (`ra_draft_{id}`) серверийн утгаас түрүүлнэ, хуудаснаас
-// гарахад ноорог устгагдана (staging). Rich text: read-only Quill (D3).
-
 type Screen =
 	| "start"
 	| "jobIntro"
@@ -42,7 +37,7 @@ type Screen =
 	| "readiness"
 	| "testIntro";
 
-const TEXT = "#10182B"; // theme LIGHT txtColor / optionTxtColor (📦 module 37740)
+const TEXT = "#10182B";
 const CARD_SHADOW = { boxShadow: "0px 4px 16px 0px #C4CBE833" };
 
 export function RecruitmentPreview({
@@ -65,7 +60,6 @@ export function RecruitmentPreview({
 	const catalog = useCatalogTests("", testCount > 0);
 	const [draft] = useState(() => readDraft(id));
 
-	// Staging: хуудаснаас гарах/хаахад ноорогийг устгана
 	useEffect(() => {
 		const drop = () => clearDraft(id);
 		window.addEventListener("beforeunload", drop);

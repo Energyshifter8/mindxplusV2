@@ -11,8 +11,6 @@ import { RaButton } from "@/components/role-assessment/ui/Button";
 import type { CategoryOption, WizardTest } from "@/lib/role-assessment/wizard";
 import { cn } from "@/lib/utils";
 
-// Staging алхам 2 (📦 `Z`).
-
 const COLOR_CHIP: Record<string, string> = {
 	GREEN: "bg-Semantic-success100 text-Semantic-success800",
 	YELLOW: "bg-Semantic-warning100 text-Semantic-warning800",

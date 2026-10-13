@@ -205,7 +205,6 @@ export default function AddQuestionPopover({
 			style={{ top: popoverPos.top, left: popoverPos.left }}
 			onPointerDown={(e) => e.stopPropagation()}
 		>
-			{/* Асуултын төрөл */}
 			<div className="p-3">
 				<div
 					className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2"
@@ -232,7 +231,6 @@ export default function AddQuestionPopover({
 				</div>
 			</div>
 
-			{/* Бэлэн асуулт */}
 			<div className="p-3 border-t-2 border-border">
 				<div
 					className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2"

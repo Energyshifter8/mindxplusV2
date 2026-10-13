@@ -131,7 +131,6 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 
 		return (
 			<div className="w-full lg:w-64 border-r-2 border-border bg-card flex flex-col shrink-0 overflow-y-auto relative z-10">
-				{/* ЭХЛЭЛ */}
 				<div className="px-3 pt-4 pb-2">
 					<div
 						className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2 px-2"
@@ -154,7 +153,6 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 					</button>
 				</div>
 
-				{/* АСУУЛТУУД */}
 				<div className="px-3 pt-3 pb-2 flex-1">
 					<div className="flex items-center justify-between px-2 mb-2">
 						<div className="flex items-center gap-2">
@@ -236,7 +234,6 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 						)}
 					</div>
 
-					{/* Үндсэн асуултууд */}
 					<div className="mt-3">
 						<button
 							type="button"
@@ -288,7 +285,6 @@ const EditorSidebar = forwardRef<EditorSidebarHandle, EditorSidebarProps>(
 					</div>
 				</div>
 
-				{/* ТӨГСГӨЛ */}
 				<div className="px-3 pb-4 pt-2 border-t border-border">
 					<div
 						className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2 px-2"

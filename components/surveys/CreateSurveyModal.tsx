@@ -130,7 +130,6 @@ export default function CreateSurveyModal({
 					{currentTemplate.name}
 				</p>
 
-				{/* Шинжилгээний нэр */}
 				<label
 					htmlFor="survey-name"
 					className="mb-2 block text-[10px] uppercase tracking-widest text-muted-foreground"
@@ -148,7 +147,6 @@ export default function CreateSurveyModal({
 					style={{ fontFamily: "'JetBrains Mono', monospace" }}
 				/>
 
-				{/* Зорилтот тоо */}
 				<label
 					htmlFor="survey-target"
 					className="mb-2 mt-5 block text-[10px] uppercase tracking-widest text-muted-foreground"
@@ -174,7 +172,6 @@ export default function CreateSurveyModal({
 					боломжтой.
 				</p>
 
-				{/* Бэлэн нэмэлт асуултууд */}
 				<div className="mt-5">
 					<div className="mb-2 flex items-center gap-3">
 						<span
@@ -308,7 +305,6 @@ export default function CreateSurveyModal({
 					</div>
 				</div>
 
-				{/* Actions */}
 				<div className="mt-6 flex items-center justify-end gap-3">
 					<button
 						type="button"

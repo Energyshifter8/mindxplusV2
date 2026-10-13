@@ -1,10 +1,3 @@
-// `localStorage["ra_draft_{id}"]` — staging-ийн ноорог (📦 wizard + preview):
-// - wizard алхам 1-ийн оролт бүрт хадгална, бусад `ra_draft_*`-ийг устгана (нэг л ноорог);
-// - update-information амжилттай бол устгана;
-// - preview нь энэ ноорогийг серверийн мэдээллээс түрүүлж харуулна;
-// - wizard өөрөө (staging) ноорогоос сэргээдэггүй. DRY-RUN-д л сэргээнэ (DECISIONS.md).
-// Зөвхөн 4 форм талбар — token, хувийн мэдээлэл хэзээ ч орохгүй.
-
 export interface RecruitmentDraft {
 	jobTitle: string;
 	jobDescription: string;
@@ -39,9 +32,7 @@ export function saveDraft(id: string, draft: RecruitmentDraft): void {
 			FIELDS.map((f) => [f, String(draft[f] ?? "")]),
 		);
 		ls.setItem(PREFIX + id, JSON.stringify(clean));
-	} catch {
-		// дүүрсэн/хаалттай storage — ноорог алгасна
-	}
+	} catch {}
 }
 
 export function readDraft(id: string): RecruitmentDraft | null {
@@ -68,7 +59,5 @@ export function readDraft(id: string): RecruitmentDraft | null {
 export function clearDraft(id: string): void {
 	try {
 		storage()?.removeItem(PREFIX + id);
-	} catch {
-		// алгасна
-	}
+	} catch {}
 }

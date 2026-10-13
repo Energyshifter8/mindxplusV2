@@ -6,9 +6,6 @@ import { formatStatCount, splitDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { RaButton } from "./Button";
 
-// Staging-ийн жижиг бүрэлдэхүүнүүд (📦 bundle module-ийн дугаартай).
-
-/** module 3878 `L`: segment tab-ын сав (tablist) */
 export function SegmentTabs({
 	children,
 	className,
@@ -32,7 +29,6 @@ export function SegmentTabs({
 	);
 }
 
-/** module 3878 `V`: tab */
 export function SegmentTab({
 	active,
 	label,
@@ -63,7 +59,6 @@ export function SegmentTab({
 	);
 }
 
-/** module 94621: статистик карт (≥ 10000 → "Хязгааргүй", null → 0) */
 export function StatCard({
 	icon,
 	count,
@@ -97,7 +92,6 @@ const SKELETON_STYLE: React.CSSProperties = {
 		"linear-gradient(90deg, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.15) 37%, rgba(0,0,0,0.06) 63%)",
 };
 
-/** antd v5 `<Skeleton active paragraph={{ rows }} />` (module 43288) */
 export function AntdSkeleton({
 	rows = 3,
 	className,
@@ -135,14 +129,12 @@ export function AntdSkeleton({
 	);
 }
 
-/** Нэг мөрийн skeleton блок (хүснэгт, карт) */
 export function SkeletonBlock({ className }: { className?: string }) {
 	return (
 		<div className={cn(SKELETON_BLOCK, className)} style={SKELETON_STYLE} />
 	);
 }
 
-/** module 39378 `Hp`: талентийн үнэлгээний статус */
 export function RecruitmentStatusPill({ status }: { status?: string }) {
 	const pill =
 		"flex items-center justify-start gap-2 rounded-lg border border-Gray-300 px-3 py-1 font-medium text-Gray-950 text-[14px] leading-[140%]";
@@ -198,7 +190,6 @@ export function RecruitmentStatusPill({ status }: { status?: string }) {
 	}
 }
 
-/** Жагсаалтын огноо (📦 `P`): огноо дээр, цаг доор жижиг */
 export function DateTimeStack({ value }: { value?: string | null }) {
 	const { date, time } = splitDateTime(value);
 	return (
@@ -215,7 +206,6 @@ export function DateTimeStack({ value }: { value?: string | null }) {
 	);
 }
 
-/** Dashboard-ын огноо (📦 module 62244): нэг мөрөнд "огноо • цаг" */
 export function DateTimeInline({ value }: { value?: string | null }) {
 	const { date, time } = splitDateTime(value);
 	const text =
@@ -236,7 +226,6 @@ export function DateTimeInline({ value }: { value?: string | null }) {
 	);
 }
 
-/** Staging-ийн хоосон төлөв (зурагтай) */
 export function EmptyIllustration({
 	title,
 	description,
@@ -273,10 +262,6 @@ export function EmptyIllustration({
 	);
 }
 
-/**
- * Алдааны төлөв (staging зөвхөн toast харуулдаг; бид алдааг хоосон төлөвтэй андуурахгүйн
- * тулд тусад нь харуулна — mismatches.md).
- */
 export function ErrorState({
 	message,
 	onRetry,

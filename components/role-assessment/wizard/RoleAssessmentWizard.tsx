@@ -75,11 +75,6 @@ import { StepQuestions } from "./StepQuestions";
 import { StepTests } from "./StepTests";
 import { PublishedModal, RecommendModal } from "./WizardModals";
 
-// Staging /role-assessment/{id} wizard (📦 app/(editor)/role-assessment/[id], `ei`).
-// Зөрүү (mismatches.md): CREATED-ээс бусад бүх статус унших горим (staging зөвхөн
-// PUBLISHED); "Нийтлэх"-ийн өмнө баталгаажуулах dialog; сонголтын дараалал серверийнхээр;
-// <lg өргөнд баруун самбар доор.
-
 const EMPTY_FORM: InfoForm = {
 	jobTitle: "",
 	jobDescription: "",
@@ -104,7 +99,6 @@ export function RoleAssessmentWizard({
 	const id = recruitmentId;
 	const router = useRouter();
 	const [step, setStep] = useState<WizardStep>(1);
-	// staging: эхний утга [2] (📦), алхам бүр нэмэгдэнэ
 	const [visited, setVisited] = useState<WizardStep[]>([2]);
 	const [form, setForm] = useState<InfoForm>(EMPTY_FORM);
 	const [testCategory, setTestCategory] = useState("");
@@ -126,7 +120,6 @@ export function RoleAssessmentWizard({
 
 	useDocumentTitle(RA_TITLES.wizard(WIZARD_STEPS[step - 1].title));
 
-	// Staging-ийн GET дараалал: designs (лого) → detail → information → settings
 	useRecruitmentDesign(id);
 	const detail = useRecruitmentDetail(id);
 	const info = useRecruitmentInformation(id);
@@ -138,8 +131,6 @@ export function RoleAssessmentWizard({
 	const maxQuestions =
 		settings.data?.maxQuestionCount || Number.POSITIVE_INFINITY;
 
-	// Форм ← серверийн мэдээлэл (staging). DRY-RUN-д л эхний удаа ноорогоос сэргээнэ.
-	// Effect биш render үеийн state тохируулга (React "adjusting state on prop change").
 	const [syncedInfo, setSyncedInfo] = useState<RecruitmentInfo | null>(null);
 	if (info.data && info.data !== syncedInfo) {
 		const draft = syncedInfo === null && isRaDryRun() ? readDraft(id) : null;
@@ -155,7 +146,6 @@ export function RoleAssessmentWizard({
 
 	if (!visited.includes(step)) setVisited([...visited, step]);
 
-	// --- Алхам 2: тест ---
 	const testIdsQuery = useRecruitmentTestIds(id, step === 2);
 	const serverTestIds = useMemo(
 		() => testIdsQuery.data ?? [],
@@ -178,7 +168,6 @@ export function RoleAssessmentWizard({
 			setAllTests((prev) => uniqueById([...prev, ...catalogTests]));
 	}
 
-	// --- Алхам 3: нэмэлт асуулт ---
 	const questionIdsQuery = useRecruitmentQuestionIds(id, step === 3);
 	const serverQuestionIds = useMemo(
 		() => questionIdsQuery.data ?? [],
@@ -204,7 +193,6 @@ export function RoleAssessmentWizard({
 			setAllQuestions((prev) => uniqueById([...prev, ...catalogQuestions]));
 	}
 
-	// Сервер дээр сонгосон тест/асуултыг нэг удаа state руу (staging `tt`/`ts` ref guard)
 	const [syncedTestsKey, setSyncedTestsKey] = useState("");
 	const serverTestsKey = [...serverTestIds].sort().join(",");
 	if (serverTestsKey && serverTestsKey !== syncedTestsKey) {
@@ -267,7 +255,6 @@ export function RoleAssessmentWizard({
 		);
 	};
 
-	// --- Хадгалалт ---
 	const updateInfo = useUpdateInformation(id);
 	const setTests = useSetTests(id);
 	const setQuestions = useSetQuestions(id);

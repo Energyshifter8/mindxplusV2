@@ -7,7 +7,6 @@
 	--font-size: 16px;
 	--radius: 0rem;
 
-	/* Light theme (default) */
 	--background: #ffffff;
 	--foreground: #0a0a0a;
 	--card: #f5f5f5;
@@ -43,7 +42,6 @@
 	--sidebar-border: #d4d4d4;
 	--sidebar-ring: #0b9a46;
 
-	/* Semantic aliases for component usage */
 	--icon-dim: #999999;
 	--icon-hover: #0b9a46;
 	--stat-value: #0a0a0a;
@@ -96,7 +94,6 @@
 	--sidebar-border: #2a2a2a;
 	--sidebar-ring: #0b9a46;
 
-	/* Semantic aliases for component usage */
 	--icon-dim: #444444;
 	--icon-hover: #0b9a46;
 	--stat-value: #f0f0f0;
@@ -159,9 +156,6 @@
 	--radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Талентийн үнэлгээ — staging-ийн өнгө, фонтын токен (app-staging CSS, docs/parity/home.md §9).
-   Нэр нь staging-ийн Tailwind class-тай ижил (text-TextColor-main г.м.) тул class-ийг шууд
-   хуулна. Зөвхөн .ra-scope доторх RA хуудсуудад хэрэглэнэ — бусад модульд хамаарахгүй. */
 @theme {
 	--font-sf: var(--font-manrope), sans-serif;
 	--color-TextColor-main: #10182b;
@@ -217,7 +211,6 @@
 	}
 }
 
-/* Table horizontal scroll hint */
 .table-scroll-container {
 	position: relative;
 }
@@ -239,7 +232,6 @@
 	opacity: 1;
 }
 
-/* Scrollbar styling */
 .table-scroll-container::-webkit-scrollbar {
 	height: 4px;
 }
@@ -256,8 +248,6 @@
 	background: var(--muted-foreground);
 }
 
-/* Талентийн үнэлгээний хуудсууд: staging шиг үргэлж light (shell dark байсан ч).
-   shadcn-ийн хувьсагчийг энэ scope дотор гэрлийн утгаар солино. */
 .ra-scope {
 	color-scheme: light;
 	--background: #ffffff;
@@ -283,7 +273,6 @@
 	letter-spacing: 0.2px;
 }
 
-/* antd v5 Skeleton (active) — staging ачаалах төлөв */
 @keyframes antd-skeleton {
 	0% {
 		background-position: 100% 50%;

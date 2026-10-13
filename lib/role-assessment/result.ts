@@ -1,12 +1,8 @@
-// Талентын үр дүнгийн хуудасны цэвэр логик (staging 📦 module 1043, 76724).
-// Тестэд relative import-оор ашиглагдана — "@/..." alias хэрэглэхгүй.
-
 export interface SpentTime {
 	minutes?: number | null;
 	seconds?: number | null;
 }
 
-/** Staging `fo`: "1 цаг 5 мин 3 сек" / "5 мин 3 сек" / "5 мин" / "3 сек" / "---". */
 export function formatSpentTime(time: SpentTime | null | undefined): string {
 	if (!time) return "---";
 	const minutes = time.minutes ?? 0;
@@ -19,7 +15,6 @@ export function formatSpentTime(time: SpentTime | null | undefined): string {
 	return "---";
 }
 
-/** Staging `m`: явцын хяналтын хугацаа "37сек" / "2мин 5сек"; сөрөг/байхгүй бол null. */
 export function formatEventSeconds(
 	total: number | null | undefined,
 ): string | null {
@@ -40,7 +35,6 @@ export interface ProctoringDef {
 	hasDuration: boolean;
 }
 
-/** Явцын хяналтын нэг мөр: тоо ("-" хоосон/0) ба хугацаа (байвал). */
 export function proctoringRow(
 	summary: Record<string, EventSummaryEntry | undefined> | null | undefined,
 	def: ProctoringDef,
@@ -57,7 +51,6 @@ export function proctoringRow(
 	};
 }
 
-/** "Овог Нэр" — хоосон бол "---". */
 export function personFullName(
 	person:
 		| { lastName?: string | null; firstName?: string | null }
@@ -77,10 +70,6 @@ export interface NameOption {
 	status?: string | null;
 }
 
-/**
- * Staging `z`: нэрсийн жагсаалт (массив эсвэл `{content}`), одоогийн талент байхгүй бол
- * эхэнд нь нэмнэ.
- */
 export function mergeNameOptions(
 	names:
 		| readonly NameOption[]
@@ -107,7 +96,6 @@ export function mergeNameOptions(
 	return list;
 }
 
-/** Нэрсийн сонголтын текст: "Овог Нэр" → имэйл → id. */
 export function nameOptionLabel(option: NameOption): string {
 	return (
 		[option.lastName, option.firstName].filter(Boolean).join(" ") ||
@@ -116,7 +104,6 @@ export function nameOptionLabel(option: NameOption): string {
 	);
 }
 
-/** Staging `v`: нэрсийн жагсаалтын төлөвийн цэгийн өнгө. */
 export function invitationDotClass(status: string | null | undefined): string {
 	switch (status) {
 		case "COMPLETED":
@@ -132,7 +119,6 @@ export function invitationDotClass(status: string | null | undefined): string {
 	}
 }
 
-/** Од үнэлгээний товчны идэвх (staging `P`): 0 эсвэл өмнөхтэй ижил бол илгээхгүй. */
 export function canSubmitRating(
 	selected: number,
 	myPoints: number | null | undefined,

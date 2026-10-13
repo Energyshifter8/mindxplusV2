@@ -112,12 +112,10 @@ export default function Sidebar({ warningMessage, user }: SidebarProps) {
 
 	return (
 		<aside className="flex h-screen w-[272px] flex-col border-r-2 border-border bg-card text-foreground">
-			{/* Workspace / Logo */}
 			<div className="flex items-center px-5 py-5">
 				<MindXLogo size="lg" />
 			</div>
 
-			{/* Navigation sections */}
 			<nav className="flex-1 overflow-y-auto px-3 py-1">
 				{navSections.map((section) => (
 					<div key={section.title} className="mb-4">
@@ -138,7 +136,6 @@ export default function Sidebar({ warningMessage, user }: SidebarProps) {
 				))}
 			</nav>
 
-			{/* Theme toggle */}
 			<div className="px-3 mb-2">
 				{mounted ? (
 					<button
@@ -161,7 +158,6 @@ export default function Sidebar({ warningMessage, user }: SidebarProps) {
 				)}
 			</div>
 
-			{/* Warning banner */}
 			{warningMessage && (
 				<div
 					className="mx-3 mb-3 flex items-start gap-2.5 border border-amber-500/30 px-3 py-3"
@@ -177,7 +173,6 @@ export default function Sidebar({ warningMessage, user }: SidebarProps) {
 				</div>
 			)}
 
-			{/* Account row */}
 			<button
 				type="button"
 				className="flex items-center gap-3 border-t-2 border-border px-5 py-4 text-left transition-colors duration-150 hover:bg-secondary/50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"

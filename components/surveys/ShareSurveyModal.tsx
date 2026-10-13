@@ -22,13 +22,11 @@ function drawMindXLogo(
 ) {
 	const half = size / 2;
 
-	// white circle background
 	ctx.fillStyle = "#ffffff";
 	ctx.beginPath();
 	ctx.arc(cx, cy, half + 4, 0, Math.PI * 2);
 	ctx.fill();
 
-	// "mindX+" text
 	ctx.fillStyle = "#141414";
 	ctx.font = `bold ${size * 0.55}px sans-serif`;
 	ctx.textAlign = "center";
@@ -72,7 +70,6 @@ export default memo(function ShareSurveyModal({
 		const ctx = canvas.getContext("2d");
 		if (!ctx) return;
 
-		// draw QR code to canvas
 		await QRCode.toCanvas(canvas, url, {
 			width: size,
 			margin: 2,
@@ -80,7 +77,6 @@ export default memo(function ShareSurveyModal({
 			color: { dark: "#141414", light: "#ffffff" },
 		});
 
-		// overlay mindX logo at center
 		drawMindXLogo(ctx, size / 2, size / 2, 60);
 
 		setQrDataUrl(canvas.toDataURL("image/png"));
@@ -89,7 +85,6 @@ export default memo(function ShareSurveyModal({
 	useEffect(() => {
 		if (!open) return;
 		setCopied(false);
-		// small delay to ensure canvas is in DOM
 		const t = setTimeout(generateQr, 50);
 		return () => clearTimeout(t);
 	}, [open, generateQr]);
@@ -111,7 +106,6 @@ export default memo(function ShareSurveyModal({
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
 		} catch {
-			// fallback
 			const ta = document.createElement("textarea");
 			ta.value = url;
 			document.body.appendChild(ta);
@@ -159,7 +153,6 @@ export default memo(function ShareSurveyModal({
 					Шинжилгээ хуваалцах
 				</h2>
 
-				{/* Share link */}
 				<div className="mb-6">
 					<span
 						className="mb-2 block text-[10px] uppercase tracking-widest text-muted-foreground"
@@ -198,7 +191,6 @@ export default memo(function ShareSurveyModal({
 					</div>
 				</div>
 
-				{/* QR code */}
 				<div>
 					<span
 						className="mb-3 block text-[10px] uppercase tracking-widest text-muted-foreground"

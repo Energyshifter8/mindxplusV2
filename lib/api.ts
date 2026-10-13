@@ -7,8 +7,6 @@ import type {
 	RecruitmentListParams,
 } from "@/lib/types/role-assessment";
 
-// HTTP цөм (axios instance, ApiResponse, apiGet/apiPost, *OrThrow, SpringPage):
-// lib/api/http.ts. Талентийн үнэлгээний endpoint-ууд: lib/api/role-assessment/.
 export * from "@/lib/api/http";
 export type {
 	CompletedInvitation,
@@ -17,9 +15,6 @@ export type {
 	RecruitmentStats,
 } from "@/lib/types/role-assessment";
 
-// --- Auth endpoint-ууд (staging-ийн ажигласан path; swagger-т байхгүй) ---
-
-/** POST /user/refresh `{}` (refresh cookie + Authorization) → `{token}` */
 export async function refreshTokenRequest(): Promise<string> {
 	const response = await httpClient.post<{ token?: string }>(
 		"/user/refresh",
@@ -30,12 +25,9 @@ export async function refreshTokenRequest(): Promise<string> {
 	return token;
 }
 
-/** POST /user/logout (body-гүй) */
 export async function logoutRequest(): Promise<void> {
 	await httpClient.post("/user/logout");
 }
-
-// --- Types ---
 
 export interface ModuleStats {
 	totalPublishedSurveyCount: number;
@@ -123,13 +115,10 @@ export function getSurveyList(params?: {
 	);
 }
 
-// --- Нүүр хуудас (components/Dashboard.tsx) — {success,data} хэлбэр ---
-
 export function getRecruitmentList(params: RecruitmentListParams) {
 	return apiGet<SpringPage<RecruitmentListItem>>(recruitmentListPath(params));
 }
 
-/** swagger: `limit` 5..10 (анхдагч 5). Хүрээнээс гарсан утгыг 400 болохоос өмнө тааруулна. */
 export function getLatestCompletedInvitations(limit = 5) {
 	const safeLimit = Math.min(10, Math.max(5, Math.trunc(limit) || 5));
 	return apiGet<CompletedInvitation[]>(
@@ -154,8 +143,6 @@ export async function createSurvey(
 	}
 	return { success: false, error: res.error };
 }
-
-// --- Survey Detail types & API ---
 
 export interface SurveyPageItem {
 	id: string;
@@ -223,8 +210,6 @@ export function getSurveyDetail(id: string) {
 	return apiGet<SurveyDetail>(`customer/surveys/${id}`);
 }
 
-// --- Survey Page Update types & API ---
-
 export interface UpdateSurveyPagePayload {
 	id: string;
 	qnSection: string;
@@ -255,8 +240,6 @@ export function updateSurveyPage(
 	);
 }
 
-// --- Survey Publish types & API ---
-
 export interface PublishSurveyPayload {
 	value: string;
 }
@@ -274,8 +257,6 @@ export function publishSurvey(surveyId: string, payload: PublishSurveyPayload) {
 	);
 }
 
-// --- Survey Edit Options types & API ---
-
 export interface SurveyEditOptions {
 	[key: string]: unknown;
 }
@@ -283,8 +264,6 @@ export interface SurveyEditOptions {
 export function getSurveyEditOptions(id: string) {
 	return apiGet<SurveyEditOptions>(`customer/surveys/${id}/edit-options`);
 }
-
-// --- Custom Question CRUD types & API ---
 
 export interface CreateQuestionPayload {
 	id: 0;
@@ -358,8 +337,6 @@ export function setSurveyDeviceCheck(surveyId: string, value: string) {
 	});
 }
 
-// --- Survey Insight types & API ---
-
 export interface SurveyInsight {
 	id: string;
 	visitedCnt: number;
@@ -372,8 +349,6 @@ export interface SurveyInsight {
 export function getSurveyInsight(id: string) {
 	return apiGet<SurveyInsight>(`customer/survey-analysis/insight/${id}`);
 }
-
-// --- Primary Question Summaries types & API ---
 
 export interface QuestionSummaryOption {
 	optionId: number;

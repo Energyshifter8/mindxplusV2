@@ -6,9 +6,6 @@ import { splitDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { RaButton } from "./Button";
 
-// Staging drawer (📦 module 33139): antd Drawer placement right, width 578,
-// mask bg-black/10, body padding 0 → `flex flex-col gap-6 p-4 font-sf`.
-
 const ANTD_DRAWER_SHADOW =
 	"shadow-[-6px_0_16px_0_rgba(0,0,0,0.08),-3px_0_6px_-4px_rgba(0,0,0,0.12),-9px_0_28px_8px_rgba(0,0,0,0.05)]";
 
@@ -68,7 +65,6 @@ export function RaDrawer({
 	);
 }
 
-/** `JH`: гарчигтай хэсэг */
 export function DrawerSection({
 	label,
 	children,
@@ -86,7 +82,6 @@ export function DrawerSection({
 	);
 }
 
-/** `_1`: хоосон тайлбар */
 export function DrawerEmpty({ description }: { description: string }) {
 	return (
 		<div className="flex min-h-[180px] flex-col items-center justify-center gap-1 px-4 text-center">
@@ -97,7 +92,6 @@ export function DrawerEmpty({ description }: { description: string }) {
 	);
 }
 
-/** `qn`: хүрээтэй бүлэг */
 export function DrawerCard({ children }: { children: React.ReactNode }) {
 	return (
 		<div className="flex flex-col gap-5 rounded-2xl border border-Stroke-700 p-4">
@@ -106,7 +100,6 @@ export function DrawerCard({ children }: { children: React.ReactNode }) {
 	);
 }
 
-/** `Qb`: label — утга мөр */
 export function DrawerField({
 	label,
 	children,
@@ -124,7 +117,6 @@ export function DrawerField({
 	);
 }
 
-/** `zi`: энгийн утга, хоосон бол "-" */
 export function DrawerText({ value }: { value?: React.ReactNode }) {
 	return (
 		<span className="font-medium text-TextColor-main text-base leading-5 tracking-[0.2px]">
@@ -133,7 +125,6 @@ export function DrawerText({ value }: { value?: React.ReactNode }) {
 	);
 }
 
-/** `zX`: тод утга */
 export function DrawerStrong({ value }: { value: React.ReactNode }) {
 	return (
 		<span className="font-bold text-TextColor-main text-base leading-5 tracking-[0.2px]">
@@ -142,7 +133,6 @@ export function DrawerStrong({ value }: { value: React.ReactNode }) {
 	);
 }
 
-/** `cT`: огноо • цаг */
 export function DrawerDate({ value }: { value?: string | null }) {
 	const { date, time } = splitDateTime(value);
 	if (!time) return <DrawerText value={date} />;

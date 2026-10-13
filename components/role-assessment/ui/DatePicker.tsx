@@ -9,12 +9,7 @@ import {
 import { addDaysYmd, formatSlashDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-// Staging огноо сонгогч (📦 module 62243, variant "default"): antd Popover (click,
-// bottomLeft) дотор 350px календарь, Даваа гаригаас эхэлнэ, `disableDays + 1` хоногоос
-// өмнөх өдөр идэвхгүй. Утга "YYYY-MM-DD", харагдац "YYYY/MM/DD".
-
 const WEEKDAYS = ["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"];
-// dayjs "mn" locale-ийн сар (staging bundle ✅)
 const MONTHS = [
 	"Нэгдүгээр сар",
 	"Хоёрдугаар сар",

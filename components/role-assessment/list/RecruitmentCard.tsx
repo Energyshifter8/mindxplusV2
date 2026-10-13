@@ -21,8 +21,6 @@ import { raRoutes } from "@/lib/routes";
 import type { RecruitmentListItem } from "@/lib/types/role-assessment";
 import type { RecruitmentRowHandlers } from "./rowActions";
 
-// Staging grid харагдлын карт (📦 `v`).
-
 export function RecruitmentCard({
 	row,
 	handlers,

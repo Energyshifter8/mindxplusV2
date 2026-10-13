@@ -5,10 +5,6 @@ import "quill/dist/quill.core.css";
 import { useEffect, useRef } from "react";
 import { RICH_TEXT_FORMATS, setQuillHtml } from "./wizard/quillShared";
 
-// Rich text-ийн read-only харагдац (D3): HTML-ийг Quill-ийн clipboard-оор Delta болгож
-// зөвхөн зөвшөөрсөн format-ыг (header, B/I/U, link, list) үлдээнэ — script/зураг/
-// бусад таг хаягдана. Link-ийн протоколыг дахин шалгаж, гадаад линкийг шинэ tab-д.
-
 const SAFE_PROTOCOLS = new Set(["http:", "https:", "mailto:", "tel:"]);
 
 function hardenLinks(root: HTMLElement) {
@@ -59,7 +55,6 @@ export default function QuillView({ html }: { html: string }) {
 		hardenLinks(quill.root);
 	}, [html]);
 
-	// quill.core.css layer-гүй тул Tailwind (@layer) override-д `!` хэрэгтэй
 	return (
 		<div
 			ref={hostRef}

@@ -28,10 +28,6 @@ import { raRoutes } from "@/lib/routes";
 import type { TalentListParams } from "@/lib/types/role-assessment";
 import { TalentCard } from "./TalentCard";
 
-// Staging /invited-talents (📦 module 62002). GET /customer/hiring-invitations/talents
-// `page,size,q,marked`. Зөрүү (mismatches.md): хайлт/шүүлт URL-д (`q`, `marked`);
-// алдааны төлөв тусдаа.
-
 const TITLE = "Миний урьсан талентууд";
 const SEARCH_DEBOUNCE_MS = 350;
 const SEARCH_MAX_LENGTH = 100;
@@ -99,14 +95,12 @@ export function InvitedTalentsList() {
 		? Math.max(1, list.data.totalPages ?? Math.ceil(totalElements / size))
 		: 1;
 
-	// Staging: хуудас хэтэрвэл сүүлийн хуудас руу
 	useEffect(() => {
 		if (list.data && !list.isFetching && page > totalPages) {
 			setPage(clampPage(page, totalPages));
 		}
 	}, [list.data, list.isFetching, page, totalPages, setPage]);
 
-	// Staging: алдаанд toast
 	useEffect(() => {
 		if (list.errorUpdatedAt) {
 			toast.error(getErrorMessage(list.error, "Жагсаалт авахад алдаа гарлаа"));

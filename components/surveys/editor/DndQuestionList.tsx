@@ -201,7 +201,6 @@ export default function DndQuestionList({
 		}
 
 		const rawOverId = over.id as string;
-		// Keep the old category-level flag for droppable zones
 		if (
 			rawOverId === "CUSTOM_QUESTION_FIRST" ||
 			rawOverId === "CUSTOM_QUESTION_LAST"
@@ -212,7 +211,6 @@ export default function DndQuestionList({
 			setActiveDragOver(parsed.category);
 		}
 
-		// Determine before/after by comparing active top to the over rect midpoint
 		let position: "before" | "after" | null = null;
 		const activeTop =
 			event.active?.rect?.current?.translated?.top ??
@@ -262,7 +260,6 @@ export default function DndQuestionList({
 			modifiers={[restrictToVerticalAxis]}
 		>
 			<div className="space-y-3">
-				{/* CUSTOM_QUESTION_FIRST */}
 				<div>
 					<div
 						className="text-[8px] uppercase tracking-[0.2em] text-muted-foreground/60 mb-1 px-2"
@@ -317,10 +314,8 @@ export default function DndQuestionList({
 					)}
 				</div>
 
-				{/* Divider */}
 				<div className="border-t border-border/30 mx-2" />
 
-				{/* CUSTOM_QUESTION_LAST */}
 				<div>
 					<div
 						className="text-[8px] uppercase tracking-[0.2em] text-muted-foreground/60 mb-1 px-2"

@@ -4,8 +4,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
 	reactStrictMode: true,
 	skipTrailingSlashRedirect: true,
-	// Талентийн үнэлгээ staging-ийн замд шилжсэн; хуучин холбоос (bookmark) ажилласаар байна.
-	// permanent:false (307) — browser кэшлэхгүй, хэрэгтэй бол буцаахад хялбар.
 	async redirects() {
 		return [
 			{

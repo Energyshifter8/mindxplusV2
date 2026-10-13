@@ -12,9 +12,6 @@ import type {
 import { cn } from "@/lib/utils";
 import { CategoryButtons } from "./StepTests";
 
-// Staging алхам 3 (📦 `H`): зөвхөн каталогоос сонгоно (customer-question-controller RA-д
-// ашиглагддаггүй — survey-д л).
-
 export function StepQuestions({
 	categories,
 	selectedCategory,

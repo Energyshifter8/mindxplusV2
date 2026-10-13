@@ -184,7 +184,6 @@ export const themes: Record<ThemeName, ThemeConfig> = {
 	},
 } as const;
 
-/** Resolves theme colors with LIGHT fallbacks for any missing keys. */
 export function getThemeColors(themeKey: ThemeName): ThemeConfig {
 	return { ...themes.light, ...(themes[themeKey] || themes.light) };
 }

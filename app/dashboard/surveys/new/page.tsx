@@ -93,7 +93,6 @@ export default function NewSurveyPage() {
 
 	return (
 		<div className="p-6 lg:p-10">
-			{/* Page header */}
 			<div className="mb-10 flex items-center gap-4">
 				<div className="inline-flex h-8 w-8 shrink-0 items-center justify-center border-2 border-primary text-primary">
 					<FilePlus size={16} />
@@ -114,7 +113,6 @@ export default function NewSurveyPage() {
 				</div>
 			</div>
 
-			{/* Content */}
 			{isLoading ? (
 				<div className="space-y-12">
 					{Array.from({ length: 3 }).map((_, i) => (
@@ -137,7 +135,6 @@ export default function NewSurveyPage() {
 								subtitle={category.categoryDescription}
 							/>
 
-							{/* Template grid */}
 							<div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 								{category.templates.map((template) => (
 									<TemplateCard
@@ -153,7 +150,6 @@ export default function NewSurveyPage() {
 				</div>
 			)}
 
-			{/* Create survey modal */}
 			{selectedTemplate && (
 				<Suspense fallback={null}>
 					<CreateSurveyModal
@@ -164,7 +160,6 @@ export default function NewSurveyPage() {
 				</Suspense>
 			)}
 
-			{/* Template preview modal */}
 			{previewTemplateId && (
 				<Suspense fallback={null}>
 					<TemplatePreviewModal

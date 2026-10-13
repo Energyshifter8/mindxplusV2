@@ -23,7 +23,6 @@ export default function TemplateCard({
 				isDisabled ? "opacity-60" : "hover:border-primary"
 			}`}
 		>
-			{/* Image area */}
 			<div className="relative flex h-40 items-center justify-center border-b-2 border-border bg-input-field-bg">
 				<div
 					className="absolute inset-0 opacity-[0.04]"
@@ -52,7 +51,6 @@ export default function TemplateCard({
 					/>
 				)}
 
-				{/* CREATED overlay */}
 				{isDisabled && (
 					<div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50">
 						<span
@@ -64,7 +62,6 @@ export default function TemplateCard({
 					</div>
 				)}
 
-				{/* hasTrial badge */}
 				{template.hasTrial && !isDisabled && (
 					<span
 						className="absolute right-2 top-2 z-20 border border-primary/50 bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-primary"
@@ -75,7 +72,6 @@ export default function TemplateCard({
 				)}
 			</div>
 
-			{/* Content */}
 			<div className="flex flex-1 flex-col gap-3 p-5">
 				<h3
 					className="text-base font-bold uppercase leading-tight text-foreground"
@@ -90,7 +86,6 @@ export default function TemplateCard({
 					{template.description}
 				</p>
 
-				{/* Footer stats */}
 				<div
 					className="mt-auto flex items-center gap-4 pt-2 text-[10px] uppercase tracking-widest text-muted-foreground"
 					style={{ fontFamily: "'JetBrains Mono', monospace" }}
@@ -105,7 +100,6 @@ export default function TemplateCard({
 					</span>
 				</div>
 
-				{/* Actions */}
 				<div className="flex items-center justify-end gap-2 pt-2">
 					<button
 						type="button"

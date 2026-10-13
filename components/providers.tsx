@@ -15,7 +15,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 						staleTime: 60 * 1000,
 						gcTime: 5 * 60 * 1000,
 						retry: (failureCount, error) => {
-							// 4xx (401, 404, plan_expired г.м.) дахин оролдоход засрахгүй
 							const status =
 								error instanceof Error && "status" in error
 									? (error as { status?: number }).status
@@ -30,7 +29,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 			}),
 	);
 
-	// Staging-ийн адил: ачаалахад refresh хийхгүй, ~9 минутын дараа (lib/auth.ts)
 	useEffect(() => startTokenRefreshScheduler(), []);
 
 	return (

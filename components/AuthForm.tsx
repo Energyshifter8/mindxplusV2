@@ -393,7 +393,6 @@ export default function AuthForm() {
 
 	return (
 		<div className="min-h-screen w-full flex flex-col lg:flex-row bg-background">
-			{/* LEFT — Hero Panel */}
 			<div
 				className="relative lg:flex-1 flex flex-col justify-between p-8 lg:p-16 overflow-hidden"
 				style={{ minHeight: "260px" }}
@@ -476,7 +475,6 @@ export default function AuthForm() {
 				<div className="absolute top-0 right-0 bottom-0 hidden lg:block w-0.5 bg-border" />
 			</div>
 
-			{/* RIGHT — Auth Form */}
 			<div className="lg:w-[520px] xl:w-[580px] flex flex-col justify-center p-6 lg:p-14">
 				<div className="flex mb-8 border-2 border-border">
 					{(["login", "signup"] as Tab[]).map((t) => (

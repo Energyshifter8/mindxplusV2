@@ -22,10 +22,6 @@ import { cn } from "@/lib/utils";
 import type { ReinviteTarget } from "../InviteTalentModal";
 import { InvitationStatusBadge } from "./InvitationStatusBadge";
 
-// Staging dashboard-ын хүснэгтүүд (📦 module 34795 `y`, `Z`, `k`; shadcn Table).
-// Staging-ийн `bg-muted`, `text-muted-foreground` CSS-д байхгүй тул орхив; мөрийн
-// хүрээ staging-ийн default `#e5e7eb`.
-
 const FRAME = "overflow-hidden rounded-[16px] border border-Stroke-600";
 const HEAD_ROW =
 	"border-Stroke-600 border-b bg-Gray-50 font-medium text-[14px] text-TextColor-main";
@@ -35,7 +31,6 @@ const TD = "p-2 align-middle";
 const SECONDARY =
 	"font-medium text-[14px] text-TextColor-secondary leading-[140%]";
 
-/** Staging module 75584: үнэлсэн бол од + оноо, эс бол "---". */
 function RatingCell({
 	rated,
 	points,

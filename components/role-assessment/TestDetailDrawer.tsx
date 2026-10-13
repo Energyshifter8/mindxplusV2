@@ -9,11 +9,6 @@ import { useRoleAssessmentTest } from "@/lib/hooks/role-assessment/queries";
 import { buildContentDoc } from "@/lib/role-assessment/html";
 import { cn } from "@/lib/utils";
 
-// Staging тестийн дэлгэрэнгүй drawer (📦 module 29241): antd Drawer 600px, толгой
-// (нэр + X), контент, хөл ("Хаах" + footerExtra). GET /customer/role-assessments/tests/{id}
-// зөвхөн нээгдсэн үед. Контентыг staging `dangerouslySetInnerHTML`-ийн оронд
-// `<iframe sandbox="" srcDoc>`-д харуулна (D3).
-
 const ANTD_DRAWER_SHADOW =
 	"shadow-[-6px_0_16px_0_rgba(0,0,0,0.08),-3px_0_6px_-4px_rgba(0,0,0,0.12),-9px_0_28px_8px_rgba(0,0,0,0.05)]";
 
