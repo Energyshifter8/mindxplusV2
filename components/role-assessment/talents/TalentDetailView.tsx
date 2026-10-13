@@ -238,7 +238,7 @@ export function TalentDetailView({ talentId }: { talentId: string }) {
 
 	return (
 		<div className="min-h-screen bg-white pb-12 font-sf">
-			<div className="sticky top-[var(--ra-banner-h,0px)] z-10 flex h-[72px] items-center border-Stroke-700 border-b bg-white px-4 md:px-6">
+			<div className="sticky top-0 z-10 flex h-[72px] items-center border-Stroke-700 border-b bg-white px-4 md:px-6">
 				<div className="mx-auto w-full">
 					<p className="font-semibold text-[24px] text-TextColor-main leading-[1.4]">
 						{TITLE}

@@ -385,7 +385,7 @@ export function RoleAssessmentWizard({
 
 	return (
 		<div className="h-full bg-white font-sf">
-			<div className="sticky top-[var(--ra-banner-h,0px)] z-50 border-Stroke-500 border-b-[0.6px] bg-white shadow-sm">
+			<div className="sticky top-0 z-50 border-Stroke-500 border-b-[0.6px] bg-white shadow-sm">
 				<div className="mx-auto px-4">
 					<div className="flex h-[72px] items-center justify-between gap-2">
 						<RaButton

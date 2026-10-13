@@ -108,7 +108,7 @@ export function RecruitmentDashboard({
 
 	return (
 		<div className="mx-auto min-h-screen bg-white">
-			<div className="sticky top-[var(--ra-banner-h,0px)] z-10 flex min-h-[72px] flex-wrap items-center justify-between gap-3 border-Stroke-700 border-b bg-white px-4 py-3 md:px-6">
+			<div className="sticky top-0 z-10 flex min-h-[72px] flex-wrap items-center justify-between gap-3 border-Stroke-700 border-b bg-white px-4 py-3 md:px-6">
 				<p className="font-semibold text-[24px] text-TextColor-main leading-[140%]">
 					Талентийн үнэлгээ
 				</p>

@@ -168,7 +168,7 @@ export function InvitationResultView({
 
 	return (
 		<div className="mx-auto min-h-screen overflow-x-clip bg-white">
-			<div className="sticky top-[var(--ra-banner-h,0px)] z-10 flex h-[72px] items-center justify-between border-Stroke-700 border-b bg-white px-4 sm:px-6">
+			<div className="sticky top-0 z-10 flex h-[72px] items-center justify-between border-Stroke-700 border-b bg-white px-4 sm:px-6">
 				<Link
 					href={dashboardHref}
 					aria-label="Dashboard руу буцах"
@@ -351,7 +351,7 @@ export function InvitationResultView({
 							aria-label="Талентын мэдээлэл"
 							className="w-full min-w-0 lg:w-[450px] lg:shrink-0"
 						>
-							<div className="space-y-6 lg:sticky lg:top-[calc(81px+var(--ra-banner-h,0px))]">
+							<div className="space-y-6 lg:sticky lg:top-[81px]">
 								<WarningCard />
 								<StatusCard result={data} />
 								<ProctoringCard result={data} />
