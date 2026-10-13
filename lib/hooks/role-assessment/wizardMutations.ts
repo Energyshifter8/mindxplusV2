@@ -90,7 +90,12 @@ export function usePublishRecruitment(id: string) {
 		mutationFn: () => publishRecruitment(id),
 		onSuccess: () => {
 			invalidateRecruitmentLists(queryClient);
-			if (isRaDryRun()) return;
+			if (isRaDryRun()) {
+				toast.success("Хүсэлт амжилттай илгээгдлээ.", {
+					description: "DRY-RUN: staging-д нийтлэгдээгүй",
+				});
+				return;
+			}
 			queryClient.invalidateQueries({ queryKey: raKeys.information(id) });
 			queryClient.invalidateQueries({ queryKey: raKeys.detail(id) });
 		},

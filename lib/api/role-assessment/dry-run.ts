@@ -16,6 +16,8 @@ const RA_WRITE_PATHS = [
 	/^\/customer\/hiring\//,
 ];
 
+const RA_READ_ONLY_POSTS = [/^\/customer\/role-assessments\/recommend$/];
+
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
 export function requestPathOf(url: string | undefined): string {
@@ -25,6 +27,7 @@ export function requestPathOf(url: string | undefined): string {
 
 export function isRaWriteRequest(method: string, path: string): boolean {
 	if (READ_METHODS.has(method.toUpperCase())) return false;
+	if (RA_READ_ONLY_POSTS.some((re) => re.test(path))) return false;
 	return RA_WRITE_PATHS.some((re) => re.test(path));
 }
 
@@ -206,9 +209,6 @@ function writeStub(path: string, body: unknown): DryRunResponse {
 		/\/(remove-logo|rate)$/.test(path)
 	) {
 		return { status: 200, data: REST_OK };
-	}
-	if (path === "/customer/role-assessments/recommend") {
-		return { status: 200, data: [] };
 	}
 	if (path === "/customer/hiring-invitations/search-by-email") {
 		return { status: 200, data: { ...REST_OK, data: null } };

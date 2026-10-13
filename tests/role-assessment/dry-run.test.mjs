@@ -35,7 +35,6 @@ test("RA бичих хүсэлтийг таних", () => {
 		"/customer/recruitments/9547a97a-342d-4db2-9b40-8e9ef400aee5/rename",
 		"/customer/recruitment-setup/publish",
 		"/customer/recruitment-setup/x/update-information",
-		"/customer/role-assessments/recommend",
 		"/customer/designs/RECRUITMENT/x/upload-logo",
 		"/customer/hiring-invitations/invite",
 		"/customer/hiring-invitations/search-by-email",
@@ -50,6 +49,23 @@ test("RA бичих хүсэлтийг таних", () => {
 		false,
 	);
 	assert.equal(isRaWriteRequest("POST", "/user/refresh"), false);
+});
+
+test("recommend: бичих биш, dry-run-д ч бодитоор явна", () => {
+	assert.equal(
+		isRaWriteRequest("POST", "/customer/role-assessments/recommend"),
+		false,
+	);
+	delete process.env[FLAG];
+	assert.equal(
+		shouldDryRun("POST", "/customer/role-assessments/recommend"),
+		false,
+	);
+	assert.equal(shouldDryRun("POST", "/customer/role-assessments/tests"), true);
+	assert.equal(
+		shouldDryRun("POST", "/customer/role-assessments/recommend/x"),
+		true,
+	);
 });
 
 test('flag: зөвхөн "1" үед бодит бичилт', () => {
@@ -95,11 +111,6 @@ test("stub: openapi-ийн хариуны хэлбэр", () => {
 			{},
 		).data.data,
 		null,
-	);
-	assert.deepEqual(
-		buildDryRunResponse("POST", "/customer/role-assessments/recommend", [])
-			.data,
-		[],
 	);
 	const note = buildDryRunResponse(
 		"POST",

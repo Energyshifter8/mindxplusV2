@@ -71,6 +71,7 @@ export function CreateRecruitmentModal({
 			}
 		>
 			<form
+				noValidate
 				onSubmit={(e) => {
 					e.preventDefault();
 					if (!pending) submit();
