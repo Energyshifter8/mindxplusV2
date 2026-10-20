@@ -55,6 +55,7 @@ const nextConfig: NextConfig = {
 		],
 	},
 	experimental: {
+		turbopackFileSystemCacheForDev: false,
 		optimizePackageImports: [
 			"lucide-react",
 			"@tanstack/react-query",
