@@ -1,15 +1,4 @@
-import axios, {
-	type AxiosAdapter,
-	AxiosError,
-	AxiosHeaders,
-	type AxiosRequestConfig,
-} from "axios";
-import {
-	buildDryRunResponse,
-	formatDryRunLog,
-	requestPathOf,
-	shouldDryRun,
-} from "@/lib/api/role-assessment/dry-run";
+import axios, { type AxiosRequestConfig } from "axios";
 import {
 	extractErrorText,
 	normalizeErrorCode,
@@ -41,37 +30,10 @@ function currentToken(): string | null {
 	return typeof window !== "undefined" ? localStorage.getItem("token") : null;
 }
 
-const raDryRunAdapter: AxiosAdapter = async (config) => {
-	const method = (config.method ?? "get").toUpperCase();
-	const path = requestPathOf(config.url);
-	let body: unknown = config.data;
-	if (typeof body === "string") {
-		try {
-			body = JSON.parse(body);
-		} catch {}
-	}
-	// biome-ignore lint/suspicious/noConsole: DRY-RUN log нь шаардлага (docs/role-assessment/DECISIONS.md D4)
-	console.info(formatDryRunLog(method, path, body));
-	const stub = buildDryRunResponse(method, path, body);
-	const response = {
-		data: stub.data,
-		status: stub.status,
-		statusText: stub.status < 400 ? "OK" : "DRY-RUN",
-		headers: new AxiosHeaders({ "x-ra-dry-run": "1" }),
-		config,
-		request: null,
-	};
-	if (stub.status >= 400) {
-		throw new AxiosError(
-			"DRY-RUN",
-			AxiosError.ERR_BAD_REQUEST,
-			config,
-			null,
-			response,
-		);
-	}
-	return response;
-};
+function requestPathOf(url: string | undefined): string {
+	const path = `/${(url ?? "").split("?")[0].replace(/^\/+/, "")}`;
+	return path.replace(/^\/api(?=\/)/, "");
+}
 
 httpClient.interceptors.request.use((config) => {
 	config.baseURL = getBaseUrl();
@@ -81,9 +43,6 @@ httpClient.interceptors.request.use((config) => {
 	} else {
 		const token = currentToken();
 		if (token) config.headers.set("Authorization", `Bearer ${token}`);
-	}
-	if (shouldDryRun((config.method ?? "get").toUpperCase(), path)) {
-		config.adapter = raDryRunAdapter;
 	}
 	return config;
 });

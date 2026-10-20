@@ -126,7 +126,6 @@ const ERROR_MESSAGES: Record<string, string> = {
 	invalid_argument: "Оруулсан мэдээлэл буруу байна",
 	unexpected_response:
 		"Сервер хүлээгдээгүй хариу буцаалаа. Жагсаалтаа шинэчилж шалгана уу",
-	ra_dry_run_blocked: "DRY-RUN: өөрчлөлт staging-д хадгалагдахгүй",
 };
 
 const NETWORK_ERROR_MESSAGE =

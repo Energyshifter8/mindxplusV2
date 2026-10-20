@@ -10,11 +10,9 @@ import {
 	setRecruitmentTests,
 	updateRecruitmentInformation,
 } from "@/lib/api/role-assessment";
-import { isRaDryRun } from "@/lib/api/role-assessment/dry-run";
 import { getErrorMessage } from "@/lib/api-errors";
 import type { RecommendAnswer } from "@/lib/constants/roleAssessment";
 import { clearDraft } from "@/lib/role-assessment/draft";
-import type { DesignDTO, RecruitmentInfo } from "@/lib/types/api";
 import type { UpdateRecruitmentInfoPayload } from "@/lib/types/role-assessment";
 import { raKeys } from "./keys";
 import { invalidateRecruitmentLists } from "./mutations";
@@ -24,18 +22,8 @@ export function useUpdateInformation(id: string) {
 	return useMutation({
 		mutationFn: (payload: UpdateRecruitmentInfoPayload) =>
 			updateRecruitmentInformation(id, payload),
-		onSuccess: (_data, payload) => {
+		onSuccess: () => {
 			toast.success("Мэдээлэл амжилттай хадгалагдлаа");
-			if (isRaDryRun()) {
-				const saved: RecruitmentInfo = {
-					jobTitle: payload.jobTitle.trim(),
-					jobDescription: payload.jobDescription.trim(),
-					companyName: payload.companyName.trim(),
-					companyDescription: payload.companyDescription ?? "",
-				};
-				queryClient.setQueryData(raKeys.information(id), saved);
-				return;
-			}
 			queryClient.invalidateQueries({ queryKey: raKeys.information(id) });
 			clearDraft(id);
 		},
@@ -49,12 +37,8 @@ export function useSetTests(id: string) {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: (testIds: string[]) => setRecruitmentTests(id, testIds),
-		onSuccess: (_data, testIds) => {
+		onSuccess: () => {
 			toast.success("Сонгосон тестүүд амжилттай хадгалагдлаа");
-			if (isRaDryRun()) {
-				queryClient.setQueryData(raKeys.testIds(id), testIds);
-				return;
-			}
 			queryClient.invalidateQueries({ queryKey: raKeys.testIds(id) });
 			queryClient.invalidateQueries({ queryKey: raKeys.detail(id) });
 		},
@@ -69,12 +53,8 @@ export function useSetQuestions(id: string) {
 	return useMutation({
 		mutationFn: (questionIds: number[]) =>
 			setRecruitmentQuestions(id, questionIds),
-		onSuccess: (_data, questionIds) => {
+		onSuccess: () => {
 			toast.success("Сонгосон асуултууд амжилттай хадгалагдлаа");
-			if (isRaDryRun()) {
-				queryClient.setQueryData(raKeys.questionIds(id), questionIds);
-				return;
-			}
 			queryClient.invalidateQueries({ queryKey: raKeys.questionIds(id) });
 			queryClient.invalidateQueries({ queryKey: raKeys.detail(id) });
 		},
@@ -90,12 +70,6 @@ export function usePublishRecruitment(id: string) {
 		mutationFn: () => publishRecruitment(id),
 		onSuccess: () => {
 			invalidateRecruitmentLists(queryClient);
-			if (isRaDryRun()) {
-				toast.success("Хүсэлт амжилттай илгээгдлээ.", {
-					description: "DRY-RUN: staging-д нийтлэгдээгүй",
-				});
-				return;
-			}
 			queryClient.invalidateQueries({ queryKey: raKeys.information(id) });
 			queryClient.invalidateQueries({ queryKey: raKeys.detail(id) });
 		},
@@ -117,18 +91,9 @@ export function useRecommendTests() {
 export function useUploadLogo(id: string) {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: (vars: { file: File; previewUrl: string }) =>
-			uploadDesignLogo("RECRUITMENT", id, vars.file),
-		onSuccess: async (_data, vars) => {
+		mutationFn: (file: File) => uploadDesignLogo("RECRUITMENT", id, file),
+		onSuccess: async () => {
 			toast.success("Лого амжилттай байршууллаа");
-			if (isRaDryRun()) {
-				queryClient.setQueryData<DesignDTO>(raKeys.design(id), (d) => ({
-					...d,
-					hasLogo: true,
-					logoUrl: vars.previewUrl,
-				}));
-				return;
-			}
 			await queryClient.invalidateQueries({ queryKey: raKeys.design(id) });
 		},
 		onError: (error) => {
@@ -144,14 +109,6 @@ export function useRemoveLogo(id: string) {
 			removeDesignLogo("RECRUITMENT", id, designId),
 		onSuccess: () => {
 			toast.success("Лого амжилттай устгалаа");
-			if (isRaDryRun()) {
-				queryClient.setQueryData<DesignDTO>(raKeys.design(id), (d) => ({
-					...d,
-					hasLogo: false,
-					logoUrl: undefined,
-				}));
-				return;
-			}
 			queryClient.invalidateQueries({ queryKey: raKeys.design(id) });
 		},
 		onError: (error) => {

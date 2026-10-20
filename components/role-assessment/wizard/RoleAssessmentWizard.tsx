@@ -15,7 +15,6 @@ import {
 } from "@/components/role-assessment/ui/Basics";
 import { RaButton } from "@/components/role-assessment/ui/Button";
 import { RaConfirmDialog } from "@/components/role-assessment/ui/Modal";
-import { isRaDryRun } from "@/lib/api/role-assessment/dry-run";
 import { getErrorMessage, isRetryableError } from "@/lib/api-errors";
 import type { RecommendAnswer } from "@/lib/constants/roleAssessment";
 import {
@@ -41,7 +40,7 @@ import {
 	useSetTests,
 	useUpdateInformation,
 } from "@/lib/hooks/role-assessment/wizardMutations";
-import { readDraft, saveDraft } from "@/lib/role-assessment/draft";
+import { saveDraft } from "@/lib/role-assessment/draft";
 import {
 	continueDisabled,
 	type InfoForm,
@@ -133,9 +132,8 @@ export function RoleAssessmentWizard({
 
 	const [syncedInfo, setSyncedInfo] = useState<RecruitmentInfo | null>(null);
 	if (info.data && info.data !== syncedInfo) {
-		const draft = syncedInfo === null && isRaDryRun() ? readDraft(id) : null;
 		setSyncedInfo(info.data);
-		setForm(draft ?? formFromInfo(info.data));
+		setForm(formFromInfo(info.data));
 	}
 
 	useEffect(() => {

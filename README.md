@@ -141,17 +141,9 @@ Staging-parity implementation of the "Талентийн үнэлгээ" module.
 
 Old `/dashboard/recruitments…` and `/dashboard/talents…` URLs redirect (307) to these.
 
-### DRY-RUN write guard
-
-All role-assessment write requests (create, save, publish, invite, extend, rate, note,
-bookmark, logo, close, delete, rename) are **not sent** unless
-`NEXT_PUBLIC_RA_ALLOW_WRITES=1` is set in `.env.local` (see `.env.example`). Otherwise they
-are logged (masked) to the console, answered with a stub, and a DRY-RUN banner is shown.
-The API proxy (`app/api/[...path]/route.ts`) enforces the same rule as a second layer.
-
 ### Code layout
 
-- `lib/api/role-assessment/*` — typed, throwing API functions (`ApiError` with normalized codes, `lib/api-errors.ts`); `dry-run.ts` — the write guard
+- `lib/api/role-assessment/*` — typed, throwing API functions (`ApiError` with normalized codes, `lib/api-errors.ts`)
 - `lib/hooks/role-assessment/*` — TanStack Query keys, queries, mutations
 - `lib/role-assessment/*`, `lib/format.ts` — pure logic (unit tested)
 - `components/role-assessment/*` — UI (`ui/` primitives, `list/`, `wizard/`, `preview/`, `dashboard/`, `result/`, `talents/`), scoped by `RaScope`

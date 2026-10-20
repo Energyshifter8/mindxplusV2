@@ -171,10 +171,7 @@ function LogoUploader({
 		reader.onload = () => {
 			const url = typeof reader.result === "string" ? reader.result : "";
 			setLocalPreview(url);
-			upload.mutate(
-				{ file, previewUrl: url },
-				{ onSettled: () => setLocalPreview(null) },
-			);
+			upload.mutate(file, { onSettled: () => setLocalPreview(null) });
 		};
 		reader.readAsDataURL(file);
 	};
