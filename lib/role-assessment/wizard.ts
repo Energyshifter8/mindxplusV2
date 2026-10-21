@@ -282,6 +282,29 @@ export function toWizardTest(
 	};
 }
 
+export interface TestGroup {
+	key: string;
+	label: string;
+	tests: WizardTest[];
+}
+
+export function groupTestsByCategory(
+	tests: readonly WizardTest[],
+	categories: readonly CategoryOption[],
+): TestGroup[] {
+	const groups = categories
+		.filter((c) => c.key !== "")
+		.map((c) => ({
+			key: c.key,
+			label: c.label,
+			tests: tests.filter((t) => t.category === c.key),
+		}));
+	const rest = tests.filter((t) => !groups.some((g) => g.key === t.category));
+	return [...groups, { key: "", label: "", tests: rest }].filter(
+		(g) => g.tests.length > 0,
+	);
+}
+
 export interface WizardQuestion {
 	id: number;
 	category: string;

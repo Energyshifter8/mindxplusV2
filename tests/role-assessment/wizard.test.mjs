@@ -7,6 +7,7 @@ import {
 import {
 	continueDisabled,
 	durationLabel,
+	groupTestsByCategory,
 	isInfoComplete,
 	isInfoDirty,
 	isSelectionDirty,
@@ -183,6 +184,35 @@ test("каталогийн хөрвүүлэлт", () => {
 		cats,
 	);
 	assert.equal(q.duration, "1-2");
+});
+
+test("тестийг ангиллаар бүлэглэх", () => {
+	const cats = toCategoryOptions([
+		{ id: "hiring_soft_skill", name: "Зөөлөн ур чадвар" },
+		{ id: "hiring_individual", name: "Бие хүний онцлог" },
+	]);
+	const tests = [
+		{ id: "a", category: "hiring_individual" },
+		{ id: "b", category: "hiring_soft_skill" },
+		{ id: "c", category: "" },
+		{ id: "d", category: "hiring_individual" },
+	];
+	assert.deepEqual(
+		groupTestsByCategory(tests, cats).map((g) => [
+			g.label,
+			g.tests.map((t) => t.id),
+		]),
+		[
+			["Зөөлөн ур чадвар", ["b"]],
+			["Бие хүний онцлог", ["a", "d"]],
+			["", ["c"]],
+		],
+	);
+	assert.deepEqual(
+		groupTestsByCategory(tests.slice(0, 1), cats).map((g) => g.key),
+		["hiring_individual"],
+	);
+	assert.deepEqual(groupTestsByCategory([], cats), []);
 });
 
 test("HTML normalize (staging regex) ба srcDoc", () => {
