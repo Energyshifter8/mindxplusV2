@@ -2,6 +2,10 @@
 
 import Image from "next/image";
 import { StatusClosedCheckIcon } from "@/components/icons/role-assessment";
+import {
+	RECRUITMENT_STATUS_LABELS,
+	RECRUITMENT_SUSPENDED_HINT,
+} from "@/lib/constants/roleAssessment";
 import { formatStatCount, splitDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { RaButton } from "./Button";
@@ -143,28 +147,28 @@ export function RecruitmentStatusPill({ status }: { status?: string }) {
 			return (
 				<div className={pill}>
 					<div className="size-2 rounded-full bg-Semantic-warning500" />
-					Үүссэн
+					{RECRUITMENT_STATUS_LABELS.CREATED}
 				</div>
 			);
 		case "PUBLISHED":
 			return (
 				<div className={pill}>
 					<div className="size-2 rounded-full bg-Semantic-success500" />
-					Идэвхтэй
+					{RECRUITMENT_STATUS_LABELS.PUBLISHED}
 				</div>
 			);
 		case "CLOSED":
 			return (
 				<div className="flex h-7 items-center gap-2 rounded-lg bg-Gray-100 pr-3 pl-2 font-medium text-Gray-700 text-[14px] leading-5">
 					<StatusClosedCheckIcon className="size-4" />
-					Хаагдсан
+					{RECRUITMENT_STATUS_LABELS.CLOSED}
 				</div>
 			);
 		case "PUBLISHING":
 			return (
 				<div className={pill}>
 					<div className="size-2 rounded-full bg-[#4d4c4b]" />
-					PUBLISHING
+					{RECRUITMENT_STATUS_LABELS.PUBLISHING}
 				</div>
 			);
 		case "SUSPENDED":
@@ -172,15 +176,14 @@ export function RecruitmentStatusPill({ status }: { status?: string }) {
 				<div className="group relative inline-flex">
 					<div className="flex items-center gap-x-2 rounded-lg border-[#f32222]/30 border-[1.5px] bg-[#fff0f0] px-2 py-[2px] text-[#f32222] text-[14px] leading-5">
 						<div className="h-[6px] w-[6px] rounded-full bg-[#f32222]" />
-						Саатсан
+						{RECRUITMENT_STATUS_LABELS.SUSPENDED}
 					</div>
 					<div
 						role="tooltip"
 						className="absolute bottom-full left-0 z-50 mb-2 hidden w-max max-w-[240px] group-hover:block"
 					>
 						<div className="rounded-lg bg-Gray-900 px-3 py-2 text-[12px] text-white leading-[1.4] shadow-lg">
-							Талентийн үнэлгээг нийтлэх үед алдаа гарсан байна. Та дахин
-							шинжилгээ үүсгэнэ үү.
+							{RECRUITMENT_SUSPENDED_HINT}
 						</div>
 					</div>
 				</div>

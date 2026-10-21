@@ -26,6 +26,7 @@ import { getErrorMessage, isApiErrorCode } from "@/lib/api-errors";
 import {
 	canCloseRecruitment,
 	canInviteToRecruitment,
+	recruitmentActionBlockReason,
 } from "@/lib/constants/roleAssessment";
 import { formatDateBullet, minutesRangeOrDash } from "@/lib/format";
 import { useCloseRecruitment } from "@/lib/hooks/role-assessment/mutations";
@@ -50,7 +51,6 @@ import { PlanExpiredModal } from "./PlanExpiredModal";
 const SECTION_TITLE =
 	"mb-5 font-medium text-base text-TextColor-main leading-5";
 const CHIP = "rounded-lg bg-Gray-50 px-3 py-1 font-medium";
-const INACTIVE_REASON = "Зөвхөн нийтлэгдсэн талентийн үнэлгээнд боломжтой";
 
 export function RecruitmentDashboard({
 	recruitmentId,
@@ -80,6 +80,7 @@ export function RecruitmentDashboard({
 
 	const data = detail.data;
 	const status = data?.status;
+	const blockReason = recruitmentActionBlockReason(status);
 	const name = data?.name || "---";
 	const rawTests = data?.tests;
 	const rawQuestions = data?.customQuestions;
@@ -119,14 +120,14 @@ export function RecruitmentDashboard({
 							title="Талент үнэлгээ хаах"
 							onClick={() => setConfirmClose(true)}
 							disabled={!canCloseRecruitment(status)}
-							disabledReason={INACTIVE_REASON}
+							disabledReason={blockReason}
 						/>
 						<RaButton
 							title="Талент урих"
 							prefixIcon={<PlusIcon />}
 							onClick={() => setInviteOpen(true)}
 							disabled={!canInviteToRecruitment(status)}
-							disabledReason={INACTIVE_REASON}
+							disabledReason={blockReason}
 						/>
 					</div>
 				)}

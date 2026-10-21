@@ -24,6 +24,10 @@ import {
 	fetchTalents,
 	fetchTestCategories,
 } from "@/lib/api/role-assessment";
+import {
+	isPublishing,
+	publishingPollInterval,
+} from "@/lib/constants/roleAssessment";
 import type { ApiPageParams } from "@/lib/pagination";
 import type {
 	RecruitmentListParams,
@@ -50,6 +54,12 @@ export function useRecruitmentList(params: RecruitmentListParams) {
 		queryKey: raKeys.list(params),
 		queryFn: () => fetchRecruitmentList(params),
 		placeholderData: keepPreviousData,
+		refetchInterval: (query) =>
+			publishingPollInterval(
+				query.state.data?.content?.some((row) => isPublishing(row.status)) ??
+					false,
+				query.state.dataUpdateCount,
+			),
 	});
 }
 
@@ -59,6 +69,11 @@ export function useRecruitmentDetail(id: string | undefined) {
 		queryKey: raKeys.detail(id ?? ""),
 		queryFn: () => fetchRecruitmentDetail(id as string),
 		enabled: !!id,
+		refetchInterval: (query) =>
+			publishingPollInterval(
+				isPublishing(query.state.data?.status),
+				query.state.dataUpdateCount,
+			),
 	});
 }
 

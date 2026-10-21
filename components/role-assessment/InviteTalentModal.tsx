@@ -3,13 +3,19 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { SendIcon } from "@/components/icons/role-assessment";
-import { EMAIL_SHAPE, searchTalentByEmail } from "@/lib/api/role-assessment";
+import { searchTalentByEmail } from "@/lib/api/role-assessment";
 import { getErrorMessage, getFieldErrors } from "@/lib/api-errors";
 import { addDaysYmd, digitsOnly, keepCyrillic } from "@/lib/format";
 import {
 	useExtendInvitation,
 	useInviteTalent,
 } from "@/lib/hooks/role-assessment/mutations";
+import {
+	EMAIL_SHAPE,
+	INVITE_EMAIL_MAX,
+	INVITE_NAME_MAX,
+	inviteFormError,
+} from "@/lib/role-assessment/invite";
 import { RaButton } from "./ui/Button";
 import { RaDatePicker } from "./ui/DatePicker";
 import { RaConfirmDialog, RaModal, RaModalTitle } from "./ui/Modal";
@@ -145,6 +151,7 @@ function InviteTalentForm({
 			trim(form.phoneNumber) !== found.phoneNumber);
 
 	const send = () => {
+		if (invite.isPending) return;
 		invite.mutate(
 			{
 				recruitmentId,
@@ -165,6 +172,7 @@ function InviteTalentForm({
 	};
 
 	const submit = () => {
+		if (pending || searching) return;
 		if (isReinvite && reinvite) {
 			extend.mutate(
 				{
@@ -175,12 +183,8 @@ function InviteTalentForm({
 			);
 			return;
 		}
-		if (!form.lastName.trim()) return void toast.warning("Овог оруулна уу");
-		if (!form.firstName.trim()) return void toast.warning("Нэр оруулна уу");
-		if (!form.email.trim()) return void toast.warning("Имэйл оруулна уу");
-		if (!EMAIL_SHAPE.test(form.email.trim())) {
-			return void toast.warning("Имэйл хаяг буруу байна!");
-		}
+		const invalid = inviteFormError(form);
+		if (invalid) return void toast.warning(invalid);
 		if (foundChanged()) {
 			setConfirmChanges(true);
 			return;
@@ -246,6 +250,7 @@ function InviteTalentForm({
 						}}
 						onBlur={lookup}
 						placeholder="example@email.com"
+						maxLength={INVITE_EMAIL_MAX}
 						required
 						readOnly={isReinvite}
 						disabled={!isReinvite && searching}
@@ -261,6 +266,7 @@ function InviteTalentForm({
 								value={form.lastName}
 								onChange={(e) => set("lastName", keepCyrillic(e.target.value))}
 								placeholder="Овог"
+								maxLength={INVITE_NAME_MAX}
 								required
 								readOnly={isReinvite}
 								status={fieldErrors.lastName ? "error" : undefined}
@@ -272,6 +278,7 @@ function InviteTalentForm({
 								value={form.firstName}
 								onChange={(e) => set("firstName", keepCyrillic(e.target.value))}
 								placeholder="Нэр"
+								maxLength={INVITE_NAME_MAX}
 								required
 								readOnly={isReinvite}
 								status={fieldErrors.firstName ? "error" : undefined}

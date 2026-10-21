@@ -12,7 +12,7 @@ export type RecruitmentStatus = (typeof RECRUITMENT_STATUSES)[number] &
 
 export const RECRUITMENT_STATUS_LABELS: Record<RecruitmentStatus, string> = {
 	CREATED: "Үүссэн",
-	PUBLISHING: "PUBLISHING",
+	PUBLISHING: "Нийтэлж байна",
 	PUBLISHED: "Идэвхтэй",
 	CLOSED: "Хаагдсан",
 	SUSPENDED: "Саатсан",
@@ -158,12 +158,43 @@ export function canDeleteRecruitment(status: string | undefined): boolean {
 	return status === "CREATED";
 }
 
+export const RECRUITMENT_SUSPENDED_HINT =
+	"Талентийн үнэлгээг нийтлэх үед алдаа гарсан байна. Та дахин шинжилгээ үүсгэнэ үү.";
+
+export function isPublishing(status: string | undefined): boolean {
+	return status === "PUBLISHING";
+}
+
+export const PUBLISHING_POLL_MS = 5000;
+export const PUBLISHING_POLL_LIMIT = 120;
+
+export function publishingPollInterval(
+	publishing: boolean,
+	updates: number,
+): number | false {
+	return publishing && updates < PUBLISHING_POLL_LIMIT
+		? PUBLISHING_POLL_MS
+		: false;
+}
+
 export function canInviteToRecruitment(status: string | undefined): boolean {
-	return status === "PUBLISHED";
+	return status === "PUBLISHING" || status === "PUBLISHED";
 }
 
 export function canCloseRecruitment(status: string | undefined): boolean {
-	return status === "PUBLISHED";
+	return (
+		status === "PUBLISHING" || status === "PUBLISHED" || status === "SUSPENDED"
+	);
+}
+
+export function recruitmentActionBlockReason(
+	status: string | undefined,
+): string {
+	if (status === "CREATED")
+		return "Талентийн үнэлгээг нийтэлсний дараа боломжтой";
+	if (status === "SUSPENDED") return RECRUITMENT_SUSPENDED_HINT;
+	if (status === "CLOSED") return "Талентийн үнэлгээ хаагдсан байна";
+	return "";
 }
 
 export function canExtendInvitation(status: string | undefined): boolean {

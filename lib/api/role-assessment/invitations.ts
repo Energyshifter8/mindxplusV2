@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import {
 	apiGetOrThrow,
 	apiPostOrThrow,
@@ -6,8 +6,10 @@ import {
 	httpClient,
 	type SpringPage,
 } from "@/lib/api/http";
-import { toApiError, toApiErrorFromBlob } from "@/lib/api-errors";
+import { ApiError, toApiError, toApiErrorFromBlob } from "@/lib/api-errors";
+import { isReportContentType } from "@/lib/download";
 import type { ApiPageParams } from "@/lib/pagination";
+import { EMAIL_SHAPE } from "@/lib/role-assessment/invite";
 import type {
 	DateDTO,
 	EmailDTO,
@@ -105,8 +107,6 @@ export function inviteTalent(payload: InviteTalentPayload) {
 	return apiPostOrThrow<string>("/customer/hiring-invitations/invite", body);
 }
 
-export const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export type FoundTalent = TalentEntity & { mobileNo?: string | null };
 
 export async function searchTalentByEmail(
@@ -178,17 +178,27 @@ export async function downloadTestReport(
 	invitationId: string,
 	answerId: string,
 ): Promise<{ blob: Blob; contentDisposition: string | null }> {
+	let response: AxiosResponse<Blob>;
 	try {
-		const response = await httpClient.get<Blob>(
+		response = await httpClient.get<Blob>(
 			`${testReportPath(invitationId, answerId)}/download`,
 			{ responseType: "blob" },
 		);
-		const header = response.headers["content-disposition"];
-		return {
-			blob: response.data,
-			contentDisposition: typeof header === "string" ? header : null,
-		};
 	} catch (error) {
 		throw await toApiErrorFromBlob(error);
 	}
+	const contentType = response.headers["content-type"];
+	if (
+		!isReportContentType(typeof contentType === "string" ? contentType : "")
+	) {
+		throw new ApiError("Unexpected report content type", {
+			status: response.status,
+			code: "unexpected_report",
+		});
+	}
+	const header = response.headers["content-disposition"];
+	return {
+		blob: response.data,
+		contentDisposition: typeof header === "string" ? header : null,
+	};
 }

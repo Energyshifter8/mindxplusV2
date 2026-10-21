@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { isReportContentType } from "../../lib/download.ts";
 import {
 	canSubmitRating,
 	formatEventSeconds,
@@ -84,4 +85,13 @@ test("од үнэлгээ илгээх нөхцөл", () => {
 	assert.equal(canSubmitRating(4, 4, false), false);
 	assert.equal(canSubmitRating(4, 3, false), true);
 	assert.equal(canSubmitRating(4, null, true), false);
+});
+
+test("тайлан татах: зөвхөн PDF/binary Content-Type", () => {
+	assert.equal(isReportContentType("application/pdf"), true);
+	assert.equal(isReportContentType("Application/PDF; charset=binary"), true);
+	assert.equal(isReportContentType("application/octet-stream"), true);
+	assert.equal(isReportContentType("application/json"), false);
+	assert.equal(isReportContentType("text/html;charset=UTF-8"), false);
+	assert.equal(isReportContentType(null), false);
 });

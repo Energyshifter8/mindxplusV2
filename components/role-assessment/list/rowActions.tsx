@@ -8,6 +8,7 @@ import {
 	TrashIcon,
 } from "@/components/icons/role-assessment";
 import type { RaMenuAction } from "@/components/role-assessment/ui/KebabMenu";
+import { canInviteToRecruitment } from "@/lib/constants/roleAssessment";
 import type { RecruitmentListItem } from "@/lib/types/role-assessment";
 
 export interface RecruitmentRowHandlers {
@@ -24,26 +25,25 @@ export function primaryRowAction(
 	row: RecruitmentListItem,
 	h: RecruitmentRowHandlers,
 ): { label: string; icon: React.ReactNode; onSelect: () => void } {
-	switch (row.status) {
-		case "CREATED":
-			return {
-				label: "Засах",
-				icon: <EditIcon />,
-				onSelect: () => h.goEdit(row.id),
-			};
-		case "CLOSED":
-			return {
-				label: "Үр дүн",
-				icon: <ResultsIcon />,
-				onSelect: () => h.goDashboard(row.id),
-			};
-		default:
-			return {
-				label: "Урих",
-				icon: <InviteIcon />,
-				onSelect: () => h.onInvite(row.id),
-			};
+	if (row.status === "CREATED") {
+		return {
+			label: "Засах",
+			icon: <EditIcon />,
+			onSelect: () => h.goEdit(row.id),
+		};
 	}
+	if (canInviteToRecruitment(row.status)) {
+		return {
+			label: "Урих",
+			icon: <InviteIcon />,
+			onSelect: () => h.onInvite(row.id),
+		};
+	}
+	return {
+		label: "Үр дүн",
+		icon: <ResultsIcon />,
+		onSelect: () => h.goDashboard(row.id),
+	};
 }
 
 export function rowMenuActions(
@@ -84,12 +84,16 @@ export function rowMenuActions(
 			return [result, detail];
 		default:
 			return [
-				{
-					key: "invite",
-					label: "Урих",
-					icon: <InviteIcon />,
-					onSelect: () => h.onInvite(row.id),
-				},
+				...(canInviteToRecruitment(row.status)
+					? [
+							{
+								key: "invite",
+								label: "Урих",
+								icon: <InviteIcon />,
+								onSelect: () => h.onInvite(row.id),
+							},
+						]
+					: []),
 				result,
 				detail,
 				{

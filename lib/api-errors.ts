@@ -126,17 +126,29 @@ const ERROR_MESSAGES: Record<string, string> = {
 	invalid_argument: "Оруулсан мэдээлэл буруу байна",
 	unexpected_response:
 		"Сервер хүлээгдээгүй хариу буцаалаа. Жагсаалтаа шинэчилж шалгана уу",
+	unexpected_report: "Тайлангийн файл буруу хэлбэртэй ирлээ. Дахин оролдоно уу",
 };
 
 const NETWORK_ERROR_MESSAGE =
 	"Сервертэй холбогдож чадсангүй. Интернэт холболтоо шалгана уу";
 const GENERIC_ERROR_MESSAGE = "Алдаа гарлаа. Дахин оролдоно уу";
 
+function serverDetail(source: object): string | undefined {
+	const s = source as { status?: unknown; problem?: ProblemDetail };
+	if (typeof s.status !== "number" || s.status < 400 || s.status >= 500) {
+		return undefined;
+	}
+	const detail = s.problem?.detail?.trim();
+	return detail || undefined;
+}
+
 export function getErrorMessage(source: unknown, fallback?: string): string {
 	if (typeof source === "object" && source !== null) {
 		const s = source as { status?: unknown; code?: unknown };
 		const code = normalizeErrorCode(s.code);
 		if (code && ERROR_MESSAGES[code]) return ERROR_MESSAGES[code];
+		const detail = serverDetail(source);
+		if (detail) return detail;
 		if (source instanceof ApiError && source.status === undefined) {
 			return NETWORK_ERROR_MESSAGE;
 		}

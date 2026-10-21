@@ -13,6 +13,7 @@ import {
 import { RecruitmentStatusPill } from "@/components/role-assessment/ui/Basics";
 import { RaButton } from "@/components/role-assessment/ui/Button";
 import {
+	canInviteToRecruitment,
 	canRenameRecruitment,
 	opensWizard,
 } from "@/lib/constants/roleAssessment";
@@ -152,7 +153,7 @@ export function RecruitmentCard({
 					</>
 				) : (
 					<>
-						{row.status !== "CLOSED" && (
+						{canInviteToRecruitment(row.status) && (
 							<RaButton
 								title="Урих"
 								variant="ghost"

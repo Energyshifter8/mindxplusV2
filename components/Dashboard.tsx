@@ -239,6 +239,8 @@ function statusBadge(status: string): {
 		PUBLISHED: { label: "Идэвхтэй", color: "green" },
 		CLOSED: { label: "Хаагдсан", color: "green" },
 		CREATED: { label: "Үүссэн", color: "amber" },
+		PUBLISHING: { label: "Нийтэлж байна", color: "amber" },
+		SUSPENDED: { label: "Саатсан", color: "amber" },
 	};
 	return map[status] ?? { label: status, color: "amber" };
 }
