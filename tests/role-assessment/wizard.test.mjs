@@ -213,6 +213,17 @@ test("тестийг ангиллаар бүлэглэх", () => {
 		["hiring_individual"],
 	);
 	assert.deepEqual(groupTestsByCategory([], cats), []);
+	assert.deepEqual(
+		groupTestsByCategory(tests, cats, ["d", "b"]).map((g) => [
+			g.label,
+			g.tests.map((t) => t.id),
+		]),
+		[
+			["Санал болгосон", ["b", "d"]],
+			["Бие хүний онцлог", ["a"]],
+			["", ["c"]],
+		],
+	);
 });
 
 test("HTML normalize (staging regex) ба srcDoc", () => {

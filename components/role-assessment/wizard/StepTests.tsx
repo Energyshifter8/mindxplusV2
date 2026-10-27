@@ -11,6 +11,7 @@ import { RaButton } from "@/components/role-assessment/ui/Button";
 import {
 	type CategoryOption,
 	groupTestsByCategory,
+	RECOMMENDED_GROUP_KEY,
 	type TestGroup,
 	type WizardTest,
 } from "@/lib/role-assessment/wizard";
@@ -177,7 +178,11 @@ export function StepTests({
 }) {
 	const groups: TestGroup[] =
 		selectedCategory === ""
-			? groupTestsByCategory(tests, categories)
+			? groupTestsByCategory(
+					tests,
+					categories,
+					recommended.map((r) => r.id),
+				)
 			: [{ key: selectedCategory, label: "", tests }];
 	return (
 		<>
@@ -228,6 +233,9 @@ export function StepTests({
 						<section key={group.key || "other"}>
 							{group.label && (
 								<h3 className="mb-4 flex items-center gap-2 font-medium text-TextColor-main text-base leading-[140%]">
+									{group.key === RECOMMENDED_GROUP_KEY && (
+										<SparkleSmallIcon className="text-Semantic-success500" />
+									)}
 									{group.label}
 									<span className="rounded-full bg-Gray-200 px-2 py-0.5 text-[11px] text-TextColor-secondary leading-4">
 										{group.tests.length}

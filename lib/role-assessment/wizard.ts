@@ -288,21 +288,29 @@ export interface TestGroup {
 	tests: WizardTest[];
 }
 
+export const RECOMMENDED_GROUP_KEY = "__recommended";
+
 export function groupTestsByCategory(
 	tests: readonly WizardTest[],
 	categories: readonly CategoryOption[],
+	recommendedIds: readonly string[] = [],
 ): TestGroup[] {
+	const recIds = new Set(recommendedIds);
+	const recommended = tests.filter((t) => recIds.has(t.id));
+	const others = tests.filter((t) => !recIds.has(t.id));
 	const groups = categories
 		.filter((c) => c.key !== "")
 		.map((c) => ({
 			key: c.key,
 			label: c.label,
-			tests: tests.filter((t) => t.category === c.key),
+			tests: others.filter((t) => t.category === c.key),
 		}));
-	const rest = tests.filter((t) => !groups.some((g) => g.key === t.category));
-	return [...groups, { key: "", label: "", tests: rest }].filter(
-		(g) => g.tests.length > 0,
-	);
+	const rest = others.filter((t) => !groups.some((g) => g.key === t.category));
+	return [
+		{ key: RECOMMENDED_GROUP_KEY, label: "Санал болгосон", tests: recommended },
+		...groups,
+		{ key: "", label: "", tests: rest },
+	].filter((g) => g.tests.length > 0);
 }
 
 export interface WizardQuestion {
