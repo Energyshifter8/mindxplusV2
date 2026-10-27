@@ -23,6 +23,11 @@ test("урилгын form: swagger-ийн хязгаар", () => {
 		inviteFormError({ ...valid, lastName: "Д".repeat(21) }),
 		"Овог 2-20 тэмдэгт байна",
 	);
+	assert.equal(
+		inviteFormError({ ...valid, firstName: "-Бат" }),
+		"Нэр үсгээр эхлэх ёстой",
+	);
+	assert.equal(inviteFormError({ ...valid, lastName: "Дорж-Очир" }), null);
 	assert.equal(inviteFormError({ ...valid, email: "" }), "Имэйл оруулна уу");
 	assert.equal(
 		inviteFormError({ ...valid, email: "talent@example" }),

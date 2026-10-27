@@ -15,6 +15,7 @@ function nameError(value: string, label: string): string | null {
 	if (text.length < INVITE_NAME_MIN || text.length > INVITE_NAME_MAX) {
 		return `${label} ${INVITE_NAME_MIN}-${INVITE_NAME_MAX} тэмдэгт байна`;
 	}
+	if (!/^\p{L}/u.test(text)) return `${label} үсгээр эхлэх ёстой`;
 	return null;
 }
 
